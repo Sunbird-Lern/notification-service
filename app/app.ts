@@ -1,12 +1,17 @@
 import * as express from "express";
 import * as bodyParser from "body-parser";
+import { AppConfig } from "./config"
 import { Routes } from "./routes";
-import { CassandraAdapter } from "./modules/shared";
+import { CassandraAdapter, KafkaProducerAdapter, KafkaConsumerAdapter } from "./modules/shared";
+import { MessageProcessService } from "./modules/notification-delivery-manager";
 class App {
 
     public app: express.Application;
     public router = express.Router();
     public cassandraAdapter: CassandraAdapter;
+    public kafkaProducerAdapter: KafkaProducerAdapter;
+    public kafkaConsumerAdapter: KafkaConsumerAdapter;
+    public messageProcessService:MessageProcessService;
     constructor() {
         this.app = express();
         this.config();
@@ -20,6 +25,12 @@ class App {
         this.router = Routes.configure();
         this.app.use("/api/v1", this.router);
         this.cassandraAdapter = CassandraAdapter.connect();
+        this.kafkaProducerAdapter = KafkaProducerAdapter.connect();
+        this.messageProcessService = new MessageProcessService();
+        this.kafkaConsumerAdapter = new KafkaConsumerAdapter(AppConfig.KAFKA_TOPICS.split(','), (data) => {
+            console.log("kafka consumer data",data);
+            this.messageProcessService.processMessage(JSON.parse(data.value.toString()));
+        })
 
     }
 

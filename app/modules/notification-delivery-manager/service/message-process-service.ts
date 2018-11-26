@@ -1,4 +1,5 @@
 import { EmailDeliveryService } from "./email-delivery-service";
+import { CassandraAdapter } from "../../shared";
 export class MessageProcessService {
     public emailDeliveryService: EmailDeliveryService;
     constructor() {
@@ -6,49 +7,39 @@ export class MessageProcessService {
     }
     public processMessage(msgData) {
 
-        let receipients = this.getReceipients(msgData.receipientRefIds,msgData.receipientRefType, "email");
-        // if the receipient is single send
-        if (receipients.length == 1) {
-            this.emailDeliveryService = new EmailDeliveryService({});
-            this.emailDeliveryService.sendEmail().then((result) => {
-                // based on success status upadate message delivery status to db
-            }, (error) => {
-                // if error add the message back to queue with retries count
-            });
-        } else {
-            this.processGroupMessages();
+        let models = CassandraAdapter.connect()
+        if (models.instance.Messages) {
+            models.instance.Messages.findOne({ id: models.uuidFromString(msgData.messageId) }, { raw: true, allow_filtering: true }, (err, message) => {
+                if (err) {
+                }
+                switch (message.broadcast_type) {
+                    case "email":
+                        let reciepients = this.getReceipients(message.recipient_refid, message.recipientRefType, "email")
+                        models.instance.Templates.findOne({ name: message.template_name }, { raw: true, allow_filtering: true }, (err, templateData) => {
+                            if (err) {
+
+                            }
+                            let emailData = {
+                                subject: "Batch notification update",
+                                templateSubData: message.message_data,
+                                templateText: templateData.template,
+                                to: reciepients
+                            }
+                            this.emailDeliveryService = new EmailDeliveryService(emailData)
+                            this.emailDeliveryService.sendEmail().then((result)=>{
+                             console.log("result",result)   
+                            })
+                        })
+                        break
+                }
+            })
+        }
+        else {
+            console.log("Cassandra models not initialised.Try again !!!")
         }
 
     }
-    private getReceipients(refIds:Array<String>,refType: String, fieldToFetch: String): Array<String> {
-        let receipients = [];
-        // based on type get associated users from the provided reference ids and return list of user emails or mobile numbers
-        switch (refType) {
-            case 'BATCH': {
-
-            }
-                break;
-            case 'USER': {
-
-            }
-                break;
-        }
-        return receipients;
+    private getReceipients(refIds: String, refType: String, fieldToFetch: String) {
+        return "rajeev.sathish@tarento.com";
     }
-    private processGroupMessages() {
-        // fanout group messages as individual and push back to queue and database
-    }
-
-    private saveMessageToDB(msg) {
-        // use 'CassandraAdapter' to insert message details into DB
-    }
-
-    private addMessageToQueue(msg) {
-        // use 'KafkaProducerAdapter' to insert message details into DB
-    }
-
-    private updateDeliveryStatus(msg) {
-        // use 'CassandraAdapter' to update message delivery status in DB
-    }
-
 }
