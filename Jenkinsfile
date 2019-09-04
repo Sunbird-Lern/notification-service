@@ -33,10 +33,7 @@ node('build-slave') {
 		currentDir = sh(returnStdout: true, script: 'pwd').trim()
                 env.NODE_ENV = "build"
                 print "Environment will be : ${env.NODE_ENV}"
-                sh('git submodule update --init')
-                sh('git submodule update --init --recursive --remote')
                 sh 'git log -1'
-	
 		sh "cd $currentDir"
 		// Build the dependencies for sunbird user-org service
                 sh 'mvn clean install'
