@@ -1,0 +1,39 @@
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.sunbird</groupId>
+    <artifactId>notification-play-service</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>notification-service</name>
+    <properties>
+        <project.version>1.0.0</project.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <jackson.version>2.9.9</jackson.version>
+        <akka.x.version>2.6.0-M2</akka.x.version>
+        <junit.version>4.12</junit.version>
+
+        <version.compiler.plugin>2.3.1</version.compiler.plugin>
+        <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
+        <slf4j.version>1.6.1</slf4j.version>
+        <logback.version>1.0.7</logback.version>
+
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <play2.version>2.6.5</play2.version>
+        <scala.version>2.12.8</scala.version>
+        <powermock.version>1.6.5</powermock.version>
+        <httpClient.version>4.5.1</httpClient.version>
+    </properties>
+
+    <modules>
+        <module>sb-utils</module>
+        <module>all-actors</module>
+        <module>sb-actor</module>
+        <module>service</module>
+    </modules>
+</project>
