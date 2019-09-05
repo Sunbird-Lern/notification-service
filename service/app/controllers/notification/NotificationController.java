@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package controllers.notification;
 
@@ -9,6 +9,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import controllers.BaseController;
+import org.sunbird.request.Request;
 import play.mvc.Result;
 
 /**
@@ -19,9 +20,9 @@ import play.mvc.Result;
  */
 public class NotificationController extends BaseController{
 	 Logger logger = LogManager.getLogger(NotificationController.class);
-	
+
 	public static final String NOTIFICATION = "notification";
-	
+
 	/**
 	   * This method will accept request for sending notification.
 	   * notification can be sent on email, sms or push on device
@@ -29,7 +30,11 @@ public class NotificationController extends BaseController{
 	   */
 	  public CompletionStage<Result> sendNotification() {
 		logger.info("method call started for sendNotification " + request().body().asJson());
-		CompletionStage<Result> response = handleRequest(request(),null,NOTIFICATION);
+		CompletionStage<Result> response = handleRequest(request()
+				,request -> {Request req = (Request) request;
+		new NotificationValidator().validateSendNotificationRequest(req);
+		return null;
+		}, NOTIFICATION);
 		logger.info("Method call end for sendNotification");
 	    return response;
 	  }

@@ -107,6 +107,11 @@
             <version>2.6.7</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2</version>
+        </dependency>
     </dependencies>
     <build>
         <sourceDirectory>${project.basedir}/app</sourceDirectory>
