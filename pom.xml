@@ -34,6 +34,7 @@
         <module>sb-utils</module>
         <module>all-actors</module>
         <module>sb-actor</module>
+        <module>notification-sdk</module>
         <module>service</module>
     </modules>
 </project>
