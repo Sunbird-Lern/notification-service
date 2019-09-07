@@ -1,20 +1,15 @@
-/**
- * 
- */
+/** */
 package org.sunbird.notification.utils;
 
-/**
- * @author manzarul
- *
- */
+/** @author manzarul */
 public class NotificationConstant {
-	public static final String FCM_URL = "";
-	public static final String SUNBIRD_FCM_ACCOUNT_KEY = "";
-	public static final String AUTHORIZATION = "";
-	public static final String FAILURE = "failure";
-	public static final String TO = "to";
-	public static final String DATA = "data";
-	public static final String MESSAGE_Id = "messageId";
-	public static final String REGISTRATION_IDS = "";
-
+  public static final String FCM_URL = "sunbird.fcm.url";
+  public static final String SUNBIRD_FCM_ACCOUNT_KEY = "sunbird_fcm_account_key";
+  public static final String AUTHORIZATION = "";
+  public static final String FAILURE = "failure";
+  public static final String TO = "to";
+  public static final String DATA = "data";
+  public static final String MESSAGE_Id = "messageId";
+  public static final String REGISTRATION_IDS = "registration_ids";
+  public static final String DRY_RUN = "dry_run";
 }

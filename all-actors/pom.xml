@@ -13,12 +13,17 @@
         <dependency>
             <groupId>org.sunbird</groupId>
             <artifactId>sb-actor</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.sunbird</groupId>
             <artifactId>sb-utils</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+        <groupId>org.sunbird</groupId>
+	    <artifactId>notification-sdk</artifactId>
+	    <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>
