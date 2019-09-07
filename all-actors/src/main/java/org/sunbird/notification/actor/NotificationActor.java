@@ -1,11 +1,13 @@
 /**
- * 
+ *
  */
 package org.sunbird.notification.actor;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.sunbird.BaseActor;
+import org.sunbird.BaseException;
+import org.sunbird.NotificationValidator;
 import org.sunbird.actor.core.ActorConfig;
 import org.sunbird.request.Request;
 import org.sunbird.response.Response;
@@ -36,8 +38,9 @@ public class NotificationActor extends BaseActor {
 		logger.info("onReceive method call End");
 	}
 
-	public void notify(Request request) {
-		System.out.println("Success");
+	public void notify(Request request) throws BaseException{
+        NotificationValidator.validateSendNotificationRequest(request);
+        System.out.println("Success");
 		Response response = new Response();
 		response.getResult().put("response", "SUCCESS");
 		sender().tell(response, getSelf());
