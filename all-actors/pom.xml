@@ -11,6 +11,11 @@
 
     <dependencies>
         <dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>0.10.0.1</version>
+		</dependency>
+        <dependency>
             <groupId>org.sunbird</groupId>
             <artifactId>sb-actor</artifactId>
             <version>1.0.0</version>

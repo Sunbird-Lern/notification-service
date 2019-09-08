@@ -3,16 +3,23 @@ package org.sunbird.notification.dispatcher.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.typesafe.config.Config;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.log4j.Logger;
 import org.sunbird.notification.dispatcher.INotificationDispatcher;
 import org.sunbird.notification.fcm.provider.IFCMNotificationService;
 import org.sunbird.notification.fcm.provider.NotificationFactory;
+import org.sunbird.util.ConfigUtil;
+import org.sunbird.util.Constant;
+import org.sunbird.util.kafka.KafkaClient;
 
 /** @author manzarul */
 public class FCMNotificationDispatcher implements INotificationDispatcher {
+  private static Logger logger = Logger.getLogger(FCMNotificationDispatcher.class);
   private IFCMNotificationService service =
       NotificationFactory.getInstance(NotificationFactory.instanceType.httpClinet.name());
   private static final String IDS = "ids";
@@ -21,6 +28,9 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
   private static final String NOTIFICATIONS = "notifications";
   private static final String CONFIG = "config";
   private static ObjectMapper mapper = new ObjectMapper();
+  String topic = null;
+  String BOOTSTRAP_SERVERS = null;
+  Producer<Long, String> producer = null;
 
   @Override
   /**
@@ -57,6 +67,24 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
       } catch (JsonProcessingException e) {
         e.printStackTrace();
       }
+    }
+  }
+
+  /** Initialises Kafka producer required for dispatching messages on Kafka. */
+  private void initKafkaClient() {
+    Config config = ConfigUtil.getConfig();
+    BOOTSTRAP_SERVERS = config.getString(Constant.SUNBIRD_NOTIFICATION_KAFKA_SERVICE_CONFIG);
+    topic = config.getString(Constant.SUNBIRD_NOTIFICATION_KAFKA_TOPIC);
+
+    logger.info(
+        "KafkaTelemetryDispatcherActor:initKafkaClient: Bootstrap servers = " + BOOTSTRAP_SERVERS);
+    logger.info("UserMergeActor:initKafkaClient: topic = " + topic);
+    try {
+      producer =
+          KafkaClient.createProducer(
+              BOOTSTRAP_SERVERS, Constant.KAFKA_CLIENT_NOTIFICATION_PRODUCER);
+    } catch (Exception e) {
+      logger.error("UserMergeActor:initKafkaClient: An exception occurred.", e);
     }
   }
 }
