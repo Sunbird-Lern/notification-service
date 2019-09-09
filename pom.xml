@@ -24,7 +24,8 @@
         <logback.version>1.0.7</logback.version>
 
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <play2.version>2.6.5</play2.version>
+        <play2.version>2.7.2</play2.version>
+        <play2.plugin.version>1.0.0-rc5</play2.plugin.version>
         <scala.version>2.12.8</scala.version>
         <powermock.version>1.6.5</powermock.version>
         <httpClient.version>4.5.1</httpClient.version>
