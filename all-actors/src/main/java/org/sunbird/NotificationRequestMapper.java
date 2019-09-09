@@ -19,6 +19,12 @@ public class NotificationRequestMapper {
 
     private static Logger logger = LogManager.getLogger(NotificationRequestMapper.class);
 
+    /**
+     * maps request to notification request
+     * @param request
+     * @return
+     * @throws BaseException
+     */
     public static List<NotificationRequest> toList(List<Map<String, Object>> request) throws BaseException {
         if (request.isEmpty()) {
             throw new BaseException("MANDATORY_PARAMETER_MISSING",
