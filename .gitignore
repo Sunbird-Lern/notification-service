@@ -59,3 +59,27 @@ typings/
 
 # next.js build output
 .next
+
+
+/target/
+project/project
+project/target
+target
+tmp
+.history
+dist
+.idea/
+/*.iml:
+*.iml
+*.log
+/*.log
+RUNNING_PID
+/out
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/.target/
+/bin/
+/logs
+*.zip
