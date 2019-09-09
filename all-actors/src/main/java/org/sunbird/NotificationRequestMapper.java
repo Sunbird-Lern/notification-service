@@ -25,17 +25,23 @@ public class NotificationRequestMapper {
                     MessageFormat.format(IResponseMessage.MANDATORY_PARAMETER_MISSING, JsonKey.NOTIFICATIONS),
                     ResponseCode.CLIENT_ERROR.getCode());
         }
-        List<NotificationRequest> sendNotificationList = new ArrayList<>();
+        List<NotificationRequest> notificationList = new ArrayList<>();
         for (Map<String, Object> map : request) {
-            sendNotificationList.add((getNotificationRequest(map)));
+            notificationList.add((getNotificationRequest(map)));
         }
-        return sendNotificationList;
+        return notificationList;
     }
 
 
-    private static NotificationRequest getNotificationRequest(Map<String, Object> data) {
-        NotificationRequest notificationRequest = mapper.convertValue(data, NotificationRequest.class);
-        logger.info("Notification request , " + notificationRequest.toString());
-        return notificationRequest;
+    private static NotificationRequest getNotificationRequest(Map<String, Object> data) throws BaseException {
+        try {
+            NotificationRequest notificationRequest = mapper.convertValue(data, NotificationRequest.class);
+            logger.info("Notification request , " + notificationRequest.toString());
+            return notificationRequest;
+        } catch (Exception e) {
+            throw new BaseException("INVALID_REQUESTED_DATA",
+                    MessageFormat.format(IResponseMessage.INVALID_REQUESTED_DATA, ", provide a valid request data, " + e.getMessage()),
+                    ResponseCode.CLIENT_ERROR.getCode());
+        }
     }
 }

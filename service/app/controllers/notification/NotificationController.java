@@ -27,7 +27,7 @@ public class NotificationController extends BaseController {
      * @return a CompletableFuture of success response
      */
     public CompletionStage<Result> sendNotification() {
-        logger.info("method call started for sendNotification " + request().body().asJson());
+        logger.info("method call started for sendNotification ");
         CompletionStage<Result> response = handleRequest(request()
                 , null, NOTIFICATION);
         logger.info("Method call end for sendNotification");

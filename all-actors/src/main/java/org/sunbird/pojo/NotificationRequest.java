@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.util.List;
 
 
 public class NotificationRequest {
@@ -25,7 +26,7 @@ public class NotificationRequest {
     /**
      * required
      */
-    private String[] ids;
+    private List<String> ids;
 
     private Template template;
 
@@ -60,11 +61,11 @@ public class NotificationRequest {
         this.config = config;
     }
 
-    public String[] getIds() {
+    public List<String> getIds() {
         return ids;
     }
 
-    public void setIds(String[] ids) {
+    public void setIds(List<String> ids) {
         this.ids = ids;
     }
 

@@ -44,14 +44,8 @@ public class NotificationActor extends BaseActor {
     }
 
     public void notify(Request request) throws BaseException {
-        List<NotificationRequest> notificationRequestList;
-        try {
-            notificationRequestList = NotificationRequestMapper.toList((List<Map<String, Object>>) request.getRequest().get(JsonKey.NOTIFICATIONS));
-        } catch (Exception e) {
-            throw new BaseException("INVALID_REQUESTED_DATA",
-                    MessageFormat.format(IResponseMessage.INVALID_REQUESTED_DATA, ", provide a valid request data"),
-                    ResponseCode.CLIENT_ERROR.getCode());
-        }
+        List<NotificationRequest> notificationRequestList = NotificationRequestMapper
+                .toList((List<Map<String, Object>>) request.getRequest().get(JsonKey.NOTIFICATIONS));
         for (NotificationRequest notificationRequest : notificationRequestList) {
             NotificationValidator.validate(notificationRequest);
         }

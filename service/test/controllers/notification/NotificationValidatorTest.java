@@ -10,6 +10,8 @@ import org.sunbird.message.ResponseCode;
 import org.sunbird.NotificationValidator;
 import org.sunbird.pojo.NotificationRequest;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.*;
 
 public class NotificationValidatorTest {
@@ -20,7 +22,8 @@ public class NotificationValidatorTest {
     public void setUp() throws Exception {
         notificationRequest.setMode("email");
         notificationRequest.setDeliveryType("message");
-        notificationRequest.setIds(new String[]{"emailAddress", "phoneNumber", "deviceId"}); }
+        notificationRequest.setIds(Arrays.asList("emailAddress", "phoneNumber", "deviceId"));
+    }
 
     @After
     public void tearDown() throws Exception {
@@ -86,7 +89,7 @@ public class NotificationValidatorTest {
     @Test
     public void validateSendNotificationWithEmptyIDs() {
         boolean response = false;
-        notificationRequest.setIds(new String[]{});
+        notificationRequest.setIds(Arrays.asList());
         try {
             NotificationValidator.validate(notificationRequest);
             response = true;
