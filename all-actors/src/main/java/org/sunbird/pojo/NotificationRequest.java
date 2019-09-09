@@ -4,13 +4,7 @@ package org.sunbird.pojo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.sunbird.BaseException;
-import org.sunbird.JsonKey;
-import org.sunbird.message.IResponseMessage;
-import org.sunbird.message.ResponseCode;
 
-import java.text.MessageFormat;
-import java.util.List;
 
 
 public class NotificationRequest {
@@ -46,7 +40,7 @@ public class NotificationRequest {
         return mode;
     }
 
-    public void setMode(String mode) throws BaseException {
+    public void setMode(String mode) {
         this.mode = mode;
     }
 

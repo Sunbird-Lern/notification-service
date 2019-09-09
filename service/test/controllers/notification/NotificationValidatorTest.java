@@ -8,20 +8,19 @@ import org.sunbird.BaseException;
 import org.sunbird.JsonKey;
 import org.sunbird.message.ResponseCode;
 import org.sunbird.NotificationValidator;
-import org.sunbird.request.Request;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.sunbird.pojo.NotificationRequest;
 
 import static org.junit.Assert.*;
 
 public class NotificationValidatorTest {
 
+    private NotificationRequest notificationRequest = new NotificationRequest();
+
     @Before
     public void setUp() throws Exception {
-    }
+        notificationRequest.setMode("email");
+        notificationRequest.setDeliveryType("message");
+        notificationRequest.setIds(new String[]{"emailAddress", "phoneNumber", "deviceId"}); }
 
     @After
     public void tearDown() throws Exception {
@@ -29,21 +28,9 @@ public class NotificationValidatorTest {
 
     @Test
     public void validateSendNotificationRequestSuccess() {
-        Request request = new Request();
         boolean response = false;
-        Map<String, Object> requestObj = new HashMap<>();
-        List<Map<String, Object>> sendReq = new ArrayList<>();
-
-        Map<String, Object> notification = new HashMap<>();
-        notification.put(JsonKey.MODE, "email");
-        notification.put(JsonKey.DELIVERY_TYPE, "message");
-        notification.put(JsonKey.IDS, new String[]{"emailAddress", "phoneNumber", "deviceId"});
-
-        sendReq.add(notification);
-        requestObj.put(JsonKey.NOTIFICATIONS, sendReq);
-        request.setRequest(requestObj);
         try {
-            NotificationValidator.validateSendNotificationRequest(request);
+            NotificationValidator.validate(notificationRequest);
             response = true;
         } catch (BaseException e) {
             Assert.assertNull(e);
@@ -54,21 +41,10 @@ public class NotificationValidatorTest {
 
     @Test
     public void validateSendNotificationWithEmptyMode() {
-        Request request = new Request();
         boolean response = false;
-        Map<String, Object> requestObj = new HashMap<>();
-        List<Map<String, Object>> sendReq = new ArrayList<>();
-
-        Map<String, Object> notification = new HashMap<>();
-        notification.put(JsonKey.MODE, "");
-        notification.put(JsonKey.DELIVERY_TYPE, "message");
-        notification.put(JsonKey.IDS, new String[]{"emailAddress", "phoneNumber", "deviceId"});
-
-        sendReq.add(notification);
-        requestObj.put(JsonKey.NOTIFICATIONS, sendReq);
-        request.setRequest(requestObj);
+        notificationRequest.setMode("");
         try {
-            NotificationValidator.validateSendNotificationRequest(request);
+            NotificationValidator.validate(notificationRequest);
             response = true;
         } catch (BaseException e) {
             assertEquals(ResponseCode.BAD_REQUEST.getCode(), e.getResponseCode());
@@ -78,22 +54,11 @@ public class NotificationValidatorTest {
     }
 
     @Test
-    public void validateSendNotificationWithInvalidModeValue()  {
-        Request request = new Request();
+    public void validateSendNotificationWithInvalidModeValue() {
         boolean response = false;
-        Map<String, Object> requestObj = new HashMap<>();
-        List<Map<String, Object>> sendReq = new ArrayList<>();
-
-        Map<String, Object> notification = new HashMap<>();
-        notification.put(JsonKey.MODE, "gmail");
-        notification.put(JsonKey.DELIVERY_TYPE, "message");
-        notification.put(JsonKey.IDS, new String[]{"emailAddress", "phoneNumber", "deviceId"});
-
-        sendReq.add(notification);
-        requestObj.put(JsonKey.NOTIFICATIONS, sendReq);
-        request.setRequest(requestObj);
+        notificationRequest.setMode("gmail");
         try {
-            NotificationValidator.validateSendNotificationRequest(request);
+            NotificationValidator.validate(notificationRequest);
             response = true;
         } catch (BaseException e) {
 
@@ -104,22 +69,11 @@ public class NotificationValidatorTest {
     }
 
     @Test
-    public void  validateSendNotificationWithEmptyDeliveryType()    {
-        Request request = new Request();
+    public void validateSendNotificationWithEmptyDeliveryType() {
         boolean response = false;
-        Map<String, Object> requestObj = new HashMap<>();
-        List<Map<String, Object>> sendReq = new ArrayList<>();
-
-        Map<String, Object> notification = new HashMap<>();
-        notification.put(JsonKey.MODE, "email");
-        notification.put(JsonKey.DELIVERY_TYPE, "");
-        notification.put(JsonKey.IDS, new String[]{"emailAddress", "phoneNumber", "deviceId"});
-
-        sendReq.add(notification);
-        requestObj.put(JsonKey.NOTIFICATIONS, sendReq);
-        request.setRequest(requestObj);
+        notificationRequest.setDeliveryType("");
         try {
-            NotificationValidator.validateSendNotificationRequest(request);
+            NotificationValidator.validate(notificationRequest);
             response = true;
         } catch (BaseException e) {
 
@@ -130,22 +84,11 @@ public class NotificationValidatorTest {
     }
 
     @Test
-    public void  validateSendNotificationWithEmptyIDs()    {
-        Request request = new Request();
+    public void validateSendNotificationWithEmptyIDs() {
         boolean response = false;
-        Map<String, Object> requestObj = new HashMap<>();
-        List<Map<String, Object>> sendReq = new ArrayList<>();
-
-        Map<String, Object> notification = new HashMap<>();
-        notification.put(JsonKey.MODE, "email");
-        notification.put(JsonKey.DELIVERY_TYPE, "");
-        notification.put(JsonKey.IDS, new String[]{});
-
-        sendReq.add(notification);
-        requestObj.put(JsonKey.NOTIFICATIONS, sendReq);
-        request.setRequest(requestObj);
+        notificationRequest.setIds(new String[]{});
         try {
-            NotificationValidator.validateSendNotificationRequest(request);
+            NotificationValidator.validate(notificationRequest);
             response = true;
         } catch (BaseException e) {
             assertEquals(ResponseCode.BAD_REQUEST.getCode(), e.getResponseCode());
