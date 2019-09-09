@@ -10,6 +10,7 @@ public interface JsonKey {
     String MESSAGE = "message";
     String ERRORS = "errors";
     String SUCCESS = "success";
+    String NOTIFICATION = "notification";
     String NOTIFICATIONS = "notifications";
     String DELIVERY_TYPE = "deliveryType";
     String MODE = "mode";

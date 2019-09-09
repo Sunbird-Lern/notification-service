@@ -1,6 +1,7 @@
 package org.sunbird;
 
 
+import org.apache.commons.collections.CollectionUtils;
 import org.sunbird.pojo.NotificationMode;
 import org.apache.commons.lang3.StringUtils;
 import org.sunbird.message.IResponseMessage;
@@ -33,7 +34,7 @@ public class NotificationValidator {
      * @throws BaseException
      */
     private static void checkMandatoryParamsPresent(String param, String key) throws BaseException {
-        if (StringUtils.isEmpty(param)) {
+        if (StringUtils.isBlank(param)) {
             throw new BaseException("MANDATORY_PARAMETER_MISSING",
                     MessageFormat.format(IResponseMessage.MANDATORY_PARAMETER_MISSING,
                             JsonKey.NOTIFICATIONS + "." + key),
@@ -60,7 +61,7 @@ public class NotificationValidator {
      * @throws BaseException
      */
     private static void validateIds(List<String> ids) throws BaseException {
-        if (ids.isEmpty()) {
+        if (CollectionUtils.isEmpty(ids)) {
             throw new BaseException("MANDATORY_PARAMETER_MISSING",
                     MessageFormat.format(IResponseMessage.MANDATORY_PARAMETER_MISSING, JsonKey.NOTIFICATIONS + "." + JsonKey.IDS),
                     ResponseCode.CLIENT_ERROR.getCode());
