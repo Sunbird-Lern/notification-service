@@ -40,7 +40,7 @@ node('build-slave') {
             }
             stage('Package') {
 		// Create a deployment package
-                dir('play-service') {
+                dir('service') {
                     sh 'mvn play2:dist'
 		    sh 'cp target/notification-service-1.0.0-dist.zip ../'
                 }
