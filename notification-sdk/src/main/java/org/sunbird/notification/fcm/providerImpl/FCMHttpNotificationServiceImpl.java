@@ -75,7 +75,7 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
     }
     FCMResponse response = null;
     try {
-      JSONObject object1 = new JSONObject(data);
+      JSONObject object1 = new JSONObject(data.get(NotificationConstant.RAW_DATA));
       JSONObject object = new JSONObject();
       object.put(NotificationConstant.DATA, object1);
       object.put(NotificationConstant.DRY_RUN, isDryRun);
@@ -107,7 +107,7 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
     }
     FCMResponse fcmResponse = null;
     try {
-      JSONObject object1 = new JSONObject(data);
+      JSONObject object1 = new JSONObject(data.get(NotificationConstant.RAW_DATA));
       JSONObject object = new JSONObject();
       object.put(NotificationConstant.DATA, object1);
       object.put(NotificationConstant.DRY_RUN, isDryRun);
