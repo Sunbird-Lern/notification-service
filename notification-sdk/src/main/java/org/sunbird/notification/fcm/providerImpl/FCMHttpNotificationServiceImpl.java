@@ -35,7 +35,7 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
   static ObjectMapper mapper = new ObjectMapper();
 
   static {
-    headerMap.put(NotificationConstant.AUTHORIZATION, "key=" + FCM_ACCOUNT_KEY);
+    headerMap.put(NotificationConstant.AUTHORIZATION, FCM_ACCOUNT_KEY);
     headerMap.put("Content-Type", "application/json");
   }
 
