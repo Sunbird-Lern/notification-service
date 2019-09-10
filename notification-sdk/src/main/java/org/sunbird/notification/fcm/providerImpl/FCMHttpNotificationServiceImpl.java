@@ -27,8 +27,8 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
   /** FCM_URL URL of FCM server */
   public static final String FCM_URL = "https://fcm.googleapis.com/fcm/send";
   /** FCM_ACCOUNT_KEY FCM server key. */
-  private static final String FCM_ACCOUNT_KEY = "AIzaSyDtx4fh39-ehz9SLglZLj8Z7RqaEjWqMH4";
-  // System.getenv(NotificationConstant.SUNBIRD_FCM_ACCOUNT_KEY);
+  private static final String FCM_ACCOUNT_KEY =
+      System.getenv(NotificationConstant.SUNBIRD_FCM_ACCOUNT_KEY);
 
   private static Map<String, String> headerMap = new HashMap<>();
   private static final String TOPIC_SUFFIX = "/topics/";
