@@ -29,13 +29,23 @@
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play_2.12</artifactId>
+            <artifactId>play_2.11</artifactId>
             <version>${play2.version}</version>
             <exclusions>
                 <exclusion>
@@ -46,7 +56,7 @@
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-guice_2.12</artifactId>
+            <artifactId>play-guice_2.11</artifactId>
             <version>${play2.version}</version>
         </dependency>
         <dependency>
@@ -61,19 +71,30 @@
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-akka-http-server_2.12</artifactId>
+            <artifactId>play-akka-http-server_2.11</artifactId>
             <version>${play2.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-remote_2.12</artifactId>
+            <artifactId>akka-remote_2.11</artifactId>
             <version>${akka.x.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>filters-helpers_2.12</artifactId>
+            <artifactId>filters-helpers_2.11</artifactId>
             <version>${play2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-specs2_2.11</artifactId>
+            <version>${play2.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>2.10.0</version>
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
@@ -89,10 +110,21 @@
         </dependency>
         <dependency>
             <groupId>org.powermock</groupId>
-            <artifactId>powermock-api-mockito</artifactId>
+            <artifactId>powermock-api-mockito2</artifactId>
             <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.typesafe.play</groupId>-->
+<!--            <artifactId>play-specs2_2.11</artifactId>-->
+<!--            <version>${play2.version}</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.mockito</groupId>-->
+<!--            <artifactId>mockito-core</artifactId>-->
+<!--            <version>2.10.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -103,8 +135,8 @@
         <!--Play Helper Class for Testing Controllers-->
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-test_2.12</artifactId>
-            <version>2.6.7</version>
+            <artifactId>play-test_2.11</artifactId>
+            <version>${play2.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
