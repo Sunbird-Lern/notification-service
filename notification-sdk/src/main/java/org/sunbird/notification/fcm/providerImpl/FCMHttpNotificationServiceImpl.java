@@ -27,8 +27,8 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
   /** FCM_URL URL of FCM server */
   public static final String FCM_URL = "https://fcm.googleapis.com/fcm/send";
   /** FCM_ACCOUNT_KEY FCM server key. */
-  private static final String FCM_ACCOUNT_KEY =
-      System.getenv(NotificationConstant.SUNBIRD_FCM_ACCOUNT_KEY);
+  private static final String FCM_ACCOUNT_KEY = "key=AIzaSyCVHsB07jyEzeb7ZTXsykmKcbG5uopOzS4";
+  // System.getenv(NotificationConstant.SUNBIRD_FCM_ACCOUNT_KEY);
 
   private static Map<String, String> headerMap = new HashMap<>();
   private static final String TOPIC_SUFFIX = "/topics/";
@@ -75,7 +75,7 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
     }
     FCMResponse response = null;
     try {
-      JSONObject object1 = new JSONObject(data);
+      JSONObject object1 = new JSONObject(data.get(NotificationConstant.RAW_DATA));
       JSONObject object = new JSONObject();
       object.put(NotificationConstant.DATA, object1);
       object.put(NotificationConstant.DRY_RUN, isDryRun);
@@ -107,7 +107,7 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
     }
     FCMResponse fcmResponse = null;
     try {
-      JSONObject object1 = new JSONObject(data);
+      JSONObject object1 = new JSONObject(data.get(NotificationConstant.RAW_DATA));
       JSONObject object = new JSONObject();
       object.put(NotificationConstant.DATA, object1);
       object.put(NotificationConstant.DRY_RUN, isDryRun);

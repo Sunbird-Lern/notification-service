@@ -12,4 +12,5 @@ public class NotificationConstant {
   public static final String MESSAGE_Id = "messageId";
   public static final String REGISTRATION_IDS = "registration_ids";
   public static final String DRY_RUN = "dry_run";
+  public static final String RAW_DATA = "rawData";
 }
