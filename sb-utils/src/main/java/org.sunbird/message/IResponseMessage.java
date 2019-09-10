@@ -13,5 +13,5 @@ public interface IResponseMessage extends IUserResponseMessage, IOrgResponseMess
   String UNAUTHORIZED = "UNAUTHORIZED";
   String MANDATORY_PARAMETER_MISSING = "Mandatory parameter {0} is missing.";
   String INVALID_VALUE = "{0} VALUE IS INVALID, {1}";
-  String DATA_TYPE_REQUIRED="{0} SHOULD BE {1}";
+  String DATA_TYPE_REQUIRED = "{0} SHOULD BE {1}";
 }
