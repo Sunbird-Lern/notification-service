@@ -23,7 +23,6 @@ public class TestHelper extends WithApplication {
 
   private ObjectMapper mapperObj = new ObjectMapper();
 
-
   /**
    * This method will perform a request call.
    *
@@ -33,7 +32,8 @@ public class TestHelper extends WithApplication {
    * @param headerMap
    * @return Result
    */
-  public Result performTest(String url, String method, Map requestMap, Map headerMap) {
+  public Result performTest(
+      String url, String method, Map requestMap, Map<String, String[]> headerMap) {
     String data = mapToJson(requestMap);
     Http.RequestBuilder req;
     if (StringUtils.isNotBlank(data) && !requestMap.isEmpty()) {
@@ -42,7 +42,9 @@ public class TestHelper extends WithApplication {
     } else {
       req = new Http.RequestBuilder().uri(url).method(method);
     }
-    req.headers(headerMap);
+    for (Map.Entry<String, String[]> map : headerMap.entrySet()) {
+      req.header(map.getKey(), map.getValue()[0]);
+    }
     Result result = route(fakeApplication(), req);
     return result;
   }
@@ -84,6 +86,8 @@ public class TestHelper extends WithApplication {
     Map<String, String[]> headerMap = new HashMap<>();
     headerMap.put("x-authenticated-user-token", new String[] {"Some authenticated user ID"});
     headerMap.put("Authorization", new String[] {"Bearer ...."});
+    headerMap.put("Accept", new String[] {"application/json"});
+    headerMap.put("Content-Type", new String[] {"application/json"});
     return headerMap;
   }
 

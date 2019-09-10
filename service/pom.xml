@@ -124,12 +124,8 @@
             <plugin>
                 <groupId>com.google.code.play2-maven-plugin</groupId>
                 <artifactId>play2-maven-plugin</artifactId>
-                <version>1.0.0-rc1</version>
+                <version>${play2.plugin.version}</version>
                 <extensions>true</extensions>
-                <configuration>
-                    <!-- if using controllers without dependency injection; default value is "injected" -->
-                    <routesGenerator>static</routesGenerator>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.google.code.sbt-compiler-maven-plugin</groupId>
