@@ -12,6 +12,7 @@ import org.sunbird.NotificationValidator;
 import org.sunbird.actor.core.ActorConfig;
 import org.sunbird.notification.dispatcher.INotificationDispatcher;
 import org.sunbird.notification.dispatcher.impl.FCMNotificationDispatcher;
+import org.sunbird.notification.utils.FCMResponse;
 import org.sunbird.pojo.NotificationRequest;
 import org.sunbird.request.Request;
 import org.sunbird.response.Response;
@@ -46,9 +47,9 @@ public class NotificationActor extends BaseActor {
       NotificationValidator.validate(notificationRequest);
     }
     Map<String, Object> requestMap = request.getRequest();
-    Dispatcher.dispatch(requestMap, false);
+    List<FCMResponse> responses = Dispatcher.dispatch(requestMap, false);
     Response response = new Response();
-    response.getResult().put("response", "SUCCESS");
+    response.getResult().put("response", responses);
     sender().tell(response, getSelf());
   }
 }

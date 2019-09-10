@@ -4,6 +4,7 @@ package org.sunbird.notification.dispatcher.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.sunbird.notification.dispatcher.INotificationDispatcher;
 import org.sunbird.notification.fcm.provider.IFCMNotificationService;
 import org.sunbird.notification.fcm.provider.NotificationFactory;
+import org.sunbird.notification.utils.FCMResponse;
 import org.sunbird.util.ConfigUtil;
 import org.sunbird.util.Constant;
 import org.sunbird.util.kafka.KafkaClient;
@@ -38,9 +40,10 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
    * topic :it will contains name of fcm topic either ids or topic one key is mandatory. and data
    * will have complete data that need to sent.
    */
-  public void dispatch(Map<String, Object> data, boolean isDryRun) {
+  public List<FCMResponse> dispatch(Map<String, Object> data, boolean isDryRun) {
     List<Map<String, Object>> notificationDataList =
         (List<Map<String, Object>>) data.get(NOTIFICATIONS);
+    List<FCMResponse> dispatchResponse = new ArrayList<>();
     for (int i = 0; i < notificationDataList.size(); i++) {
       Map<String, Object> innerMap = (Map<String, Object>) notificationDataList.get(i);
       List<String> deviceRegIds = null;
@@ -55,19 +58,23 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
           throw new RuntimeException("neither device registration id nore topic found in request");
         }
       }
+      FCMResponse response = null;
       try {
         String notificationData = mapper.writeValueAsString(innerMap.get(RAW_DATA));
         Map<String, String> map = new HashMap<String, String>();
         map.put(RAW_DATA, notificationData);
         if (StringUtils.isNotBlank(topicVal)) {
-          service.sendTopicNotification(topicVal, map, isDryRun);
+          response = service.sendTopicNotification(topicVal, map, isDryRun);
         } else {
-          service.sendMultiDeviceNotification(deviceRegIds, map, isDryRun);
+          response = service.sendMultiDeviceNotification(deviceRegIds, map, isDryRun);
         }
+        dispatchResponse.add(response);
+
       } catch (JsonProcessingException e) {
         e.printStackTrace();
       }
     }
+    return dispatchResponse;
   }
 
   /** Initialises Kafka producer required for dispatching messages on Kafka. */
@@ -86,5 +93,10 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
     } catch (Exception e) {
       logger.error("UserMergeActor:initKafkaClient: An exception occurred.", e);
     }
+  }
+
+  @Override
+  public boolean dispatchAsync(Map<String, Object> data) {
+    return false;
   }
 }

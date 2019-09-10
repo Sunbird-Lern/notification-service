@@ -6,18 +6,18 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.SendResponse;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
 import org.sunbird.notification.fcm.provider.FCMInitializer;
 import org.sunbird.notification.fcm.provider.IFCMNotificationService;
+import org.sunbird.notification.utils.FCMResponse;
 
 public class FCMNotificationServiceImpl implements IFCMNotificationService {
   private static Logger logger = Logger.getLogger("FCMNotificationServiceImpl");
 
   @Override
-  public String sendSingleDeviceNotification(
+  public FCMResponse sendSingleDeviceNotification(
       String deviceId, Map<String, String> data, boolean isDryRun) {
     logger.info("sendSinfleDeviceNotification method started.");
     Message message = Message.builder().putAllData(data).setToken(deviceId).build();
@@ -30,11 +30,11 @@ public class FCMNotificationServiceImpl implements IFCMNotificationService {
       logger.error("Exception occured during notification sent: " + e.getMessage());
       e.printStackTrace();
     }
-    return response;
+    return null;
   }
 
   @Override
-  public List<String> sendMultiDeviceNotification(
+  public FCMResponse sendMultiDeviceNotification(
       List<String> deviceIds, Map<String, String> data, boolean isDryRun) {
     List<String> responseDetails = new ArrayList<String>();
     if (deviceIds == null || deviceIds.size() == 0 || deviceIds.size() > 100) {
@@ -54,11 +54,12 @@ public class FCMNotificationServiceImpl implements IFCMNotificationService {
     for (SendResponse response : responseList) {
       responseDetails.add(response.getMessageId());
     }
-    return responseDetails;
+    return null;
   }
 
   @Override
-  public String sendTopicNotification(String topic, Map<String, String> data, boolean isDryRun) {
+  public FCMResponse sendTopicNotification(
+      String topic, Map<String, String> data, boolean isDryRun) {
     Message message = Message.builder().putAllData(data).setTopic(topic).build();
     logger.info("Message going to be sent:" + message);
     String response = null;
@@ -69,13 +70,6 @@ public class FCMNotificationServiceImpl implements IFCMNotificationService {
       logger.error("Exception occured during notification sent: " + e.getMessage());
       e.printStackTrace();
     }
-    return response;
-  }
-
-  public static void main(String[] args) {
-    Map<String, String> data = new HashMap<>();
-    data.put("data", "test app notification");
-    IFCMNotificationService ifcmNotificationService = new FCMNotificationServiceImpl();
-    ifcmNotificationService.sendSingleDeviceNotification("", data, true);
+    return null;
   }
 }

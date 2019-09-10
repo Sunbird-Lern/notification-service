@@ -1,6 +1,6 @@
 # Sets up all environment vars.
 
-################### USER_ORG_SERVICE configuration ###################################
-#export keyA=valA
+################### NOTIFICATION_SERVICE configuration ###################################
+#export sunbird_notification_fcm_account_key=
 
-################### END - USER_ORG_SERVICE configuration #############################
+################### END - NOTIFICATION_SERVICE configuration #############################
