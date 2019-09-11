@@ -1,6 +1,5 @@
 package org.sunbird.notification.actor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.log4j.LogManager;
@@ -27,9 +26,6 @@ import org.sunbird.util.Constant;
 public class NotificationActor extends BaseActor {
   Logger logger = LogManager.getLogger(NotificationActor.class);
   private static final String NOTIFICATION = JsonKey.NOTIFICATION;
-  private static final String SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE =
-      "sunbird_notification_default_dispatch_mode";
-  private static final String SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE_VAL = "async";
   INotificationDispatcher Dispatcher = new FCMNotificationDispatcher();
 
   @Override
@@ -45,6 +41,7 @@ public class NotificationActor extends BaseActor {
   }
 
   public void notify(Request request) throws BaseException {
+    logger.info("Call started for notify method");
     List<NotificationRequest> notificationRequestList =
         NotificationRequestMapper.toList(
             (List<Map<String, Object>>) request.getRequest().get(JsonKey.NOTIFICATIONS));
@@ -52,18 +49,11 @@ public class NotificationActor extends BaseActor {
       NotificationValidator.validate(notificationRequest);
     }
     Map<String, Object> requestMap = request.getRequest();
-    List<FCMResponse> responses = new ArrayList<FCMResponse>();
+    List<FCMResponse> responses = null;
     Response response = new Response();
-    if (System.getenv(SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE) != null
-        && !SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE_VAL.equalsIgnoreCase(
-            System.getenv(SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE))) {
-      responses = Dispatcher.dispatch(requestMap, false);
-      response.getResult().put(Constant.RESPONSE, responses);
-    } else {
-      boolean resp = Dispatcher.dispatchAsync(requestMap);
-      response.getResult().put(Constant.RESPONSE, resp);
-    }
-
+    responses = Dispatcher.dispatch(requestMap, false);
+    response.getResult().put(Constant.RESPONSE, responses);
+    logger.info("response got from notification service " + responses);
     sender().tell(response, getSelf());
   }
 }

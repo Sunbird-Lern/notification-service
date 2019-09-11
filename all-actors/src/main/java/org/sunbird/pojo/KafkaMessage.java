@@ -4,6 +4,8 @@ package org.sunbird.pojo;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import org.sunbird.util.Constant;
 
 /** @author manzarul */
 public class KafkaMessage implements Serializable {
@@ -19,6 +21,14 @@ public class KafkaMessage implements Serializable {
   EventData edata;
   Context context;
   Map<String, Object> object = new HashMap<String, Object>();
+
+  public KafkaMessage() {
+    this.ets = System.currentTimeMillis();
+    this.eid = Constant.EID_VALUE;
+    this.iteration = Constant.NUMBER_OF_ITERATION;
+    this.mid = Constant.PRODUCER_ID + "." + ets + "." + UUID.randomUUID();
+    setContext();
+  }
 
   public Actor getActor() {
     return actor;
@@ -82,5 +92,14 @@ public class KafkaMessage implements Serializable {
 
   public void setObject(Map<String, Object> object) {
     this.object = object;
+  }
+
+  private void setContext() {
+    Context context = new Context();
+    Map<String, Object> pdata = new HashMap<String, Object>();
+    pdata.put(Constant.VER, Constant.VERSION_VALUE);
+    pdata.put(Constant.ID, Constant.ID_VALUE);
+    context.setPdata(pdata);
+    this.context = context;
   }
 }

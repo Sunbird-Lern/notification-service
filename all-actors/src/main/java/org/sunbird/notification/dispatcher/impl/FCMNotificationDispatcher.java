@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -22,6 +21,7 @@ import org.sunbird.pojo.*;
 import org.sunbird.pojo.KafkaMessage;
 import org.sunbird.util.ConfigUtil;
 import org.sunbird.util.Constant;
+import org.sunbird.util.DataHash;
 import org.sunbird.util.kafka.KafkaClient;
 
 /** @author manzarul */
@@ -34,6 +34,9 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
   private static final String RAW_DATA = "rawData";
   private static final String NOTIFICATIONS = "notifications";
   private static final String CONFIG = "config";
+  private static final String SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE =
+      "sunbird_notification_default_dispatch_mode";
+  private static final String SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE_VAL = "async";
   private static ObjectMapper mapper = new ObjectMapper();
   String topic = null;
   String BOOTSTRAP_SERVERS = null;
@@ -46,6 +49,17 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
    * will have complete data that need to sent.
    */
   public List<FCMResponse> dispatch(Map<String, Object> data, boolean isDryRun) {
+
+    if (System.getenv(SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE) != null
+        && !SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE_VAL.equalsIgnoreCase(
+            System.getenv(SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE))) {
+      return dispatchSync(data, isDryRun);
+    } else {
+      return dispatchAsync(data);
+    }
+  }
+
+  private List<FCMResponse> dispatchSync(Map<String, Object> data, boolean isDryRun) {
     List<Map<String, Object>> notificationDataList =
         (List<Map<String, Object>>) data.get(NOTIFICATIONS);
     List<FCMResponse> dispatchResponse = new ArrayList<>();
@@ -76,6 +90,7 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
         dispatchResponse.add(response);
 
       } catch (JsonProcessingException e) {
+        logger.error("Error during fcm notification processing." + e.getMessage());
         e.printStackTrace();
       }
     }
@@ -103,47 +118,40 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
     }
   }
 
-  @Override
-  public boolean dispatchAsync(Map<String, Object> data) {
-    boolean response = true;
+  private List<FCMResponse> dispatchAsync(Map<String, Object> data) {
+    List<FCMResponse> dispatchResponse = new ArrayList<>();
     initKafkaClient();
     List<Map<String, Object>> notificationDataList =
         (List<Map<String, Object>>) data.get(NOTIFICATIONS);
     for (int i = 0; i < notificationDataList.size(); i++) {
+      FCMResponse response = new FCMResponse();
       Map<String, Object> innerMap = (Map<String, Object>) notificationDataList.get(i);
-      String message = processTopicData(innerMap);
+      String message = getTopicMessage(innerMap);
       ProducerRecord<Long, String> record = new ProducerRecord<>(topic, message);
       if (producer != null) {
         producer.send(record);
+        response.setMessage_id(i + 1);
       } else {
-        response = false;
+        response.setError("Data write error to kafka topic");
+        response.setFailure(500);
         logger.info("UserMergeActor:mergeCertCourseDetails: Kafka producer is not initialised.");
       }
+      dispatchResponse.add(response);
     }
-    return response;
+    return dispatchResponse;
   }
 
-  private String processTopicData(Map<String, Object> data) {
+  private String getTopicMessage(Map<String, Object> data) {
     KafkaMessage message = new KafkaMessage();
-    message.setEts(System.currentTimeMillis());
-    message.setEid(Constant.EID_VALUE);
-    message.setIteration(Constant.NUMBER_OF_ITERATION);
-    message.setMid(Constant.PRODUCER_ID + "." + message.getEts() + "." + UUID.randomUUID());
     Actor actor =
         new Actor(Constant.BROAD_CAST_TOPIC_NOTIFICATION_MESSAGE, Constant.ACTOR_TYPE_VALUE);
     message.setActor(actor);
-    Context context = new Context();
-    Map<String, Object> pdata = new HashMap<String, Object>();
-    pdata.put(Constant.VER, Constant.VERSION_VALUE);
-    pdata.put(Constant.ID, Constant.ID_VALUE);
-    context.setPdata(pdata);
-    message.setContext(context);
-    Map<String, Object> object = new HashMap<String, Object>();
-    object.put(Constant.ID, "");
-    object.put(Constant.TYPE, Constant.TYPE_VALUE);
-    message.setObject(object);
     Map<String, Object> requestMap = new HashMap<String, Object>();
     requestMap.put(Constant.NOTIFICATION, data);
+    Map<String, Object> object = new HashMap<String, Object>();
+    object.put(Constant.ID, getRequestHashed(requestMap));
+    object.put(Constant.TYPE, Constant.TYPE_VALUE);
+    message.setObject(object);
     EventData evnetData = new EventData();
     evnetData.setAction(Constant.BROAD_CAST_TOPIC_NOTIFICATION_KEY);
     evnetData.setRequest(requestMap);
@@ -156,5 +164,15 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
       e.printStackTrace();
     }
     return topicMessage;
+  }
+
+  private String getRequestHashed(Map<String, Object> request) {
+    String val = null;
+    try {
+      val = DataHash.getHashed(mapper.writeValueAsString(request));
+    } catch (Exception e) {
+      logger.error("exception occured during hash of request data:" + e.getMessage());
+    }
+    return val;
   }
 }

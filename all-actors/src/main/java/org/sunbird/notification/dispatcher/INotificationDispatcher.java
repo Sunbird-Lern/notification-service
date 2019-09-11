@@ -13,6 +13,4 @@ import org.sunbird.notification.utils.FCMResponse;
 public interface INotificationDispatcher {
 
   public List<FCMResponse> dispatch(Map<String, Object> data, boolean isDryRun);
-
-  public boolean dispatchAsync(Map<String, Object> data);
 }
