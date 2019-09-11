@@ -3,6 +3,7 @@ package controllers.notification;
 
 import controllers.BaseController;
 import java.util.concurrent.CompletionStage;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import play.mvc.Result;
 
@@ -12,7 +13,7 @@ import play.mvc.Result;
  * @author manzarul
  */
 public class NotificationController extends BaseController {
-  Logger logger = Logger.getLogger(NotificationController.class);
+  Logger logger = LogManager.getLogger(NotificationController.class);
 
   public static final String NOTIFICATION = "notification";
 
