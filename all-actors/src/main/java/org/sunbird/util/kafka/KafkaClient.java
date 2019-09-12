@@ -11,6 +11,7 @@ import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 /**
@@ -19,7 +20,7 @@ import org.apache.log4j.Logger;
  * @author manzarul
  */
 public class KafkaClient {
-  private static Logger logger = Logger.getLogger(KafkaClient.class);
+  private static Logger logger = LogManager.getLogger(KafkaClient.class);
 
   /**
    * Creates a Kafka producer.

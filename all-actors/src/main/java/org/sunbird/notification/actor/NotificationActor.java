@@ -16,6 +16,7 @@ import org.sunbird.notification.utils.FCMResponse;
 import org.sunbird.pojo.NotificationRequest;
 import org.sunbird.request.Request;
 import org.sunbird.response.Response;
+import org.sunbird.util.Constant;
 
 /** @author manzarul */
 @ActorConfig(
@@ -40,6 +41,7 @@ public class NotificationActor extends BaseActor {
   }
 
   public void notify(Request request) throws BaseException {
+    logger.info("Call started for notify method");
     List<NotificationRequest> notificationRequestList =
         NotificationRequestMapper.toList(
             (List<Map<String, Object>>) request.getRequest().get(JsonKey.NOTIFICATIONS));
@@ -47,9 +49,11 @@ public class NotificationActor extends BaseActor {
       NotificationValidator.validate(notificationRequest);
     }
     Map<String, Object> requestMap = request.getRequest();
-    List<FCMResponse> responses = Dispatcher.dispatch(requestMap, false);
+    List<FCMResponse> responses = null;
     Response response = new Response();
-    response.getResult().put("response", responses);
+    responses = Dispatcher.dispatch(requestMap, false);
+    response.getResult().put(Constant.RESPONSE, responses);
+    logger.info("response got from notification service " + responses);
     sender().tell(response, getSelf());
   }
 }
