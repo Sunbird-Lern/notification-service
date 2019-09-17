@@ -32,4 +32,7 @@ public class Constant {
   public static final String VERSION_VALUE = "1.0";
   public static final String ID_VALUE = "org.sunbird.platform";
   public static final String TYPE_VALUE = "TopicNotifyAll";
+  public static final int SUCCESS_CODE = 200;
+  public static final int FAILURE_CODE = 500;
+  public static final String ERROR_DURING_WRITE_DATA = "Data write error to kafka topic";
 }

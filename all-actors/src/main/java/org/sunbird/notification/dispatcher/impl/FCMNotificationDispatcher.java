@@ -131,9 +131,11 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
       if (producer != null) {
         producer.send(record);
         response.setMessage_id(i + 1);
+        response.setCanonical_ids(System.currentTimeMillis());
+        response.setSuccess(Constant.SUCCESS_CODE);
       } else {
-        response.setError("Data write error to kafka topic");
-        response.setFailure(500);
+        response.setError(Constant.ERROR_DURING_WRITE_DATA);
+        response.setFailure(Constant.FAILURE_CODE);
         logger.info("UserMergeActor:mergeCertCourseDetails: Kafka producer is not initialised.");
       }
       dispatchResponse.add(response);
