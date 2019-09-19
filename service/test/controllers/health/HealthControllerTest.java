@@ -46,7 +46,7 @@ public class HealthControllerTest extends BaseControllerTest {
   }
 
   @Test
-  public void testGetUserOrgServiceHealthSuccess() {
+  public void testCompleteServiceHealthSuccess() {
     Map<String, Object> reqMap = new HashMap<>();
     reqMap.put("accept", "yes");
     Result result = testHelper.performTest("/service/health", "GET", reqMap, headerMap, app);
@@ -54,7 +54,7 @@ public class HealthControllerTest extends BaseControllerTest {
   }
 
   @Test
-  public void testGetUserOrgServiceHealthFailure() {
+  public void testCompleteServiceHealthFailure() {
     Map<String, Object> reqMap = new HashMap<>();
     reqMap.put("accept", "yes");
     Result result = testHelper.performTest("/user-service/health", "GET", reqMap, headerMap, app);
