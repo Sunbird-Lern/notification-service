@@ -39,16 +39,12 @@ public class TestHelper extends WithApplication {
     if (StringUtils.isNotBlank(data) && !requestMap.isEmpty()) {
       JsonNode json = Json.parse(data);
       req = new Http.RequestBuilder().bodyJson(json).uri(url).method(method);
-      System.out.println("url: "+url);
     } else {
       req = new Http.RequestBuilder().uri(url).method(method);
-      System.out.println("url: "+url);
     }
     for (Map.Entry<String, String[]> map : headerMap.entrySet()) {
       req.header(map.getKey(), map.getValue()[0]);
     }
-    System.out.println("request body:"+req.body().toString());
-    System.out.println("request "+req.getHeaders().toMap());
     Result result = route(app, req);
     return result;
   }
@@ -78,7 +74,6 @@ public class TestHelper extends WithApplication {
    * @return
    */
   public int getResponseStatus(Result result) {
-    System.out.println("result:"+ result.status());
     return result.status();
   }
 
