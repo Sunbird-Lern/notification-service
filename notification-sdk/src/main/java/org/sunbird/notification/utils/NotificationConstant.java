@@ -13,4 +13,28 @@ public class NotificationConstant {
   public static final String REGISTRATION_IDS = "registration_ids";
   public static final String DRY_RUN = "dry_run";
   public static final String RAW_DATA = "rawData";
+  public static final String SUNBIRD_DEFAULT_COUNTRY_CODE =
+      "sunbird_notification_default_country_code";
+  public static final String SUNBIR_MSG_DEFAULT_SENDER = "sunbird_notification_msg_default_sender";
+  public static final String SUNBIRD_MSG_91_AUTH = "sunbird_msg_91_auth";
+  public static final String SUNBIRD_MSG_91_ROUTE = "sunbird_msg_91_route";
+  public static final String SUNBIRD_MSG_91_BASEURL = "sunbird_msg_91_baseurl";
+  public static final String SUNBIRD_MSG_91_GET_URL = "sunbird_msg_91_get_url";
+  public static final String SUNBIRD_MSG_91_POST_URL = "sunbird_msg_91_post_url";
+  public static final String SUNBIRD_OTP_DEFAULT_LENGHT = "sunbird_notification_otp_length";
+  public static final String SUNBIRD_OTP_DEFAULT_MESSAGE =
+      "sunbird_notification_otp_default_message";
+  public static final String SUNBIRD_OTP_DEFAULT_EXPIRY_IN_MINUTE =
+      "sunbird_notification_otp_expiry_in_minute";
+  public static final int SUCCESS_CODE = 200;
+  public static final String MOBILE = "mobile";
+  public static final String SUCCESS = "success";
+  public static final String OTP = "otp";
+  public static final String SENDER = "sender";
+  public static final String MESSAGE = "message";
+  public static final String MOBILES = "mobiles";
+  public static final String OTP_LENGTH = "otp_length";
+  public static final String OTP_EXPIRY = "otp_expiry";
+  public static final String Ampersand = "&";
+  public static final String EQUAL = "=";
 }

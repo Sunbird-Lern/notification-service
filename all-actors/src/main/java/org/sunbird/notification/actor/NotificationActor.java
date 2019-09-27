@@ -11,12 +11,11 @@ import org.sunbird.NotificationRequestMapper;
 import org.sunbird.NotificationValidator;
 import org.sunbird.actor.core.ActorConfig;
 import org.sunbird.notification.dispatcher.INotificationDispatcher;
+import org.sunbird.notification.dispatcher.NotificationRouter;
 import org.sunbird.notification.dispatcher.impl.FCMNotificationDispatcher;
-import org.sunbird.notification.utils.FCMResponse;
 import org.sunbird.pojo.NotificationRequest;
 import org.sunbird.request.Request;
 import org.sunbird.response.Response;
-import org.sunbird.util.Constant;
 
 /** @author manzarul */
 @ActorConfig(
@@ -48,12 +47,9 @@ public class NotificationActor extends BaseActor {
     for (NotificationRequest notificationRequest : notificationRequestList) {
       NotificationValidator.validate(notificationRequest);
     }
-    Map<String, Object> requestMap = request.getRequest();
-    List<FCMResponse> responses = null;
-    Response response = new Response();
-    responses = Dispatcher.dispatch(requestMap, false);
-    response.getResult().put(Constant.RESPONSE, responses);
-    logger.info("response got from notification service " + responses);
+    NotificationRouter routes = new NotificationRouter();
+    Response response = routes.route(notificationRequestList, false);
+    logger.info("response got from notification service " + response);
     sender().tell(response, getSelf());
   }
 }
