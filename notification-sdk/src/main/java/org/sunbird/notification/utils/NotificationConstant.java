@@ -37,4 +37,6 @@ public class NotificationConstant {
   public static final String OTP_EXPIRY = "otp_expiry";
   public static final String Ampersand = "&";
   public static final String EQUAL = "=";
+  public static final String ERROR = "error";
+  public static final String OTP_PHONE_ERROR = "Only one phone number is allowed.";
 }
