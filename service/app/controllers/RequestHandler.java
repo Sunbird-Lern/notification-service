@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.lang3.StringUtils;
 import org.sunbird.BaseException;
 import org.sunbird.message.IResponseMessage;
 import org.sunbird.message.ResponseCode;
@@ -36,7 +37,10 @@ public class RequestHandler extends BaseController {
    * @throws Exception
    */
   public CompletionStage<Result> handleRequest(
-      Request request, HttpExecutionContext httpExecutionContext, String operation)
+      Request request,
+      HttpExecutionContext httpExecutionContext,
+      String operation,
+      play.mvc.Http.Request req)
       throws Exception {
     Object obj;
     CompletableFuture<String> cf = new CompletableFuture<>();
@@ -48,7 +52,7 @@ public class RequestHandler extends BaseController {
     Future<Object> future = Patterns.ask(getActorRef(operation), request, t);
     obj = Await.result(future, t.duration());
     // endTrace("handleRequest");
-    return handleResponse(obj, httpExecutionContext);
+    return handleResponse(obj, httpExecutionContext, req);
   }
 
   /**
@@ -58,7 +62,7 @@ public class RequestHandler extends BaseController {
    * @return
    */
   public static CompletionStage<Result> handleFailureResponse(
-      Object exception, HttpExecutionContext httpExecutionContext) {
+      Object exception, HttpExecutionContext httpExecutionContext, play.mvc.Http.Request req) {
 
     Response response = new Response();
     CompletableFuture<JsonNode> future = new CompletableFuture<>();
@@ -66,6 +70,10 @@ public class RequestHandler extends BaseController {
       BaseException ex = (BaseException) exception;
       response.setResponseCode(ResponseCode.BAD_REQUEST);
       response.put(JsonKey.MESSAGE, ex.getMessage());
+      String apiId = getApiId(req.path());
+      response.setId(apiId);
+      response.setVer("v1");
+      response.setTs(System.currentTimeMillis() + "");
       future.complete(Json.toJson(response));
       if (ex.getResponseCode() == Results.badRequest().status()) {
         return future.thenApplyAsync(Results::badRequest, httpExecutionContext.current());
@@ -89,13 +97,13 @@ public class RequestHandler extends BaseController {
    * @return
    */
   public static CompletionStage<Result> handleResponse(
-      Object object, HttpExecutionContext httpExecutionContext) {
+      Object object, HttpExecutionContext httpExecutionContext, play.mvc.Http.Request req) {
 
     if (object instanceof Response) {
       Response response = (Response) object;
-      return handleSuccessResponse(response, httpExecutionContext);
+      return handleSuccessResponse(response, httpExecutionContext, req);
     } else {
-      return handleFailureResponse(object, httpExecutionContext);
+      return handleFailureResponse(object, httpExecutionContext, req);
     }
   }
 
@@ -106,9 +114,28 @@ public class RequestHandler extends BaseController {
    * @return
    */
   public static CompletionStage<Result> handleSuccessResponse(
-      Response response, HttpExecutionContext httpExecutionContext) {
+      Response response, HttpExecutionContext httpExecutionContext, play.mvc.Http.Request req) {
     CompletableFuture<JsonNode> future = new CompletableFuture<>();
+    String apiId = getApiId(req.path());
+    response.setId(apiId);
+    response.setVer("v1");
+    response.setTs(System.currentTimeMillis() + "");
     future.complete(Json.toJson(response));
     return future.thenApplyAsync(Results::ok, httpExecutionContext.current());
+  }
+
+  public static String getApiId(String uri) {
+    StringBuilder builder = new StringBuilder();
+    if (StringUtils.isNotBlank(uri)) {
+      String temVal[] = uri.split("/");
+      for (int i = 1; i < temVal.length; i++) {
+        if (i < temVal.length - 1) {
+          builder.append(temVal[i] + ".");
+        } else {
+          builder.append(temVal[i]);
+        }
+      }
+    }
+    return builder.toString();
   }
 }

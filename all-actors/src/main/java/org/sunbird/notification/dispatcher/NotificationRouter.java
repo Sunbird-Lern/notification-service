@@ -98,12 +98,7 @@ public class NotificationRouter {
             }
             OTPRequest request =
                 new OTPRequest(
-                    ids.get(0),
-                    NotificationConstant.SUNBIRD_DEFAULT_COUNTRY_CODE,
-                    otp.getLength(),
-                    otp.getExpiryInMinute(),
-                    message,
-                    null);
+                    ids.get(0), null, otp.getLength(), otp.getExpiryInMinute(), message, null);
             boolean smsResponse = getSMSInstance().sendOtp(request);
             responseMap.put(ids.get(0), smsResponse);
             response.putAll(responseMap);
@@ -123,6 +118,17 @@ public class NotificationRouter {
     } else {
       logger.info(
           "requested notification list is either null or empty :" + notificationRequestList);
+    }
+    return response;
+  }
+
+  public Response verifyOtp(OTPRequest otpRequest) {
+    boolean verificationResp = getSMSInstance().verifyOtp(otpRequest);
+    Response response = new Response();
+    if (verificationResp) {
+      response.put(NotificationConstant.MESSAGE, NotificationConstant.SUCCESS);
+    } else {
+      response.put(NotificationConstant.MESSAGE, NotificationConstant.FAILURE);
     }
     return response;
   }

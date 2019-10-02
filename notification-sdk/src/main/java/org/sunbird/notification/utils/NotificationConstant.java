@@ -39,4 +39,7 @@ public class NotificationConstant {
   public static final String EQUAL = "=";
   public static final String ERROR = "error";
   public static final String OTP_PHONE_ERROR = "Only one phone number is allowed.";
+  public static final String VERIFY_OTP = "for verify otp";
+  public static final String KEY = "key";
+  public static final String VALUE = "value";
 }
