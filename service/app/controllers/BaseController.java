@@ -100,11 +100,11 @@ public class BaseController extends Controller {
       if (validatorFunction != null) {
         validatorFunction.apply(request);
       }
-      return new RequestHandler().handleRequest(request, httpExecutionContext, operation);
+      return new RequestHandler().handleRequest(request, httpExecutionContext, operation, req);
     } catch (BaseException ex) {
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext);
+      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, req);
     } catch (Exception ex) {
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext);
+      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, req);
     }
   }
 
@@ -115,13 +115,14 @@ public class BaseController extends Controller {
    * @param operation
    * @return
    */
-  public CompletionStage<Result> handleRequest(Request req, String operation) {
+  public CompletionStage<Result> handleRequest(
+      Request req, String operation, play.mvc.Http.Request httpReq) {
     try {
-      return new RequestHandler().handleRequest(req, httpExecutionContext, operation);
+      return new RequestHandler().handleRequest(req, httpExecutionContext, operation, httpReq);
     } catch (BaseException ex) {
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext);
+      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, httpReq);
     } catch (Exception ex) {
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext);
+      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, httpReq);
     }
   }
 
@@ -141,8 +142,8 @@ public class BaseController extends Controller {
       // ProjectLogger.log(String.format("%s:%s:exception occurred in mapping
       // request", this.getClass().getSimpleName(), "handleLogRequest"),
       // LoggerEnum.ERROR.name());
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext);
+      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, null);
     }
-    return RequestHandler.handleSuccessResponse(response, httpExecutionContext);
+    return RequestHandler.handleSuccessResponse(response, httpExecutionContext, null);
   }
 }

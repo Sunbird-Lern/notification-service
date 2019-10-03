@@ -6,6 +6,7 @@
 GET  /health                               @controllers.health.HealthController.getHealth()
 GET  /:service/health                      @controllers.health.HealthController.getServiceHealth(service:String)
 POST /v1/notification/send				   @controllers.notification.NotificationController.sendNotification()
+POST /v1/notification/otp/verify           @controllers.notification.NotificationController.verifyOTP()
 
 # Logs Management APIs
 # POST    /v1.3/system/log/update           @controllers.logsmanager.LogController.setLogLevel()

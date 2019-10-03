@@ -8,13 +8,14 @@ import com.google.firebase.messaging.SendResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.sunbird.notification.fcm.provider.FCMInitializer;
 import org.sunbird.notification.fcm.provider.IFCMNotificationService;
 import org.sunbird.notification.utils.FCMResponse;
 
 public class FCMNotificationServiceImpl implements IFCMNotificationService {
-  private static Logger logger = Logger.getLogger("FCMNotificationServiceImpl");
+  private static Logger logger = LogManager.getLogger("FCMNotificationServiceImpl");
 
   @Override
   public FCMResponse sendSingleDeviceNotification(

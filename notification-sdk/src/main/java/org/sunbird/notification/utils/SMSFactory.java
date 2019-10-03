@@ -1,6 +1,7 @@
 /** */
 package org.sunbird.notification.utils;
 
+import org.sunbird.notification.beans.SMSConfig;
 import org.sunbird.notification.sms.provider.ISmsProvider;
 import org.sunbird.notification.sms.provider.ISmsProviderFactory;
 import org.sunbird.notification.sms.providerimpl.Msg91SmsProviderFactory;
@@ -19,13 +20,13 @@ public class SMSFactory {
    * @param objectName String ,{"91SMS","some other impl"}
    * @return ISmsProvider
    */
-  public static ISmsProvider getInstance(String objectName) {
+  public static ISmsProvider getInstance(String objectName, SMSConfig config) {
     if ("91SMS".equalsIgnoreCase(objectName)) {
       ISmsProviderFactory factory = new Msg91SmsProviderFactory();
-      return factory.create();
+      return factory.create(config);
     } else {
       ISmsProviderFactory factory = new Msg91SmsProviderFactory();
-      return factory.create();
+      return factory.create(config);
     }
   }
 }

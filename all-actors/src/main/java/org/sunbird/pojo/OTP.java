@@ -4,7 +4,7 @@ public class OTP {
 
   private int length;
 
-  private String expiry;
+  private int expiryInMinute;
 
   public OTP() {}
 
@@ -16,11 +16,11 @@ public class OTP {
     this.length = length;
   }
 
-  public String getExpiry() {
-    return expiry;
+  public int getExpiryInMinute() {
+    return expiryInMinute;
   }
 
-  public void setExpiry(String expiry) {
-    this.expiry = expiry;
+  public void setExpiryInMinute(int expiryInMinute) {
+    this.expiryInMinute = expiryInMinute;
   }
 }
