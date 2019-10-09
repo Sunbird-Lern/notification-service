@@ -135,7 +135,7 @@ public class NotificationRouter {
             notification.getTemplate().setData(data);
           }
           response = writeDataToKafa(notification, response, isDryRun, responseMap);
-        }
+        } 
       }
     } else {
       logger.info(
@@ -143,7 +143,7 @@ public class NotificationRouter {
     }
     return response;
   }
-
+  
   private String createNotificationBody(NotificationRequest notification) throws BaseException {
     return readVm(notification.getTemplate().getId(), notification.getTemplate().getParams());
   }
@@ -182,7 +182,6 @@ public class NotificationRouter {
     }
     return body;
   }
-
   public Response verifyOtp(OTPRequest otpRequest) {
     boolean verificationResp = getSMSInstance().verifyOtp(otpRequest);
     Response response = new Response();
@@ -217,7 +216,6 @@ public class NotificationRouter {
     }
     return message;
   }
-
   private VelocityContext getContextObj(JsonNode node) {
     VelocityContext context = null;
     if (node != null) {
