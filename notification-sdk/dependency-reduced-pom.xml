@@ -57,6 +57,18 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.jvnet.mock-javamail</groupId>
+      <artifactId>mock-javamail</artifactId>
+      <version>1.9</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>mail</artifactId>
+          <groupId>javax.mail</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>

@@ -8,6 +8,8 @@ public class Config {
 
   private OTP otp;
 
+  private String subject;
+
   public Config() {}
 
   public String getSender() {
@@ -32,5 +34,13 @@ public class Config {
 
   public void setOtp(OTP otp) {
     this.otp = otp;
+  }
+
+  public String getSubject() {
+    return subject;
+  }
+
+  public void setSubject(String subject) {
+    this.subject = subject;
   }
 }

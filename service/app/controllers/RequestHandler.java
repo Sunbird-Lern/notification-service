@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.sunbird.BaseException;
 import org.sunbird.message.IResponseMessage;
-import org.sunbird.message.ResponseCode;
 import org.sunbird.request.Request;
 import org.sunbird.response.Response;
 import play.libs.Json;
@@ -68,7 +67,7 @@ public class RequestHandler extends BaseController {
     CompletableFuture<JsonNode> future = new CompletableFuture<>();
     if (exception instanceof BaseException) {
       BaseException ex = (BaseException) exception;
-      response.setResponseCode(ResponseCode.BAD_REQUEST);
+      response.setResponseCode(ex.getCode());
       response.put(JsonKey.MESSAGE, ex.getMessage());
       String apiId = getApiId(req.path());
       response.setId(apiId);
@@ -81,7 +80,7 @@ public class RequestHandler extends BaseController {
         return future.thenApplyAsync(Results::internalServerError, httpExecutionContext.current());
       }
     } else {
-      response.setResponseCode(ResponseCode.SERVER_ERROR);
+      response.setResponseCode(IResponseMessage.SERVER_ERROR);
       response.put(
           JsonKey.MESSAGE, localizerObject.getMessage(IResponseMessage.INTERNAL_ERROR, null));
       future.complete(Json.toJson(response));
