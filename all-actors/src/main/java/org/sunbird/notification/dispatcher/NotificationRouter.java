@@ -84,40 +84,7 @@ public class NotificationRouter {
         if (notification.getMode().equalsIgnoreCase(DeliveryMode.phone.name())
             && (notification.getDeliveryType().equalsIgnoreCase(DeliveryType.message.name())
                 || notification.getDeliveryType().equalsIgnoreCase(DeliveryType.otp.name()))) {
-          String message = null;
-          if (notification.getTemplate() != null
-              && StringUtils.isNotBlank(notification.getTemplate().getData())) {
-            message =
-                getMessage(
-                    notification.getTemplate().getData(), notification.getTemplate().getParams());
-          }
-
-          Config config = notification.getConfig();
-          if (config != null && config.getOtp() != null
-              || notification.getDeliveryType().equalsIgnoreCase(DeliveryType.otp.name())) {
-            OTP otp = config.getOtp();
-            List<String> ids = notification.getIds();
-            if (ids.size() > 1) {
-              throw new ActorServiceException.InvalidRequestData(
-                  IUserResponseMessage.USER_NOT_FOUND,
-                  MessageFormat.format(
-                      IResponseMessage.INVALID_REQUESTED_DATA,
-                      NotificationConstant.OTP_PHONE_ERROR),
-                  ResponseCode.CLIENT_ERROR.getCode());
-            }
-            OTPRequest request =
-                new OTPRequest(
-                    ids.get(0), null, otp.getLength(), otp.getExpiryInMinute(), message, null);
-            boolean smsResponse = getSMSInstance().sendOtp(request);
-            responseMap.put(ids.get(0), smsResponse);
-            response.putAll(responseMap);
-          } else {
-            if (notification.getTemplate() != null) {
-              notification.getTemplate().setData(message);
-            }
-            response = writeDataToKafa(notification, response, isDryRun, responseMap);
-          }
-
+          response = handleMessageAndOTP(notification, isDryRun, responseMap);
         } else if (notification.getMode().equalsIgnoreCase(DeliveryMode.device.name())) {
           response = writeDataToKafa(notification, response, isDryRun, responseMap);
         } else if (notification.getMode().equalsIgnoreCase(DeliveryMode.email.name())
@@ -135,7 +102,7 @@ public class NotificationRouter {
             notification.getTemplate().setData(data);
           }
           response = writeDataToKafa(notification, response, isDryRun, responseMap);
-        } 
+        }
       }
     } else {
       logger.info(
@@ -143,7 +110,44 @@ public class NotificationRouter {
     }
     return response;
   }
-  
+
+  private Response handleMessageAndOTP(
+      NotificationRequest notification, boolean isDryRun, Map<String, Object> responseMap)
+      throws BaseException {
+    Response response = new Response();
+    String message = null;
+    if (notification.getTemplate() != null
+        && StringUtils.isNotBlank(notification.getTemplate().getData())) {
+      message =
+          getMessage(notification.getTemplate().getData(), notification.getTemplate().getParams());
+    }
+
+    Config config = notification.getConfig();
+    if (config != null && config.getOtp() != null
+        || notification.getDeliveryType().equalsIgnoreCase(DeliveryType.otp.name())) {
+      OTP otp = config.getOtp();
+      List<String> ids = notification.getIds();
+      if (ids.size() > 1) {
+        throw new ActorServiceException.InvalidRequestData(
+            IUserResponseMessage.USER_NOT_FOUND,
+            MessageFormat.format(
+                IResponseMessage.INVALID_REQUESTED_DATA, NotificationConstant.OTP_PHONE_ERROR),
+            ResponseCode.CLIENT_ERROR.getCode());
+      }
+      OTPRequest request =
+          new OTPRequest(ids.get(0), null, otp.getLength(), otp.getExpiryInMinute(), message, null);
+      boolean smsResponse = getSMSInstance().sendOtp(request);
+      responseMap.put(ids.get(0), smsResponse);
+      response.putAll(responseMap);
+    } else {
+      if (notification.getTemplate() != null) {
+        notification.getTemplate().setData(message);
+      }
+      response = writeDataToKafa(notification, response, isDryRun, responseMap);
+    }
+    return response;
+  }
+
   private String createNotificationBody(NotificationRequest notification) throws BaseException {
     return readVm(notification.getTemplate().getId(), notification.getTemplate().getParams());
   }
@@ -182,6 +186,7 @@ public class NotificationRouter {
     }
     return body;
   }
+
   public Response verifyOtp(OTPRequest otpRequest) {
     boolean verificationResp = getSMSInstance().verifyOtp(otpRequest);
     Response response = new Response();
@@ -216,6 +221,7 @@ public class NotificationRouter {
     }
     return message;
   }
+
   private VelocityContext getContextObj(JsonNode node) {
     VelocityContext context = null;
     if (node != null) {

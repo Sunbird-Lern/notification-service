@@ -1,8 +1,10 @@
 package org.sunbird.notification.actor;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.sunbird.ActorServiceException;
@@ -54,9 +56,14 @@ public class NotificationActor extends BaseActor {
     List<NotificationRequest> notificationRequestList =
         NotificationRequestMapper.toList(
             (List<Map<String, Object>>) request.getRequest().get(JsonKey.NOTIFICATIONS));
+    List<String> ids = new ArrayList<String>();
     for (NotificationRequest notificationRequest : notificationRequestList) {
+      if (CollectionUtils.isNotEmpty(notificationRequest.getIds())) {
+        ids.addAll(notificationRequest.getIds());
+      }
       NotificationValidator.validate(notificationRequest);
     }
+    NotificationValidator.validateMaxSupportedIds(ids);
     NotificationRouter routes = new NotificationRouter();
     Response response = routes.route(notificationRequestList, false);
     logger.info("response got from notification service " + response);
