@@ -29,8 +29,8 @@ import org.sunbird.notification.utils.Util;
  *
  * @author Manzarul.Haque
  */
-public class SendMail {
-  private static Logger logger = LogManager.getLogger(SendMail.class);
+public class Email {
+  private static Logger logger = LogManager.getLogger(Email.class);
   private static Properties props = null;
   private String host;
   private String port;
@@ -38,12 +38,12 @@ public class SendMail {
   private String password;
   private String fromEmail;
 
-  public SendMail() {
+  public Email() {
     init();
     initProps();
   }
 
-  public SendMail(EmailConfig config) {
+  public Email(EmailConfig config) {
     this.fromEmail =
         StringUtils.isNotBlank(config.getFromEmail())
             ? config.getFromEmail()
@@ -56,6 +56,7 @@ public class SendMail {
         StringUtils.isNotBlank(config.getPassword())
             ? config.getPassword()
             : Util.readValue(Constants.EMAIL_SERVER_PASSWORD);
+
     this.host =
         StringUtils.isNotBlank(config.getHost())
             ? config.getHost()
@@ -127,7 +128,6 @@ public class SendMail {
   public boolean sendMail(
       List<String> emailList, String subject, String body, List<String> ccEmailList) {
     boolean response = true;
-    Transport transport = null;
     try {
       Session session = Session.getInstance(props, new GMailAuthenticator(userName, password));
       MimeMessage message = new MimeMessage(session);
@@ -148,21 +148,10 @@ public class SendMail {
       }
       message.setSubject(subject);
       message.setContent(body, "text/html; charset=utf-8");
-      transport = session.getTransport("smtp");
-      transport.connect(host, userName, password);
-      transport.sendMessage(message, message.getAllRecipients());
-      transport.close();
+      response = sendEmail(session, message);
     } catch (Exception e) {
       response = false;
       logger.error("Exception occured during email sending " + e, e);
-    } finally {
-      if (transport != null) {
-        try {
-          transport.close();
-        } catch (MessagingException e) {
-          logger.error("Exception occured during connection clean up.", e);
-        }
-      }
     }
     return response;
   }
@@ -177,7 +166,6 @@ public class SendMail {
    */
   public void sendAttachment(
       List<String> emailList, String emailBody, String subject, String filePath) {
-    Transport transport = null;
     try {
       Session session = Session.getInstance(props, new GMailAuthenticator(userName, password));
       MimeMessage message = new MimeMessage(session);
@@ -204,20 +192,9 @@ public class SendMail {
       multipart.addBodyPart(messageBodyPart);
       message.setSubject(subject);
       message.setContent(multipart);
-      transport = session.getTransport("smtp");
-      transport.connect(host, userName, password);
-      transport.sendMessage(message, message.getAllRecipients());
-      transport.close();
+      sendEmail(session, message);
     } catch (Exception e) {
       logger.error("Exception occured during email sending " + e, e);
-    } finally {
-      if (transport != null) {
-        try {
-          transport.close();
-        } catch (MessagingException e) {
-          logger.error("Exception occured during connection clean up.", e);
-        }
-      }
     }
   }
 
@@ -231,32 +208,36 @@ public class SendMail {
    * @return boolean
    */
   public boolean sendEmail(String fromEmail, String subject, String body, List<String> bccList) {
-    Transport transport = null;
     boolean sentStatus = true;
     try {
       Session session = Session.getInstance(props, new GMailAuthenticator(userName, password));
       MimeMessage message = new MimeMessage(session);
       message.setFrom(new InternetAddress(fromEmail));
       RecipientType recipientType = null;
-      if (bccList.size() > 1) {
-        recipientType = Message.RecipientType.BCC;
-      } else {
-        recipientType = Message.RecipientType.TO;
-      }
+      recipientType = (bccList.size() > 1) ? Message.RecipientType.BCC : Message.RecipientType.TO;
       for (String email : bccList) {
         message.addRecipient(recipientType, new InternetAddress(email));
       }
-      if (recipientType == Message.RecipientType.BCC)
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(fromEmail));
       message.setSubject(subject);
       message.setContent(body, "text/html; charset=utf-8");
-      transport = session.getTransport("smtp");
-      transport.connect(host, userName, password);
-      transport.sendMessage(message, message.getAllRecipients());
-      transport.close();
+      sentStatus = sendEmail(session, message);
     } catch (Exception e) {
       sentStatus = false;
       logger.error("SendMail:sendMail: Exception occurred with message = " + e.getMessage(), e);
+    }
+    return sentStatus;
+  }
+
+  private boolean sendEmail(Session session, MimeMessage message) {
+    Transport transport = null;
+    boolean response = true;
+    try {
+      transport = session.getTransport("smtp");
+      transport.connect(host, userName, password);
+      transport.sendMessage(message, message.getAllRecipients());
+    } catch (Exception e) {
+      logger.error("SendMail:sendMail: Exception occurred with message = " + e.getMessage(), e);
+      response = false;
     } finally {
       if (transport != null) {
         try {
@@ -266,6 +247,26 @@ public class SendMail {
         }
       }
     }
-    return sentStatus;
+    return response;
+  }
+
+  public String getHost() {
+    return host;
+  }
+
+  public String getPort() {
+    return port;
+  }
+
+  public String getUserName() {
+    return userName;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public String getFromEmail() {
+    return fromEmail;
   }
 }

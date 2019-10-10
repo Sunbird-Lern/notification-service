@@ -42,5 +42,5 @@ public class NotificationConstant {
   public static final String VERIFY_OTP = "for verify otp";
   public static final String KEY = "key";
   public static final String VALUE = "value";
-  public static final String EMAIL_TEMPLATE_ERROR = "email template not found.";
+  public static final String EMAIL_TEMPLATE_NOT_FOUND = "email template not found.";
 }

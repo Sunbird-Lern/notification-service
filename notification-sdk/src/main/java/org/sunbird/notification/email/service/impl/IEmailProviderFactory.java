@@ -9,7 +9,7 @@ public class IEmailProviderFactory implements IEmailFactory {
 
   @Override
   public IEmailService create(EmailConfig config) {
-    if (emailservice != null) {
+    if (emailservice == null) {
       emailservice = new SmtpEMailServiceImpl(config);
     }
     return emailservice;

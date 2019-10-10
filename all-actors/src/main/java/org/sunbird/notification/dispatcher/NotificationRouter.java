@@ -25,9 +25,13 @@ import org.sunbird.message.IResponseMessage;
 import org.sunbird.message.IUserResponseMessage;
 import org.sunbird.message.ResponseCode;
 import org.sunbird.notification.beans.Constants;
+import org.sunbird.notification.beans.EmailConfig;
+import org.sunbird.notification.beans.EmailRequest;
 import org.sunbird.notification.beans.OTPRequest;
 import org.sunbird.notification.beans.SMSConfig;
 import org.sunbird.notification.dispatcher.impl.FCMNotificationDispatcher;
+import org.sunbird.notification.email.service.IEmailService;
+import org.sunbird.notification.email.service.impl.IEmailProviderFactory;
 import org.sunbird.notification.sms.provider.ISmsProvider;
 import org.sunbird.notification.sms.providerimpl.Msg91SmsProviderFactory;
 import org.sunbird.notification.utils.FCMResponse;
@@ -101,7 +105,23 @@ public class NotificationRouter {
             String data = createNotificationBody(notification);
             notification.getTemplate().setData(data);
           }
-          response = writeDataToKafa(notification, response, isDryRun, responseMap);
+
+          IEmailProviderFactory factory = new IEmailProviderFactory();
+          EmailConfig config = new EmailConfig();
+          IEmailService service = factory.create(config);
+          EmailRequest emailRequest =
+              new EmailRequest(
+                  notification.getConfig().getSubject(),
+                  notification.getIds(),
+                  null,
+                  notification.getIds(),
+                  null,
+                  notification.getTemplate().getData(),
+                  null);
+          boolean emailResponse = service.sendEmail(emailRequest);
+          responseMap.put("response", emailResponse);
+          response.putAll(responseMap);
+          // response = writeDataToKafa(notification, response, isDryRun, responseMap);
         }
       }
     } else {
@@ -173,7 +193,8 @@ public class NotificationRouter {
       throw new ActorServiceException.InvalidRequestData(
           IUserResponseMessage.TEMPLATE_NOT_FOUND,
           MessageFormat.format(
-              IResponseMessage.INVALID_REQUESTED_DATA, NotificationConstant.EMAIL_TEMPLATE_ERROR),
+              IResponseMessage.INVALID_REQUESTED_DATA,
+              NotificationConstant.EMAIL_TEMPLATE_NOT_FOUND),
           ResponseCode.CLIENT_ERROR.getCode());
     } finally {
       if (writer != null) {
