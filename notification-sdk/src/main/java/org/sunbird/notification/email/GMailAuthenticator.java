@@ -1,5 +1,5 @@
 /** */
-package org.sunbird.notification.utils.email;
+package org.sunbird.notification.email;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;

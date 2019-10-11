@@ -17,7 +17,13 @@ public class NotificationValidator {
 
   public static void validate(NotificationRequest notificationRequest) throws BaseException {
     validateModeType(notificationRequest.getMode());
-    validateIds(notificationRequest.getIds());
+    // in case of topic based notification id not required.
+    if (StringUtils.isBlank(
+        notificationRequest.getConfig() != null
+            ? notificationRequest.getConfig().getTopic()
+            : "")) {
+      validateIds(notificationRequest.getIds());
+    }
     // for checking mandatory params of string type
     checkMandatoryParamsPresent(notificationRequest.getDeliveryType(), JsonKey.DELIVERY_TYPE);
   }

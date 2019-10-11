@@ -1,4 +1,4 @@
-package org.sunbird.notification.utils.email;
+package org.sunbird.notification.email;
 
 import java.util.List;
 import java.util.Properties;
@@ -12,6 +12,7 @@ import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -37,6 +38,7 @@ public class Email {
   private String userName;
   private String password;
   private String fromEmail;
+  private Session session;
 
   public Email() {
     init();
@@ -94,6 +96,13 @@ public class Email {
     return response;
   }
 
+  private Session getSession() {
+    if (session == null) {
+      session = Session.getInstance(props, new GMailAuthenticator(userName, password));
+    }
+    return session;
+  }
+
   private void initProps() {
     props = System.getProperties();
     props.put("mail.smtp.host", host);
@@ -129,25 +138,11 @@ public class Email {
       List<String> emailList, String subject, String body, List<String> ccEmailList) {
     boolean response = true;
     try {
-      Session session = Session.getInstance(props, new GMailAuthenticator(userName, password));
+      Session session = getSession();
       MimeMessage message = new MimeMessage(session);
-      message.setFrom(new InternetAddress(fromEmail));
-      int size = CollectionUtils.isNotEmpty(emailList) ? emailList.size() : 0;
-      int i = 0;
-      while (size > 0) {
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(emailList.get(i)));
-        i++;
-        size--;
-      }
-      size = CollectionUtils.isNotEmpty(ccEmailList) ? ccEmailList.size() : 0;
-      i = 0;
-      while (size > 0) {
-        message.addRecipient(Message.RecipientType.CC, new InternetAddress(ccEmailList.get(i)));
-        i++;
-        size--;
-      }
-      message.setSubject(subject);
-      message.setContent(body, "text/html; charset=utf-8");
+      addRecipient(message, Message.RecipientType.TO, emailList);
+      addRecipient(message, Message.RecipientType.CC, ccEmailList);
+      setMessageAttribute(message, fromEmail, subject, body);
       response = sendEmail(session, message);
     } catch (Exception e) {
       response = false;
@@ -167,31 +162,12 @@ public class Email {
   public void sendAttachment(
       List<String> emailList, String emailBody, String subject, String filePath) {
     try {
-      Session session = Session.getInstance(props, new GMailAuthenticator(userName, password));
+      Session session = getSession();
       MimeMessage message = new MimeMessage(session);
-      message.setFrom(new InternetAddress(fromEmail));
-      int size = emailList.size();
-      int i = 0;
-      while (size > 0) {
-        message.addRecipient(Message.RecipientType.TO, new InternetAddress(emailList.get(i)));
-        i++;
-        size--;
-      }
+      addRecipient(message, Message.RecipientType.TO, emailList);
       message.setSubject(subject);
-      BodyPart messageBodyPart = new MimeBodyPart();
-      messageBodyPart.setContent(emailBody, "text/html; charset=utf-8");
-      // messageBodyPart.setText(mail);
-      // Create a multipar message
-      Multipart multipart = new MimeMultipart();
-      multipart.addBodyPart(messageBodyPart);
-      DataSource source = new FileDataSource(filePath);
-      messageBodyPart = null;
-      messageBodyPart = new MimeBodyPart();
-      messageBodyPart.setDataHandler(new DataHandler(source));
-      messageBodyPart.setFileName(filePath);
-      multipart.addBodyPart(messageBodyPart);
-      message.setSubject(subject);
-      message.setContent(multipart);
+      Multipart multipart = createMultipartData(emailBody, filePath);
+      setMessageAttribute(message, fromEmail, subject, multipart);
       sendEmail(session, message);
     } catch (Exception e) {
       logger.error("Exception occured during email sending " + e, e);
@@ -210,22 +186,58 @@ public class Email {
   public boolean sendEmail(String fromEmail, String subject, String body, List<String> bccList) {
     boolean sentStatus = true;
     try {
-      Session session = Session.getInstance(props, new GMailAuthenticator(userName, password));
+      Session session = getSession();
       MimeMessage message = new MimeMessage(session);
-      message.setFrom(new InternetAddress(fromEmail));
-      RecipientType recipientType = null;
-      recipientType = (bccList.size() > 1) ? Message.RecipientType.BCC : Message.RecipientType.TO;
-      for (String email : bccList) {
-        message.addRecipient(recipientType, new InternetAddress(email));
-      }
-      message.setSubject(subject);
-      message.setContent(body, "text/html; charset=utf-8");
+      addRecipient(message, Message.RecipientType.BCC, bccList);
+      setMessageAttribute(message, fromEmail, subject, body);
       sentStatus = sendEmail(session, message);
     } catch (Exception e) {
       sentStatus = false;
       logger.error("SendMail:sendMail: Exception occurred with message = " + e.getMessage(), e);
     }
     return sentStatus;
+  }
+
+  private Multipart createMultipartData(String emailBody, String filePath)
+      throws AddressException, MessagingException {
+    BodyPart messageBodyPart = new MimeBodyPart();
+    messageBodyPart.setContent(emailBody, "text/html; charset=utf-8");
+    Multipart multipart = new MimeMultipart();
+    multipart.addBodyPart(messageBodyPart);
+    DataSource source = new FileDataSource(filePath);
+    messageBodyPart = null;
+    messageBodyPart = new MimeBodyPart();
+    messageBodyPart.setDataHandler(new DataHandler(source));
+    messageBodyPart.setFileName(filePath);
+    multipart.addBodyPart(messageBodyPart);
+    return multipart;
+  }
+
+  private void addRecipient(MimeMessage message, RecipientType type, List<String> recipient)
+      throws AddressException, MessagingException {
+    if (CollectionUtils.isEmpty(recipient)) {
+      logger.info("Recipient list is empty or null ");
+      return;
+    }
+    for (String email : recipient) {
+      message.addRecipient(type, new InternetAddress(email));
+    }
+  }
+
+  private void setMessageAttribute(
+      MimeMessage message, String fromEmail, String subject, String body)
+      throws AddressException, MessagingException {
+    message.setFrom(new InternetAddress(fromEmail));
+    message.setSubject(subject, "utf-8");
+    message.setContent(body, "text/html; charset=utf-8");
+  }
+
+  private void setMessageAttribute(
+      MimeMessage message, String fromEmail, String subject, Multipart multipart)
+      throws AddressException, MessagingException {
+    message.setFrom(new InternetAddress(fromEmail));
+    message.setSubject(subject, "utf-8");
+    message.setContent(multipart, "text/html; charset=utf-8");
   }
 
   private boolean sendEmail(Session session, MimeMessage message) {

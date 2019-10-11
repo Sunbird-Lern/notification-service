@@ -6,8 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.sunbird.notification.beans.EmailConfig;
 import org.sunbird.notification.beans.EmailRequest;
+import org.sunbird.notification.email.Email;
 import org.sunbird.notification.email.service.IEmailService;
-import org.sunbird.notification.utils.email.Email;
 
 /** @author manzarul */
 public class SmtpEMailServiceImpl implements IEmailService {
