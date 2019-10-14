@@ -11,5 +11,5 @@ import org.sunbird.pojo.NotificationRequest;
  */
 public interface INotificationDispatcher {
 
-  public FCMResponse dispatch(NotificationRequest data, boolean isDryRun);
+  public FCMResponse dispatch(NotificationRequest data, boolean isDryRun, boolean isSync);
 }

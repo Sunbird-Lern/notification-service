@@ -10,6 +10,8 @@ public class SMSConfig {
   private String authKey;
   private String sender;
 
+  public SMSConfig() {}
+
   /**
    * @param authKey account key to send sms
    * @param sender sander name , it must be 6 character only.
