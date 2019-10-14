@@ -1,7 +1,6 @@
 package org.sunbird;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -83,13 +82,5 @@ public class NotificationValidator {
           MessageFormat.format(IResponseMessage.MAX_NOTIFICATION_SIZE, MAX_NOTIFICATION_SIZE),
           ResponseCode.CLIENT_ERROR.getCode());
     }
-  }
-
-  public static void main(String[] args) {
-    List<String> list = new ArrayList<String>();
-    for (int i = 0; i < 1002; i++) {
-      list.add("\"test@" + i + ".com\"");
-    }
-    System.out.println(list);
   }
 }

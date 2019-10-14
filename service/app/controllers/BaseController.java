@@ -33,7 +33,7 @@ import utils.RequestValidatorFunction;
  */
 public class BaseController extends Controller {
   Logger logger = LogManager.getLogger(BaseController.class);
-  private static final String NOTIFICATION_DELIVERY_MODE = "notification-delivery-mode";
+  public static final String NOTIFICATION_DELIVERY_MODE = "notification-delivery-mode";
   /** We injected HttpExecutionContext to decrease the response time of APIs. */
   @Inject private HttpExecutionContext httpExecutionContext;
 
