@@ -31,9 +31,6 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
   private IFCMNotificationService service =
       NotificationFactory.getInstance(NotificationFactory.instanceType.httpClinet.name());
   private static final String RAW_DATA = "rawData";
-  private static final String SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE =
-      "sunbird_notification_default_dispatch_mode";
-  private static final String SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE_VAL = "async";
   private static ObjectMapper mapper = new ObjectMapper();
   String topic = null;
   String BOOTSTRAP_SERVERS = null;
@@ -46,11 +43,9 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
    * topic :it will contains name of fcm topic either ids or topic one key is mandatory. and data
    * will have complete data that need to sent.
    */
-  public FCMResponse dispatch(NotificationRequest notification, boolean isDryRun) {
+  public FCMResponse dispatch(NotificationRequest notification, boolean isDryRun, boolean isSync) {
 
-    if (System.getenv(SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE) != null
-        && !SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE_VAL.equalsIgnoreCase(
-            System.getenv(SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE))) {
+    if (isSync) {
       return dispatchSync(notification, isDryRun);
     } else {
       return dispatchAsync(notification);

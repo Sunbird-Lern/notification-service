@@ -25,13 +25,9 @@ import org.sunbird.message.IResponseMessage;
 import org.sunbird.message.IUserResponseMessage;
 import org.sunbird.message.ResponseCode;
 import org.sunbird.notification.beans.Constants;
-import org.sunbird.notification.beans.EmailConfig;
-import org.sunbird.notification.beans.EmailRequest;
 import org.sunbird.notification.beans.OTPRequest;
 import org.sunbird.notification.beans.SMSConfig;
 import org.sunbird.notification.dispatcher.impl.FCMNotificationDispatcher;
-import org.sunbird.notification.email.service.IEmailService;
-import org.sunbird.notification.email.service.impl.IEmailProviderFactory;
 import org.sunbird.notification.sms.provider.ISmsProvider;
 import org.sunbird.notification.sms.providerimpl.Msg91SmsProviderFactory;
 import org.sunbird.notification.utils.FCMResponse;
@@ -51,6 +47,7 @@ import org.sunbird.util.Constant;
 public class NotificationRouter {
   private static Logger logger = LogManager.getLogger(NotificationRouter.class);
   private static final String TEMPLATE_SUFFIX = ".vm";
+  private SyncMessageDispatcher syDispatcher = new SyncMessageDispatcher();
 
   enum DeliveryMode {
     phone,
@@ -78,7 +75,8 @@ public class NotificationRouter {
     return smsProvider;
   }
 
-  public Response route(List<NotificationRequest> notificationRequestList, boolean isDryRun)
+  public Response route(
+      List<NotificationRequest> notificationRequestList, boolean isDryRun, boolean isSync)
       throws BaseException {
     logger.info("making call to route method");
     Response response = new Response();
@@ -88,9 +86,9 @@ public class NotificationRouter {
         if (notification.getMode().equalsIgnoreCase(DeliveryMode.phone.name())
             && (notification.getDeliveryType().equalsIgnoreCase(DeliveryType.message.name())
                 || notification.getDeliveryType().equalsIgnoreCase(DeliveryType.otp.name()))) {
-          response = handleMessageAndOTP(notification, isDryRun, responseMap);
+          response = handleMessageAndOTP(notification, isDryRun, responseMap, isSync);
         } else if (notification.getMode().equalsIgnoreCase(DeliveryMode.device.name())) {
-          response = writeDataToKafa(notification, response, isDryRun, responseMap);
+          response = writeDataToKafa(notification, response, isDryRun, responseMap, isSync);
         } else if (notification.getMode().equalsIgnoreCase(DeliveryMode.email.name())
             && notification.getDeliveryType().equalsIgnoreCase(DeliveryType.message.name())) {
           String message = null;
@@ -105,23 +103,11 @@ public class NotificationRouter {
             String data = createNotificationBody(notification);
             notification.getTemplate().setData(data);
           }
-
-          IEmailProviderFactory factory = new IEmailProviderFactory();
-          EmailConfig config = new EmailConfig();
-          IEmailService service = factory.create(config);
-          EmailRequest emailRequest =
-              new EmailRequest(
-                  notification.getConfig().getSubject(),
-                  notification.getIds(),
-                  null,
-                  notification.getIds(),
-                  null,
-                  notification.getTemplate().getData(),
-                  null);
-          boolean emailResponse = service.sendEmail(emailRequest);
-          responseMap.put("response", emailResponse);
-          response.putAll(responseMap);
-          // response = writeDataToKafa(notification, response, isDryRun, responseMap);
+          if (isSync) {
+            response = syDispatcher.syncDispatch(notification, isDryRun);
+          } else {
+            response = writeDataToKafa(notification, response, isDryRun, responseMap, isSync);
+          }
         }
       }
     } else {
@@ -132,7 +118,10 @@ public class NotificationRouter {
   }
 
   private Response handleMessageAndOTP(
-      NotificationRequest notification, boolean isDryRun, Map<String, Object> responseMap)
+      NotificationRequest notification,
+      boolean isDryRun,
+      Map<String, Object> responseMap,
+      boolean isSync)
       throws BaseException {
     Response response = new Response();
     String message = null;
@@ -163,7 +152,12 @@ public class NotificationRouter {
       if (notification.getTemplate() != null) {
         notification.getTemplate().setData(message);
       }
-      response = writeDataToKafa(notification, response, isDryRun, responseMap);
+      if (isSync) {
+        response = syDispatcher.syncDispatch(notification, isDryRun);
+
+      } else {
+        response = writeDataToKafa(notification, response, isDryRun, responseMap, isSync);
+      }
     }
     return response;
   }
@@ -223,8 +217,9 @@ public class NotificationRouter {
       NotificationRequest notification,
       Response response,
       boolean isDryRun,
-      Map<String, Object> responseMap) {
-    FCMResponse responses = FcmDispatcher.dispatch(notification, isDryRun);
+      Map<String, Object> responseMap,
+      boolean isSync) {
+    FCMResponse responses = FcmDispatcher.dispatch(notification, isDryRun, isSync);
     logger.info("response from FCM " + responses);
     responseMap.put(Constant.RESPONSE, NotificationConstant.SUCCESS);
     response.putAll(responseMap);

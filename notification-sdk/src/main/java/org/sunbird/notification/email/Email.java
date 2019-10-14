@@ -58,7 +58,6 @@ public class Email {
         StringUtils.isNotBlank(config.getPassword())
             ? config.getPassword()
             : Util.readValue(Constants.EMAIL_SERVER_PASSWORD);
-
     this.host =
         StringUtils.isNotBlank(config.getHost())
             ? config.getHost()

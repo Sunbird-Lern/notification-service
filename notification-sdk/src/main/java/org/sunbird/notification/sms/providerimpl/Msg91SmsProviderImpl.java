@@ -4,9 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -85,60 +83,6 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
   @Override
   public boolean sendSms(String phoneNumber, String countryCode, String smsText) {
     return sendMsg(phoneNumber, smsText, countryCode);
-  }
-
-  private boolean sendAsyncMsg(String phone, String smsText, String countryCode) {
-    List<String> mobileNumbers = new ArrayList<>();
-    mobileNumbers.add(phone);
-    Sms sms = null;
-    try {
-      sms = new Sms(URLEncoder.encode(smsText, "UTF-8"), mobileNumbers);
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
-    }
-
-    List<Sms> smsList = new ArrayList<>();
-    smsList.add(sms);
-    if (countryCode == null || countryCode.trim().length() == 0) {
-      countryCode = country;
-    }
-    // create body
-    ProviderDetails providerDetails = new ProviderDetails(sender, smsRoute, country, smsList);
-
-    String providerDetailsString = JsonUtil.toJson(providerDetails);
-
-    Unirest.post(baseUrl + postUrl)
-        .headers(headers)
-        .body(providerDetailsString)
-        .asJsonAsync(
-            new Callback<JsonNode>() {
-              @Override
-              public void failed(UnirestException e) {
-                logger.error("Msg91SmsProviderImpl:sendAsyncMsg  exception " + e);
-              }
-
-              @Override
-              public void completed(HttpResponse<JsonNode> response) {
-                logger.info(
-                    "Msg91SmsProviderImpl:sendAsyncMsg send sms response "
-                        + response.getStatus()
-                        + "--"
-                        + response.getBody());
-                try {
-                  Unirest.shutdown();
-                } catch (IOException e) {
-                  // TODO Auto-generated catch block
-                  e.printStackTrace();
-                }
-              }
-
-              @Override
-              public void cancelled() {
-                logger.info("Msg91SmsProviderImpl:sendAsyncMsg send sms cancelled ");
-              }
-            });
-
-    return true;
   }
 
   /**

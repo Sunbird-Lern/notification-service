@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.sunbird.ActorServiceException;
@@ -52,6 +53,7 @@ public class NotificationActor extends BaseActor {
   }
 
   public void notify(Request request) throws BaseException {
+    boolean isSyncDelivery = false;
     logger.info("Call started for notify method");
     List<NotificationRequest> notificationRequestList =
         NotificationRequestMapper.toList(
@@ -65,7 +67,11 @@ public class NotificationActor extends BaseActor {
     }
     NotificationValidator.validateMaxSupportedIds(ids);
     NotificationRouter routes = new NotificationRouter();
-    Response response = routes.route(notificationRequestList, false);
+    String deliveryMode = request.getManagerName();
+    if (StringUtils.isNotBlank(deliveryMode) && "sync".equalsIgnoreCase(deliveryMode)) {
+      isSyncDelivery = true;
+    }
+    Response response = routes.route(notificationRequestList, false, isSyncDelivery);
     logger.info("response got from notification service " + response);
     sender().tell(response, getSelf());
   }
