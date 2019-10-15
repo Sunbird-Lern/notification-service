@@ -27,7 +27,7 @@ public class Constant {
   public static final String BROAD_CAST_TOPIC_NOTIFICATION_KEY = "broadcast-topic-notification-all";
   public static final String EID_VALUE = "BE_JOB_REQUEST";
   public static final String ACTOR_TYPE_VALUE = "System";
-  public static final int NUMBER_OF_ITERATION = 2;
+  public static final int NUMBER_OF_ITERATION = 1;
   public static final String PRODUCER_ID = "NS";
   public static final String VERSION_VALUE = "1.0";
   public static final String ID_VALUE = "org.sunbird.platform";
