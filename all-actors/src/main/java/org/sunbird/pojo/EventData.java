@@ -1,6 +1,8 @@
 /** */
 package org.sunbird.pojo;
 
+import org.sunbird.util.Constant;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -11,7 +13,12 @@ public class EventData implements Serializable {
   private static final long serialVersionUID = 3676213939777740836L;
 
   String action;
+  private int iteration;
   Map<String, Object> request;
+
+  public EventData() {
+    this.iteration = Constant.NUMBER_OF_ITERATION;
+  }
 
   public String getAction() {
     return action;
@@ -27,5 +34,13 @@ public class EventData implements Serializable {
 
   public void setRequest(Map<String, Object> request) {
     this.request = request;
+  }
+
+  public int getIteration() {
+    return iteration;
+  }
+
+  public void setIteration(int iteration) {
+    this.iteration = iteration;
   }
 }
