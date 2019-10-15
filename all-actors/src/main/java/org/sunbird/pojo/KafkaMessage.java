@@ -15,7 +15,7 @@ public class KafkaMessage implements Serializable {
 
   private Actor actor;
   private String eid;
-  private int iteration;
+
   private String mid;
   long ets;
   EventData edata;
@@ -25,7 +25,6 @@ public class KafkaMessage implements Serializable {
   public KafkaMessage() {
     this.ets = System.currentTimeMillis();
     this.eid = Constant.EID_VALUE;
-    this.iteration = Constant.NUMBER_OF_ITERATION;
     this.mid = Constant.PRODUCER_ID + "." + ets + "." + UUID.randomUUID();
     setContext();
   }
@@ -44,14 +43,6 @@ public class KafkaMessage implements Serializable {
 
   public void setEid(String eid) {
     this.eid = eid;
-  }
-
-  public int getIteration() {
-    return iteration;
-  }
-
-  public void setIteration(int iteration) {
-    this.iteration = iteration;
   }
 
   public String getMid() {
