@@ -5,6 +5,7 @@ jobs:
       - image: circleci/openjdk:8-jdk
     working_directory: ~/project
     steps:
+      - checkout
       - restore_cache:
           key: lms-dependency-cache-{{ checksum "pom.xml" }}      
       - run: 
