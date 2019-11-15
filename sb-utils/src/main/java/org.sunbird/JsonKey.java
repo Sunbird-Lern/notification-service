@@ -32,4 +32,5 @@ public interface JsonKey {
   String PARAMS = "params";
   String MANDATORY_PARAMETER_MISSING = "MANDATORY_PARAMETER_MISSING";
   String INVALID_VALUE = "INVALID_VALUE";
+  String VERIFY_OTP = "verifyOtp";
 }

@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.sunbird.notification.fcm.provider.IFCMNotificationService;
 import org.sunbird.notification.utils.FCMResponse;
@@ -22,12 +23,12 @@ import org.sunbird.notification.utils.NotificationConstant;
  * @author manzarul
  */
 public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
-  private static Logger logger = Logger.getLogger("FCMHttpNotificationServiceImpl");
+  private static Logger logger = LogManager.getLogger("FCMHttpNotificationServiceImpl");
 
   /** FCM_URL URL of FCM server */
   public static final String FCM_URL = "https://fcm.googleapis.com/fcm/send";
   /** FCM_ACCOUNT_KEY FCM server key. */
-  private static final String FCM_ACCOUNT_KEY =
+  private static String FCM_ACCOUNT_KEY =
       System.getenv(NotificationConstant.SUNBIRD_FCM_ACCOUNT_KEY);
 
   private static Map<String, String> headerMap = new HashMap<>();
@@ -57,6 +58,11 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
   public FCMResponse sendTopicNotification(
       String topic, Map<String, String> data, boolean isDryRun) {
     return sendTopicNotification(topic, data, FCM_URL, isDryRun);
+  }
+
+  public static void setAccountKey(String key) {
+    FCM_ACCOUNT_KEY = key;
+    headerMap.put(NotificationConstant.AUTHORIZATION, FCM_ACCOUNT_KEY);
   }
 
   /**

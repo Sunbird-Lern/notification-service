@@ -5,16 +5,24 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sunbird.message.IResponseMessage;
+import org.sunbird.message.IUserResponseMessage;
 import org.sunbird.message.ResponseCode;
 import org.sunbird.pojo.NotificationMode;
 import org.sunbird.pojo.NotificationRequest;
 
 /** Validates send notification api request */
 public class NotificationValidator {
+  private static final int MAX_NOTIFICATION_SIZE = 1000;
 
   public static void validate(NotificationRequest notificationRequest) throws BaseException {
     validateModeType(notificationRequest.getMode());
-    validateIds(notificationRequest.getIds());
+    // in case of topic based notification id not required.
+    if (StringUtils.isBlank(
+        notificationRequest.getConfig() != null
+            ? notificationRequest.getConfig().getTopic()
+            : "")) {
+      validateIds(notificationRequest.getIds());
+    }
     // for checking mandatory params of string type
     checkMandatoryParamsPresent(notificationRequest.getDeliveryType(), JsonKey.DELIVERY_TYPE);
   }
@@ -63,6 +71,15 @@ public class NotificationValidator {
           MessageFormat.format(
               IResponseMessage.MANDATORY_PARAMETER_MISSING,
               JsonKey.NOTIFICATIONS + "." + JsonKey.IDS),
+          ResponseCode.CLIENT_ERROR.getCode());
+    }
+  }
+
+  public static void validateMaxSupportedIds(List<String> ids) throws BaseException {
+    if (ids.size() > MAX_NOTIFICATION_SIZE) {
+      throw new BaseException(
+          IUserResponseMessage.INVALID_REQUESTED_DATA,
+          MessageFormat.format(IResponseMessage.MAX_NOTIFICATION_SIZE, MAX_NOTIFICATION_SIZE),
           ResponseCode.CLIENT_ERROR.getCode());
     }
   }

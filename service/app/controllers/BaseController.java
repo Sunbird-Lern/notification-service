@@ -2,9 +2,11 @@ package controllers;
 
 import akka.actor.ActorRef;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.sunbird.Application;
@@ -31,6 +33,7 @@ import utils.RequestValidatorFunction;
  */
 public class BaseController extends Controller {
   Logger logger = LogManager.getLogger(BaseController.class);
+  public static final String NOTIFICATION_DELIVERY_MODE = "notification-delivery-mode";
   /** We injected HttpExecutionContext to decrease the response time of APIs. */
   @Inject private HttpExecutionContext httpExecutionContext;
 
@@ -94,17 +97,21 @@ public class BaseController extends Controller {
       play.mvc.Http.Request req, RequestValidatorFunction validatorFunction, String operation) {
     try {
       Request request = new Request();
+      List<String> list = req.getHeaders().toMap().get(NOTIFICATION_DELIVERY_MODE);
       if (req.body() != null && req.body().asJson() != null) {
         request = (Request) RequestMapper.mapRequest(req, Request.class);
       }
       if (validatorFunction != null) {
         validatorFunction.apply(request);
       }
-      return new RequestHandler().handleRequest(request, httpExecutionContext, operation);
+      if (CollectionUtils.isNotEmpty(list)) {
+        request.setManagerName(list.get(0));
+      }
+      return new RequestHandler().handleRequest(request, httpExecutionContext, operation, req);
     } catch (BaseException ex) {
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext);
+      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, req);
     } catch (Exception ex) {
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext);
+      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, req);
     }
   }
 
@@ -115,13 +122,14 @@ public class BaseController extends Controller {
    * @param operation
    * @return
    */
-  public CompletionStage<Result> handleRequest(Request req, String operation) {
+  public CompletionStage<Result> handleRequest(
+      Request req, String operation, play.mvc.Http.Request httpReq) {
     try {
-      return new RequestHandler().handleRequest(req, httpExecutionContext, operation);
+      return new RequestHandler().handleRequest(req, httpExecutionContext, operation, httpReq);
     } catch (BaseException ex) {
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext);
+      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, httpReq);
     } catch (Exception ex) {
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext);
+      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, httpReq);
     }
   }
 
@@ -141,8 +149,8 @@ public class BaseController extends Controller {
       // ProjectLogger.log(String.format("%s:%s:exception occurred in mapping
       // request", this.getClass().getSimpleName(), "handleLogRequest"),
       // LoggerEnum.ERROR.name());
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext);
+      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, null);
     }
-    return RequestHandler.handleSuccessResponse(response, httpExecutionContext);
+    return RequestHandler.handleSuccessResponse(response, httpExecutionContext, null);
   }
 }

@@ -3,10 +3,11 @@ package org.sunbird.notification.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import org.jboss.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class PropertiesCache {
-  private static Logger logger = Logger.getLogger(PropertiesCache.class);
+  private static Logger logger = LogManager.getLogger(PropertiesCache.class);
   private final String fileName = "configuration.properties";
   private final Properties configProp = new Properties();
 

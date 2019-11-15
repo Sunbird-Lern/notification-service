@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -29,18 +30,12 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
   private static Logger logger = LogManager.getLogger(FCMNotificationDispatcher.class);
   private IFCMNotificationService service =
       NotificationFactory.getInstance(NotificationFactory.instanceType.httpClinet.name());
-  private static final String IDS = "ids";
-  private static final String TOPIC = "topic";
   private static final String RAW_DATA = "rawData";
-  private static final String NOTIFICATIONS = "notifications";
-  private static final String CONFIG = "config";
-  private static final String SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE =
-      "sunbird_notification_default_dispatch_mode";
-  private static final String SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE_VAL = "async";
   private static ObjectMapper mapper = new ObjectMapper();
   String topic = null;
   String BOOTSTRAP_SERVERS = null;
   Producer<Long, String> producer = null;
+  private static final int BATCH_SIZE = 100;
 
   @Override
   /**
@@ -48,53 +43,52 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
    * topic :it will contains name of fcm topic either ids or topic one key is mandatory. and data
    * will have complete data that need to sent.
    */
-  public List<FCMResponse> dispatch(Map<String, Object> data, boolean isDryRun) {
+  public FCMResponse dispatch(NotificationRequest notification, boolean isDryRun, boolean isSync) {
 
-    if (System.getenv(SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE) != null
-        && !SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE_VAL.equalsIgnoreCase(
-            System.getenv(SUNBIRD_NOTIFICATION_DEFAULT_DISPATCH_MODE))) {
-      return dispatchSync(data, isDryRun);
+    if (isSync) {
+      return dispatchSync(notification, isDryRun);
     } else {
-      return dispatchAsync(data);
+      return dispatchAsync(notification);
     }
   }
 
-  private List<FCMResponse> dispatchSync(Map<String, Object> data, boolean isDryRun) {
-    List<Map<String, Object>> notificationDataList =
-        (List<Map<String, Object>>) data.get(NOTIFICATIONS);
-    List<FCMResponse> dispatchResponse = new ArrayList<>();
-    for (int i = 0; i < notificationDataList.size(); i++) {
-      Map<String, Object> innerMap = (Map<String, Object>) notificationDataList.get(i);
-      List<String> deviceRegIds = null;
-      String topicVal = null;
-      if (innerMap.get(IDS) != null) {
-        deviceRegIds = (List) innerMap.get(IDS);
-      }
-      if (deviceRegIds == null || deviceRegIds.size() == 0) {
-        Map<String, Object> configMap = (Map<String, Object>) innerMap.get(CONFIG);
-        topicVal = (String) configMap.getOrDefault(TOPIC, "");
-        if (StringUtils.isBlank(topicVal)) {
-          throw new RuntimeException("neither device registration id nore topic found in request");
-        }
-      }
-      FCMResponse response = null;
-      try {
-        String notificationData = mapper.writeValueAsString(innerMap.get(RAW_DATA));
-        Map<String, String> map = new HashMap<String, String>();
-        map.put(RAW_DATA, notificationData);
-        if (StringUtils.isNotBlank(topicVal)) {
-          response = service.sendTopicNotification(topicVal, map, isDryRun);
-        } else {
-          response = service.sendMultiDeviceNotification(deviceRegIds, map, isDryRun);
-        }
-        dispatchResponse.add(response);
-
-      } catch (JsonProcessingException e) {
-        logger.error("Error during fcm notification processing." + e.getMessage());
-        e.printStackTrace();
+  private FCMResponse dispatchSync(NotificationRequest notification, boolean isDryRun) {
+    org.sunbird.pojo.Config config = null;
+    if (notification.getIds() == null || notification.getIds().size() == 0) {
+      config = notification.getConfig();
+      if (StringUtils.isBlank(config.getTopic())) {
+        throw new RuntimeException("neither device registration id nore topic found in request");
       }
     }
-    return dispatchResponse;
+    FCMResponse response = null;
+    try {
+      String notificationData = mapper.writeValueAsString(notification.getRawData());
+      Map<String, String> map = new HashMap<String, String>();
+      map.put(RAW_DATA, notificationData);
+      if (config != null && StringUtils.isNotBlank(config.getTopic())) {
+        response = service.sendTopicNotification(config.getTopic(), map, isDryRun);
+      } else {
+        if (notification.getIds().size() <= BATCH_SIZE) {
+          response = service.sendMultiDeviceNotification(notification.getIds(), map, isDryRun);
+        } else {
+          // Split into 100 batch
+          List<String> tmp = new ArrayList<String>();
+          for (int i = 0; i < notification.getIds().size(); i++) {
+            tmp.add(notification.getIds().get(i));
+            if (tmp.size() == BATCH_SIZE || i == (notification.getIds().size() - 1)) {
+              response = service.sendMultiDeviceNotification(tmp, map, isDryRun);
+              tmp.clear();
+              logger.info("sending message in 100 batch.");
+            }
+          }
+        }
+      }
+
+    } catch (JsonProcessingException e) {
+      logger.error("Error during fcm notification processing." + e.getMessage());
+      e.printStackTrace();
+    }
+    return response;
   }
 
   /** Initialises Kafka producer required for dispatching messages on Kafka. */
@@ -118,48 +112,72 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
     }
   }
 
-  private List<FCMResponse> dispatchAsync(Map<String, Object> data) {
-    List<FCMResponse> dispatchResponse = new ArrayList<>();
+  private FCMResponse dispatchAsync(NotificationRequest notification) {
     initKafkaClient();
-    List<Map<String, Object>> notificationDataList =
-        (List<Map<String, Object>>) data.get(NOTIFICATIONS);
-    for (int i = 0; i < notificationDataList.size(); i++) {
-      FCMResponse response = new FCMResponse();
-      Map<String, Object> innerMap = (Map<String, Object>) notificationDataList.get(i);
-      String message = getTopicMessage(innerMap);
-      ProducerRecord<Long, String> record = new ProducerRecord<>(topic, message);
-      if (producer != null) {
-        producer.send(record);
-        response.setMessage_id(i + 1);
-        response.setCanonical_ids(System.currentTimeMillis());
-        response.setSuccess(Constant.SUCCESS_CODE);
+    FCMResponse response = null;
+    if (CollectionUtils.isNotEmpty(notification.getIds())) {
+      if (notification.getIds().size() <= BATCH_SIZE) {
+        String message = getTopicMessage(notification);
+        response = writeDataToKafka(message, topic);
+        logger.info("device id size is less than Batch size " + BATCH_SIZE);
       } else {
-        response.setError(Constant.ERROR_DURING_WRITE_DATA);
-        response.setFailure(Constant.FAILURE_CODE);
-        logger.info("UserMergeActor:mergeCertCourseDetails: Kafka producer is not initialised.");
+        List<String> deviceIds = notification.getIds();
+        logger.info(
+            "device id size is less more than Batch size " + BATCH_SIZE + " - " + deviceIds.size());
+        List<String> tmp = new ArrayList<String>();
+        for (int i = 0; i < deviceIds.size(); i++) {
+          tmp.add(deviceIds.get(i));
+          if (tmp.size() == BATCH_SIZE || i == deviceIds.size() - 1) {
+            notification.setIds(tmp);
+            String message = getTopicMessage(notification);
+            response = writeDataToKafka(message, topic);
+            tmp.clear();
+          }
+        }
       }
-      dispatchResponse.add(response);
+    } else {
+      String message = getTopicMessage(notification);
+      response = writeDataToKafka(message, topic);
     }
-    return dispatchResponse;
+
+    return response;
   }
 
-  private String getTopicMessage(Map<String, Object> data) {
+  private FCMResponse writeDataToKafka(String message, String topic) {
+    FCMResponse response = new FCMResponse();
+    ProducerRecord<Long, String> record = new ProducerRecord<>(topic, message);
+    if (producer != null) {
+      producer.send(record);
+      response.setMessage_id(1);
+      response.setCanonical_ids(System.currentTimeMillis());
+      response.setSuccess(Constant.SUCCESS_CODE);
+    } else {
+      response.setError(Constant.ERROR_DURING_WRITE_DATA);
+      response.setFailure(Constant.FAILURE_CODE);
+      logger.info("UserMergeActor:mergeCertCourseDetails: Kafka producer is not initialised.");
+    }
+    return response;
+  }
+
+  private String getTopicMessage(NotificationRequest notification) {
     KafkaMessage message = new KafkaMessage();
     Actor actor =
         new Actor(Constant.BROAD_CAST_TOPIC_NOTIFICATION_MESSAGE, Constant.ACTOR_TYPE_VALUE);
     message.setActor(actor);
     Map<String, Object> requestMap = new HashMap<String, Object>();
-    requestMap.put(Constant.NOTIFICATION, data);
-    Map<String, Object> object = new HashMap<String, Object>();
-    object.put(Constant.ID, getRequestHashed(requestMap));
-    object.put(Constant.TYPE, Constant.TYPE_VALUE);
-    message.setObject(object);
-    EventData evnetData = new EventData();
-    evnetData.setAction(Constant.BROAD_CAST_TOPIC_NOTIFICATION_KEY);
-    evnetData.setRequest(requestMap);
-    message.setEdata(evnetData);
     String topicMessage = null;
     try {
+      requestMap.put(
+          Constant.NOTIFICATION,
+          (Map<String, Object>) mapper.convertValue(notification, Map.class));
+      Map<String, Object> object = new HashMap<String, Object>();
+      object.put(Constant.ID, getRequestHashed(requestMap));
+      object.put(Constant.TYPE, Constant.TYPE_VALUE);
+      message.setObject(object);
+      EventData evnetData = new EventData();
+      evnetData.setAction(Constant.BROAD_CAST_TOPIC_NOTIFICATION_KEY);
+      evnetData.setRequest(requestMap);
+      message.setEdata(evnetData);
       topicMessage = mapper.writeValueAsString(message);
     } catch (JsonProcessingException e) {
       logger.error("Error occured during data parsing==" + e.getMessage());

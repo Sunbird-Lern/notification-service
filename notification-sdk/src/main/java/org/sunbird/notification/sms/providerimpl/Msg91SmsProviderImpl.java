@@ -1,5 +1,11 @@
 package org.sunbird.notification.sms.providerimpl;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -8,8 +14,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -17,123 +22,69 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.jboss.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.sunbird.notification.beans.MessageResponse;
+import org.sunbird.notification.beans.OTPRequest;
 import org.sunbird.notification.sms.Sms;
 import org.sunbird.notification.sms.provider.ISmsProvider;
 import org.sunbird.notification.utils.JsonUtil;
-import org.sunbird.notification.utils.PropertiesCache;
-import org.sunbird.notification.utils.SMSFactory;
+import org.sunbird.notification.utils.NotificationConstant;
+import org.sunbird.notification.utils.Util;
 
-import com.google.firebase.messaging.Message;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.async.Callback;
-import com.mashape.unirest.http.exceptions.UnirestException;
-
+/** @author manzarul */
 public class Msg91SmsProviderImpl implements ISmsProvider {
 
-  private static Logger logger = Logger.getLogger(Msg91SmsProviderImpl.class);
+  private static Logger logger = LogManager.getLogger(Msg91SmsProviderImpl.class);
 
   private static String baseUrl = null;
   private static String postUrl = null;
-  private static String sender = null;
+  private String sender = null;
   private static String smsRoute = null;
-  private static String authKey = null;
+  private String authKey = null;
   private static String country = null;
-  private static Map<String,String> headers = new HashMap<String,String>();
-  static {
+  private static Map<String, String> headers = new HashMap<String, String>();
+  private static final String OTP_BASE_URL = "https://control.msg91.com/api/";
+  ObjectMapper mapper = new ObjectMapper();
+
+  /**
+   * @param authKey
+   * @param sender
+   */
+  public Msg91SmsProviderImpl(String authKey, String sender) {
+    this.authKey = authKey;
+    this.sender = sender;
     boolean resposne = init();
     logger.info("SMS configuration values are set ==" + resposne);
-    headers.put("authkey", authKey);
-    headers.put("content-type", "application/json");
   }
 
   /** this method will do the SMS properties initialization. */
-  public static boolean init() {
-    baseUrl = PropertiesCache.getInstance().getProperty("sunbird.msg.91.baseurl");
-    postUrl = PropertiesCache.getInstance().getProperty("sunbird.msg.91.post.url");
-    sender = System.getenv("sunbird_msg_sender");
-    if (JsonUtil.isStringNullOREmpty(sender)) {
-      sender = PropertiesCache.getInstance().getProperty("sunbird.msg.91.sender");
+  public boolean init() {
+    baseUrl = Util.readValue(NotificationConstant.SUNBIRD_MSG_91_BASEURL);
+    postUrl = Util.readValue(NotificationConstant.SUNBIRD_MSG_91_POST_URL);
+    if (StringUtils.isBlank(sender)) {
+      sender = Util.readValue(NotificationConstant.SUNBIR_MSG_DEFAULT_SENDER);
     }
-    smsRoute = PropertiesCache.getInstance().getProperty("sunbird.msg.91.route");
-    country = PropertiesCache.getInstance().getProperty("sunbird.msg.91.country");
-   // authKey = System.getenv("sunbird_msg_91_auth");
-    if (JsonUtil.isStringNullOREmpty(authKey)) {
-      authKey = PropertiesCache.getInstance().getProperty("sunbird.msg.91.auth");
+    smsRoute = Util.readValue(NotificationConstant.SUNBIRD_MSG_91_ROUTE);
+    country = Util.readValue(NotificationConstant.SUNBIRD_DEFAULT_COUNTRY_CODE);
+    if (StringUtils.isBlank(authKey)) {
+      authKey = Util.readValue(NotificationConstant.SUNBIRD_MSG_91_AUTH);
     }
+    headers.put("authkey", authKey);
+    headers.put("content-type", "application/json");
     return validateSettings();
   }
 
   @Override
   public boolean sendSms(String phoneNumber, String smsText) {
-      return sendMsg(phoneNumber, smsText,null);
-    }
+    return sendMsg(phoneNumber, smsText, null);
+  }
 
   @Override
   public boolean sendSms(String phoneNumber, String countryCode, String smsText) {
-      return sendMsg(phoneNumber, smsText,countryCode);
-    }
+    return sendMsg(phoneNumber, smsText, countryCode);
+  }
 
-  
-  
-  
-  
-	private boolean sendAsyncMsg(String phone, String smsText, String countryCode) {
-		List<String> mobileNumbers = new ArrayList<>();
-		mobileNumbers.add(phone);
-		Sms sms = null; 
-		try {
-			sms = new Sms(URLEncoder.encode(smsText, "UTF-8"), mobileNumbers);
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-
-		List<Sms> smsList = new ArrayList<>();
-		smsList.add(sms);
-		if (countryCode == null || countryCode.trim().length() == 0) {
-			countryCode = country;
-		}
-		// create body
-		ProviderDetails providerDetails = new ProviderDetails(sender, smsRoute, country, smsList);
-
-		String providerDetailsString = JsonUtil.toJson(providerDetails);
-
-		Unirest.post(baseUrl+postUrl).headers(headers).body(providerDetailsString).asJsonAsync(new Callback<JsonNode>() {
-			@Override
-			public void failed(UnirestException e) {
-				logger.error("Msg91SmsProviderImpl:sendAsyncMsg  exception " + e);
-			}
-
-			@Override
-			public void completed(HttpResponse<JsonNode> response) {
-				logger.info("Msg91SmsProviderImpl:sendAsyncMsg send sms response " + response.getStatus() + "--"
-						+ response.getBody());
-				try {
-					Unirest.shutdown();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void cancelled() {
-				logger.info("Msg91SmsProviderImpl:sendAsyncMsg send sms cancelled ");
-			}
-		});
-
-		return true;
-	}
-  
-	
-	public static void main(String[] args) {
-	    ISmsProvider provider = SMSFactory.getInstance("91SMS");
-	    Msg91SmsProviderImpl impl = new Msg91SmsProviderImpl();
-	    impl.sendAsyncMsg("9663890445", "Test sms", "91");
-	}
-  
   /**
    * This method will send SMS using Post method
    *
@@ -142,7 +93,7 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
    * @param smsText String
    * @return boolean
    */
-  private boolean sendMsg(String mobileNumber, String smsText,String countryCode) {
+  private boolean sendMsg(String mobileNumber, String smsText, String countryCode) {
     logger.debug("Msg91SmsProvider@Sending " + smsText + "  to mobileNumber " + mobileNumber);
     CloseableHttpClient httpClient = null;
     try {
@@ -175,10 +126,11 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
         smsList.add(sms);
 
         // create body
-        if(countryCode == null || countryCode.trim().length()==0) {
-        	countryCode = country;	
+        if (countryCode == null || countryCode.trim().length() == 0) {
+          countryCode = country;
         }
-        ProviderDetails providerDetails = new ProviderDetails(sender, smsRoute, countryCode, smsList);
+        ProviderDetails providerDetails =
+            new ProviderDetails(sender, smsRoute, countryCode, smsList);
 
         String providerDetailsString = JsonUtil.toJson(providerDetails);
 
@@ -234,7 +186,7 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
     }
     return mobileNumber;
   }
-  
+
   /**
    * This method will close the http resource.
    *
@@ -269,7 +221,7 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
   }
 
   /** @return */
-  private static boolean validateSettings() {
+  private boolean validateSettings() {
     if (!JsonUtil.isStringNullOREmpty(sender)
         && !JsonUtil.isStringNullOREmpty(smsRoute)
         && !JsonUtil.isStringNullOREmpty(authKey)
@@ -301,6 +253,7 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
             + "smsRoute - "
             + smsRoute
             + "\n");
+
     if (JsonUtil.isStringNullOREmpty(smsText)) {
       logger.debug("can't sent empty msg.");
       return false;
@@ -392,26 +345,222 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
     return phones;
   }
 
-@Override
-public boolean sendOtp(String phoneNumber, String message, String countryCode) {
-	try {
-		Unirest.post(baseUrl+"api/sendotp.php").headers(headers).body("").asString();
-	} catch (UnirestException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	return false;
-}
+  @Override
+  public boolean sendOtp(OTPRequest request) {
+    if (!isOtpRequestValid(request)) {
+      logger.info("Send opt request is not valid.");
+      return false;
+    }
+    boolean otpResponse = false;
+    try {
+      String data = createOtpReqData(request);
+      HttpResponse<String> response =
+          Unirest.get(OTP_BASE_URL + "sendotp.php?authkey=" + authKey + data).asString();
+      if (response != null) {
+        if (response.getStatus() == NotificationConstant.SUCCESS_CODE) {
+          MessageResponse messageResponse = convertMsg91Response(response.getBody());
+          if (NotificationConstant.SUCCESS.equalsIgnoreCase(messageResponse.getType())) {
+            logger.info("OTP sent succssfully with response data " + response.getBody());
+            otpResponse = true;
+          }
+          logger.info("OTP sent response data " + response.getBody());
+        } else {
+          logger.info(
+              "OTP failed to sent with status code and response data "
+                  + response.getStatus()
+                  + " "
+                  + response.getBody());
+        }
+      }
 
-@Override
-public boolean resendOtp(String phoneNumber, String countryCode) {
-	// TODO Auto-generated method stub
-	return false;
-}
+    } catch (UnirestException e) {
+      logger.error(
+          "Msg91SmsProviderImpl:sendOtp  exception occured during otp send :" + e.getMessage());
+      e.printStackTrace();
+    }
+    return otpResponse;
+  }
 
-@Override
-public boolean verifyOtp(String phoneNumber, String otp, String countryCode) {
-	// TODO Auto-generated method stub
-	return false;
-}
+  @Override
+  public boolean resendOtp(OTPRequest request) {
+    if (!isPhoneNumberValid(request.getPhone())) {
+      logger.info("resend otp request is not valid ");
+      return false;
+    }
+    boolean response = false;
+    try {
+      HttpResponse<String> resendResponse =
+          Unirest.get(
+                  OTP_BASE_URL
+                      + "retryotp.php?retrytype=text&authkey="
+                      + authKey
+                      + NotificationConstant.Ampersand
+                      + NotificationConstant.MOBILE
+                      + NotificationConstant.EQUAL
+                      + request.getCountryCode()
+                      + request.getPhone())
+              .header("content-type", "application/x-www-form-urlencoded")
+              .asString();
+
+      if (resendResponse != null) {
+        if (resendResponse.getStatus() == NotificationConstant.SUCCESS_CODE) {
+          logger.info("OTP resent response data " + resendResponse.getBody());
+          MessageResponse messageResponse = convertMsg91Response(resendResponse.getBody());
+          if (NotificationConstant.SUCCESS.equalsIgnoreCase(messageResponse.getType())) {
+            logger.info("OTP resent succssfully with response data " + resendResponse.getBody());
+            response = true;
+          }
+        } else {
+          logger.info(
+              "OTP resent failed with code and response data "
+                  + resendResponse.getStatus()
+                  + " -"
+                  + resendResponse.getBody());
+        }
+
+      } else {
+        logger.info("OTP resent failed .");
+      }
+
+    } catch (Exception e) {
+      logger.error(
+          "Msg91SmsProviderImpl:sendOtp  exception occured during otp resend :" + e.getMessage());
+    }
+    return response;
+  }
+
+  @Override
+  public boolean verifyOtp(OTPRequest request) {
+    if (!isOtpRequestValid(request)) {
+      logger.info("Verify Opt request is not valid.");
+      return false;
+    }
+    boolean response = false;
+    try {
+      HttpResponse<String> resendResponse =
+          Unirest.get(
+                  OTP_BASE_URL
+                      + "verifyRequestOTP.php?authkey="
+                      + authKey
+                      + NotificationConstant.Ampersand
+                      + NotificationConstant.MOBILE
+                      + NotificationConstant.EQUAL
+                      + request.getCountryCode()
+                      + request.getPhone()
+                      + NotificationConstant.Ampersand
+                      + NotificationConstant.OTP
+                      + NotificationConstant.EQUAL
+                      + request.getOtp())
+              .header("content-type", "application/x-www-form-urlencoded")
+              .asString();
+
+      if (resendResponse != null) {
+        if (resendResponse.getStatus() == NotificationConstant.SUCCESS_CODE) {
+          logger.info("OTP verify response data " + resendResponse.getBody());
+          MessageResponse messageResponse = convertMsg91Response(resendResponse.getBody());
+          if (NotificationConstant.SUCCESS.equalsIgnoreCase(messageResponse.getType())) {
+            logger.info("OTP verify succssfully with response data " + resendResponse.getBody());
+            response = true;
+          }
+        } else {
+          logger.info(
+              "OTP verification failed with code and response data "
+                  + resendResponse.getStatus()
+                  + " -"
+                  + resendResponse.getBody());
+        }
+
+      } else {
+        logger.info("OTP verification failed .");
+      }
+
+    } catch (Exception e) {
+      logger.error(
+          "Msg91SmsProviderImpl:sendOtp  exception occured during otp verification :"
+              + e.getMessage());
+    }
+    return response;
+  }
+
+  private String createOtpReqData(OTPRequest request) {
+    StringBuilder builder = new StringBuilder();
+    if (StringUtils.isNotBlank(request.getOtp())) {
+      builder.append(
+          NotificationConstant.Ampersand
+              + NotificationConstant.OTP
+              + NotificationConstant.EQUAL
+              + request.getOtp());
+    } else {
+      builder.append(
+          NotificationConstant.Ampersand
+              + NotificationConstant.SENDER
+              + NotificationConstant.EQUAL
+              + Util.readValue(NotificationConstant.SUNBIR_MSG_DEFAULT_SENDER));
+    }
+    try {
+      builder.append(
+          NotificationConstant.Ampersand
+              + NotificationConstant.MESSAGE
+              + NotificationConstant.EQUAL
+              + URLEncoder.encode(request.getMessage(), "UTF-8")
+              + NotificationConstant.Ampersand
+              + NotificationConstant.MOBILES
+              + NotificationConstant.EQUAL
+              + request.getCountryCode()
+              + request.getPhone());
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();
+    }
+    builder.append(
+        NotificationConstant.Ampersand
+            + NotificationConstant.OTP_LENGTH
+            + NotificationConstant.EQUAL
+            + request.getOtpLength()
+            + NotificationConstant.Ampersand
+            + NotificationConstant.OTP_EXPIRY
+            + NotificationConstant.EQUAL
+            + request.getExpiryTimeInMinute());
+    return builder.toString();
+  }
+
+  private MessageResponse convertMsg91Response(String response) {
+    MessageResponse messageResponse = new MessageResponse();
+    try {
+      messageResponse = mapper.readValue(response, MessageResponse.class);
+    } catch (JsonParseException e) {
+      logger.error("Error occured during response parsing:JsonParseException: " + e.getMessage());
+    } catch (JsonMappingException e) {
+      logger.error(
+          "Error occured during response parsing:JsonMappingException : " + e.getMessage());
+    } catch (IOException e) {
+      logger.error("Error occured during response parsing:IOException : " + e.getMessage());
+    }
+    return messageResponse;
+  }
+
+  private boolean isOtpRequestValid(OTPRequest request) {
+    boolean response = isPhoneNumberValid(request.getPhone());
+    if (response) {
+      response = isOtpLengthValid(request.getOtpLength());
+    }
+    return response;
+  }
+
+  private boolean isPhoneNumberValid(String phone) {
+    if (StringUtils.isBlank(phone)) {
+      return false;
+    } else {
+      if (phone.trim().length() > 12 || phone.trim().length() < 10) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean isOtpLengthValid(int otpLength) {
+    if (otpLength > 9 || otpLength < 4) {
+      return false;
+    }
+    return true;
+  }
 }
