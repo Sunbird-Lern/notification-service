@@ -184,21 +184,4 @@
             </plugin>
         </plugins>
     </build>
-    <!--<repositories>-->
-        <!--<repository>-->
-            <!--<id>scalaz-bintray</id>-->
-            <!--<name>Scalaz Bintray - releases</name>-->
-            <!--<url>https://dl.bintray.com/scalaz/releases/</url>-->
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-            <!--</snapshots>-->
-        <!--</repository>-->
-        <!--<repository>-->
-            <!--<id>jitpack.io</id>-->
-            <!--<snapshots>-->
-                <!--<enabled>false</enabled>-->
-            <!--</snapshots>-->
-            <!--<url>https://jitpack.io</url>-->
-        <!--</repository>-->
-    <!--</repositories>-->
 </project>
