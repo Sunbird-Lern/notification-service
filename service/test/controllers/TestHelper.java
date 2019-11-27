@@ -1,18 +1,18 @@
 package controllers;
 
-import static play.test.Helpers.fakeApplication;
-import static play.test.Helpers.route;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import play.Application;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.WithApplication;
+
+import static play.test.Helpers.*;
 
 /**
  * This a helper class for All the Controllers Test
@@ -23,7 +23,6 @@ public class TestHelper extends WithApplication {
 
   private ObjectMapper mapperObj = new ObjectMapper();
 
-
   /**
    * This method will perform a request call.
    *
@@ -33,18 +32,20 @@ public class TestHelper extends WithApplication {
    * @param headerMap
    * @return Result
    */
-  public Result performTest(String url, String method, Map requestMap, Map<String,String[]> headerMap) {
+  public Result performTest(
+          String url, String method, Map requestMap, Map<String, String[]> headerMap, Application app) {
     String data = mapToJson(requestMap);
-    Http.RequestBuilder req;
+    Http.RequestBuilder req = null;
     if (StringUtils.isNotBlank(data) && !requestMap.isEmpty()) {
       JsonNode json = Json.parse(data);
       req = new Http.RequestBuilder().bodyJson(json).uri(url).method(method);
     } else {
       req = new Http.RequestBuilder().uri(url).method(method);
     }
-    for(Map.Entry<String,String[]>map:headerMap.entrySet()){
-      req.header(map.getKey(),map.getValue()[0]);
-    }    Result result = route(fakeApplication(), req);
+    for (Map.Entry<String, String[]> map : headerMap.entrySet()) {
+      req.header(map.getKey(), map.getValue()[0]);
+    }
+    Result result = route(app, req);
     return result;
   }
 
@@ -85,8 +86,8 @@ public class TestHelper extends WithApplication {
     Map<String, String[]> headerMap = new HashMap<>();
     headerMap.put("x-authenticated-user-token", new String[] {"Some authenticated user ID"});
     headerMap.put("Authorization", new String[] {"Bearer ...."});
-      headerMap.put("Accept", new String[] {"application/json"});
-      headerMap.put("Content-Type", new String[] {"application/json"});
+    headerMap.put("Accept", new String[] {"application/json"});
+    headerMap.put("Content-Type", new String[] {"application/json"});
     return headerMap;
   }
 

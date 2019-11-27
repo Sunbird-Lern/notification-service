@@ -2,26 +2,25 @@ package org.sunbird.pojo;
 
 public class OTP {
 
-     private int length;
+  private int length;
 
-     private String expiry;
+  private int expiryInMinute;
 
-    public OTP() {
-    }
+  public OTP() {}
 
-    public int getLength() {
-        return length;
-    }
+  public int getLength() {
+    return length;
+  }
 
-    public void setLength(int length) {
-        this.length = length;
-    }
+  public void setLength(int length) {
+    this.length = length;
+  }
 
-    public String getExpiry() {
-        return expiry;
-    }
+  public int getExpiryInMinute() {
+    return expiryInMinute;
+  }
 
-    public void setExpiry(String expiry) {
-        this.expiry = expiry;
-    }
+  public void setExpiryInMinute(int expiryInMinute) {
+    this.expiryInMinute = expiryInMinute;
+  }
 }
