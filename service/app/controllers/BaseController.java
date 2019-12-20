@@ -109,9 +109,17 @@ public class BaseController extends Controller {
       }
       return new RequestHandler().handleRequest(request, httpExecutionContext, operation, req);
     } catch (BaseException ex) {
+<<<<<<< HEAD
       return RequestHandler.handleFailureResponse(ex, httpExecutionContext, req);
     } catch (Exception ex) {
       return RequestHandler.handleFailureResponse(ex, httpExecutionContext, req);
+=======
+      return (CompletionStage<Result>)
+              RequestHandler.handleFailureResponse(ex, httpExecutionContext, req);
+    } catch (Exception ex) {
+      return (CompletionStage<Result>)
+              RequestHandler.handleFailureResponse(ex, httpExecutionContext, req);
+>>>>>>> upstream/release-1.1.0
     }
   }
 
@@ -127,9 +135,17 @@ public class BaseController extends Controller {
     try {
       return new RequestHandler().handleRequest(req, httpExecutionContext, operation, httpReq);
     } catch (BaseException ex) {
+<<<<<<< HEAD
       return RequestHandler.handleFailureResponse(ex, httpExecutionContext, httpReq);
     } catch (Exception ex) {
       return RequestHandler.handleFailureResponse(ex, httpExecutionContext, httpReq);
+=======
+      return (CompletionStage<Result>)
+              RequestHandler.handleFailureResponse(ex, httpExecutionContext, httpReq);
+    } catch (Exception ex) {
+      return (CompletionStage<Result>)
+              RequestHandler.handleFailureResponse(ex, httpExecutionContext, httpReq);
+>>>>>>> upstream/release-1.1.0
     }
   }
 
@@ -149,8 +165,16 @@ public class BaseController extends Controller {
       // ProjectLogger.log(String.format("%s:%s:exception occurred in mapping
       // request", this.getClass().getSimpleName(), "handleLogRequest"),
       // LoggerEnum.ERROR.name());
+<<<<<<< HEAD
       return RequestHandler.handleFailureResponse(ex, httpExecutionContext, null);
     }
     return RequestHandler.handleSuccessResponse(response, httpExecutionContext, null);
+=======
+      return (CompletionStage<Result>)
+      RequestHandler.handleFailureResponse(ex, httpExecutionContext, null);
+    }
+    return (CompletionStage<Result>)
+            RequestHandler.handleSuccessResponse(response, httpExecutionContext, null);
+>>>>>>> upstream/release-1.1.0
   }
 }

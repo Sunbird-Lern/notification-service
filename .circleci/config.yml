@@ -21,4 +21,8 @@ workflows:
   version: 2.1
   workflow:
     jobs:
+<<<<<<< HEAD
       - build
+=======
+      - build
+>>>>>>> upstream/release-1.1.0
