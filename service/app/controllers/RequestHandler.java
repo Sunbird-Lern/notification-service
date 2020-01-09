@@ -43,7 +43,6 @@ public class RequestHandler extends BaseController {
             play.mvc.Http.Request req)
             throws Exception {
         Object obj;
-        CompletableFuture<String> cf = new CompletableFuture<>();
         request.setOperation(operation);
         Function<Object, Result> fn =
                 new Function<Object, Result>() {
