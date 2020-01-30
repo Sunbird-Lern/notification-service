@@ -94,7 +94,7 @@ public class BaseController extends Controller {
    * @return
    */
   public CompletionStage<Result> handleRequest(
-      play.mvc.Http.Request req, RequestValidatorFunction validatorFunction, String operation) {
+          play.mvc.Http.Request req, RequestValidatorFunction validatorFunction, String operation) {
     try {
       Request request = new Request();
       List<String> list = req.getHeaders().toMap().get(NOTIFICATION_DELIVERY_MODE);
@@ -109,9 +109,11 @@ public class BaseController extends Controller {
       }
       return new RequestHandler().handleRequest(request, httpExecutionContext, operation, req);
     } catch (BaseException ex) {
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, req);
+      return (CompletionStage<Result>)
+              RequestHandler.handleFailureResponse(ex, httpExecutionContext, req);
     } catch (Exception ex) {
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, req);
+      return (CompletionStage<Result>)
+              RequestHandler.handleFailureResponse(ex, httpExecutionContext, req);
     }
   }
 
@@ -123,13 +125,15 @@ public class BaseController extends Controller {
    * @return
    */
   public CompletionStage<Result> handleRequest(
-      Request req, String operation, play.mvc.Http.Request httpReq) {
+          Request req, String operation, play.mvc.Http.Request httpReq) {
     try {
       return new RequestHandler().handleRequest(req, httpExecutionContext, operation, httpReq);
     } catch (BaseException ex) {
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, httpReq);
+      return (CompletionStage<Result>)
+              RequestHandler.handleFailureResponse(ex, httpExecutionContext, httpReq);
     } catch (Exception ex) {
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, httpReq);
+      return (CompletionStage<Result>)
+              RequestHandler.handleFailureResponse(ex, httpExecutionContext, httpReq);
     }
   }
 
@@ -149,8 +153,10 @@ public class BaseController extends Controller {
       // ProjectLogger.log(String.format("%s:%s:exception occurred in mapping
       // request", this.getClass().getSimpleName(), "handleLogRequest"),
       // LoggerEnum.ERROR.name());
-      return RequestHandler.handleFailureResponse(ex, httpExecutionContext, null);
+      return (CompletionStage<Result>)
+              RequestHandler.handleFailureResponse(ex, httpExecutionContext, null);
     }
-    return RequestHandler.handleSuccessResponse(response, httpExecutionContext, null);
+    return (CompletionStage<Result>)
+            RequestHandler.handleSuccessResponse(response, httpExecutionContext, null);
   }
 }
