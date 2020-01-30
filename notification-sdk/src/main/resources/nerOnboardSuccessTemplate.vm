@@ -105,19 +105,25 @@
                     </tbody>
 
                 </table>
-                <table class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: aliceblue!important; border-radius: 3px; color: black;">
+                <table class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: white!important; border-radius: 3px; color: black;">
                     <!-- START MAIN CONTENT AREA -->
                     <tr>
                         <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
                             <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
                                 <tr>
                                 <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
-                                    <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">$employeeName from $orgName has been onboarded to the EkStep partner ecosystem.
-                                        This is for your information and actions.
+                                    #if ($empName)
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Dear $empName</p>
+                                    #end
+                                    <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Welcome to EkStep. You're successfully onboarded to the EkStep partner ecosystem.
+
+                                    #if ($orgName)
+                                        Your parent organization is $orgName per our records.
+                                    #end
                                     </p>
 
                                     <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
-                                        You may access EkStep Partner Registry by clicking <a href=$eprURL>here.</a>
+                                        You may login to NIIT Registry by clicking <a href=$niitURL>here.</a>
                                     </p>
 
                                     <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">

@@ -94,52 +94,52 @@
                 <!-- START CENTERED WHITE CONTAINER -->
                 <span class="preheader" style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;"></span>
                 <table class="main"
-                       style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background:#2c3e50 !important; border-radius: 3px; color: black;">
+                       style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background:white !important; border-radius: 3px; color: black;">
                     <tbody>
                     <tr>
                         <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
                             <!-- ADD IMAGE URL AT TOP RIGHT ALIGNED -->
-                            <img src="https://ekstep.org/img/logo.png" alt="logo" align="right" width="180" height="50">
+                            <img src="https://www.niit.com/india/themes/custom/nexus/assets/images/NIIT_logomobile.png" alt="logo" align="right" width="110" height="45">
                         </td>
                     </tr>
                     </tbody>
 
                 </table>
-                <table class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: aliceblue!important; border-radius: 3px; color: black;">
+                <table class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: white!important; border-radius: 3px; color: black;">
                     <!-- START MAIN CONTENT AREA -->
                     <tr>
                         <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
                             <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
                                 <tr>
-                                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
-                                    <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">$employeeName from $orgName has been onboarded to the EkStep partner ecosystem.
-                                        This is for your information and actions.
-                                    </p>
+                                    <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">$employeeName has been onboarded to the NIIT ecosystem.
+                                            This is for your information and actions.
+                                        </p>
 
-                                    <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
-                                        You may access EkStep Partner Registry by clicking <a href=$eprURL>here.</a>
-                                    </p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">
+                                            You may access NIIT Registry by clicking <a href="$niitURL">here.</a>
+                                        </p>
 
-                                    <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
-                                        <tbody>
-                                        <tr>
-                                            <td align="left" style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding-bottom: 15px;">
-                                                <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
-                                                    <tbody>
-                                                    <tr>
-                                                    </tr>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                    <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0;">Regards</p>
-                                    <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0;">EkStep Admin
+                                        <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
+                                            <tbody>
+                                            <tr>
+                                                <td align="left" style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding-bottom: 15px;">
+                                                    <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
+                                                        <tbody>
+                                                        <tr>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0;">Regards</p>
+                                        <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 0;">NIIT Admin
 
-                                    </p>
-                                    <p> Note: This is an automatic alert. Do not reply. Replies to this mail box will NOT be monitored. </p>
-                                </td>
+                                        </p>
+                                        <p> Note: This is an automatic alert. Do not reply. Replies to this mail box will NOT be monitored. </p>
+                                    </td>
                                 </tr>
                             </table>
                         </td>
