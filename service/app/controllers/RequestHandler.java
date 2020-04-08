@@ -10,8 +10,10 @@ import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 import org.sunbird.BaseException;
 import org.sunbird.message.IResponseMessage;
+import org.sunbird.message.ResponseCode;
 import org.sunbird.request.Request;
 import org.sunbird.response.Response;
+import org.sunbird.response.ResponseParams;
 import play.libs.Json;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Result;
@@ -42,16 +44,9 @@ public class RequestHandler extends BaseController {
             String operation,
             play.mvc.Http.Request req)
             throws Exception {
-        Object obj;
         request.setOperation(operation);
         Function<Object, Result> fn =
-                new Function<Object, Result>() {
-
-                    @Override
-                    public Result apply(Object object) {
-                        return handleResponse(object, httpExecutionContext, req);
-                    }
-                };
+                object -> handleResponse(object, httpExecutionContext, req);
 
         Timeout t = new Timeout(Long.valueOf(request.getTimeout()), TimeUnit.SECONDS);
         Future<Object> future = Patterns.ask(getActorRef(operation), request, t);
@@ -65,13 +60,13 @@ public class RequestHandler extends BaseController {
      * @return
      */
     public static Result handleFailureResponse(
-            Object exception, HttpExecutionContext httpExecutionContext, play.mvc.Http.Request req) {
+            Object exception, HttpExecutionContext httpExecutionContext ,play.mvc.Http.Request req) {
 
         Response response = new Response();
         CompletableFuture<JsonNode> future = new CompletableFuture<>();
         if (exception instanceof BaseException) {
             BaseException ex = (BaseException) exception;
-            response.setResponseCode(ex.getCode());
+            response.setResponseCode(ResponseCode.getResponseCode(ex.getResponseCode()));
             response.put(JsonKey.MESSAGE, ex.getMessage());
             String apiId = getApiId(req.path());
             response.setId(apiId);
@@ -79,17 +74,38 @@ public class RequestHandler extends BaseController {
             response.setTs(System.currentTimeMillis() + "");
             future.complete(Json.toJson(response));
             if (ex.getResponseCode() == Results.badRequest().status()) {
-                return Results.badRequest(Json.toJson(response));
+                return  Results.badRequest(Json.toJson(response));
+            } else if (ex.getResponseCode() == 503) {
+                return Results.status(
+                        ex.getResponseCode(),
+                        Json.toJson(createResponseOnException(ex)));
             } else {
                 return Results.internalServerError();
             }
         } else {
-            response.setResponseCode(IResponseMessage.SERVER_ERROR);
+            response.setResponseCode(ResponseCode.SERVER_ERROR);
             response.put(
-                    JsonKey.MESSAGE, localizerObject.getMessage(IResponseMessage.INTERNAL_ERROR, null));
+                    JsonKey.MESSAGE, locale.getMessage(IResponseMessage.INTERNAL_ERROR, null));
             future.complete(Json.toJson(response));
             return Results.internalServerError(Json.toJson(response));
         }
+    }
+
+    public static Response createResponseOnException(BaseException exception) {
+        Response response = new Response();
+        response.setResponseCode(ResponseCode.getResponseCode(exception.getResponseCode()));
+        response.setParams(createResponseParamObj(response.getResponseCode(), exception.getMessage()));
+        return response;
+    }
+
+    public static ResponseParams createResponseParamObj(ResponseCode code, String message) {
+        ResponseParams params = new ResponseParams();
+        if (code.getCode() != 200) {
+            params.setErr(code.name());
+            params.setErrmsg(StringUtils.isNotBlank(message) ? message : code.name());
+        }
+        params.setStatus(ResponseCode.getResponseCode(code.getCode()).name());
+        return params;
     }
 
     /**
