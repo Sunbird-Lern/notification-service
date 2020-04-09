@@ -16,7 +16,6 @@ import org.sunbird.message.Localizer;
 import org.sunbird.request.Request;
 import org.sunbird.response.Response;
 import scala.compat.java8.FutureConverters;
-import scala.concurrent.Await;
 import scala.concurrent.Future;
 
 import java.util.Map;
@@ -43,7 +42,6 @@ public class BaseControllerTest {
 	}
 
 	public void baseControllerTestsetUp() {
-
 		application = PowerMockito.mock(org.sunbird.Application.class);
 		PowerMockito.mockStatic(org.sunbird.Application.class);
 		PowerMockito.when(org.sunbird.Application.getInstance()).thenReturn(application);
