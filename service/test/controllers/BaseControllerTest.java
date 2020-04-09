@@ -16,7 +16,6 @@ import org.sunbird.message.Localizer;
 import org.sunbird.request.Request;
 import org.sunbird.response.Response;
 import scala.compat.java8.FutureConverters;
-import scala.concurrent.Await;
 import scala.concurrent.Future;
 
 import java.util.Map;
@@ -78,4 +77,5 @@ public class BaseControllerTest {
 		Long val = new BaseController().getTimeStamp();
 		Assert.assertTrue(val<=System.currentTimeMillis());
 	}
+
 }
