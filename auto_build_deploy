@@ -1,3 +1,4 @@
+@Library('deploy-conf') _ 
 node('build-slave') {
     try {
         String ANSI_GREEN = "\u001B[32m"
@@ -27,7 +28,7 @@ node('build-slave') {
             artifact_version = tag_name + "_" + commit_hash
             echo "build_tag: " + build_tag
 
-            stage('Build') {
+     //       stage Build
 		currentDir = sh(returnStdout: true, script: 'pwd').trim()
                 env.NODE_ENV = "build"
                 print "Environment will be : ${env.NODE_ENV}"
@@ -35,8 +36,8 @@ node('build-slave') {
 		sh "cd $currentDir"
 		// Build the dependencies for sunbird user-org service
                 sh 'mvn clean install'
-            }
-            stage('Package') {
+            
+   //         stage Package
 		// Create a deployment package
                 dir('service') {
                     sh 'mvn play2:dist'
@@ -44,11 +45,11 @@ node('build-slave') {
                 }
                 sh('chmod 777 ./build.sh')
                 sh("./build.sh ${build_tag} ${env.NODE_NAME} ${hub_org}")
-            }
-            stage('ArchiveArtifacts') {
+            
+   //         stage ArchiveArtifacts
                 archiveArtifacts "metadata.json"
                 currentBuild.description = "${build_tag}"
-            }
+            
         }
         currentBuild.result = "SUCCESS"    
         slack_notify(currentBuild.result, tag_name)
