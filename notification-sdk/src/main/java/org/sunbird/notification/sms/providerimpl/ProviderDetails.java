@@ -12,13 +12,15 @@ public class ProviderDetails implements Serializable {
   private String sender;
   private String route;
   private String country;
+  private int unicode;
   private List<Sms> sms;
 
-  public ProviderDetails(String sender, String route, String country, List<Sms> sms) {
+  public ProviderDetails(String sender, String route, String country, int unicode, List<Sms> sms) {
     this.sender = sender;
     this.route = route;
     this.country = country;
     this.sms = sms;
+    this.unicode = unicode;
   }
 
   /** @return the serialversionuid */
@@ -44,5 +46,10 @@ public class ProviderDetails implements Serializable {
   /** @return the sms */
   public List<Sms> getSms() {
     return sms;
+  }
+
+  /** @return the unicode */
+  public int getUnicode() {
+    return unicode;
   }
 }
