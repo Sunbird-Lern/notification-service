@@ -35,9 +35,9 @@ public class BaseController extends Controller {
   Logger logger = LogManager.getLogger(BaseController.class);
   public static final String NOTIFICATION_DELIVERY_MODE = "notification-delivery-mode";
   /** We injected HttpExecutionContext to decrease the response time of APIs. */
-  @Inject private HttpExecutionContext httpExecutionContext;
+  @Inject public HttpExecutionContext httpExecutionContext;
 
-  protected static Localizer localizerObject = Localizer.getInstance();
+  protected static Localizer locale = Localizer.getInstance();
   public static final String RESPONSE = "Response";
   public static final String SUCCESS = "Success";
 

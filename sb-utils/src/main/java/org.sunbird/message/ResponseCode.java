@@ -23,4 +23,20 @@ public enum ResponseCode {
     return this.code;
   }
 
+  public static ResponseCode getResponseCode(int code) {
+    if (code > 0) {
+      try {
+        ResponseCode[] arr = ResponseCode.values();
+        if (null != arr) {
+          for (ResponseCode rc : arr) {
+            if (rc.getCode() == code) return rc;
+          }
+        }
+      } catch (Exception e) {
+        return ResponseCode.SERVER_ERROR;
+      }
+    }
+    return ResponseCode.SERVER_ERROR;
+  }
+
 }
