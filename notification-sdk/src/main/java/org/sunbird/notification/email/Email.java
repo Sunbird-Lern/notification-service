@@ -5,13 +5,8 @@ import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.mail.BodyPart;
-import javax.mail.Message;
+import javax.mail.*;
 import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -39,13 +34,37 @@ public class Email {
   private String password;
   private String fromEmail;
   private Session session;
+  private static Email instance;
+  private Transport transport;
 
-  public Email() {
+  private Email() {
     init();
     initProps();
   }
 
-  public Email(EmailConfig config) {
+  public static Email getInstance() {
+    if (null == instance) {
+      synchronized (Email.class){
+        if (null == instance) {
+          instance = new Email();
+        }
+      }
+    }
+    return instance;
+  }
+
+  public static Email getInstance(EmailConfig config) {
+    if (null == instance) {
+      synchronized (Email.class){
+        if (null == instance) {
+          instance = new Email(config);
+        }
+      }
+    }
+    return instance;
+  }
+
+  private Email(EmailConfig config) {
     this.fromEmail =
         StringUtils.isNotBlank(config.getFromEmail())
             ? config.getFromEmail()
@@ -100,6 +119,22 @@ public class Email {
       session = Session.getInstance(props, new GMailAuthenticator(userName, password));
     }
     return session;
+  }
+
+  private Transport getTransportClient() throws MessagingException {
+    if (null == transport) {
+      transport = getSession().getTransport("smtp");
+      transport.connect(host, userName, password);
+    }
+    return transport;
+  }
+
+  private Transport getTransportClient(Session session) throws MessagingException {
+    if (null == transport) {
+      transport = session.getTransport("smtp");
+      transport.connect(host, userName, password);
+    }
+    return transport;
   }
 
   private void initProps() {
@@ -243,13 +278,15 @@ public class Email {
     Transport transport = null;
     boolean response = true;
     try {
-      transport = session.getTransport("smtp");
-      transport.connect(host, userName, password);
+     // transport = session.getTransport("smtp");
+     // transport.connect(host, userName, password);
+      transport = getTransportClient(session);
       transport.sendMessage(message, message.getAllRecipients());
     } catch (Exception e) {
       logger.error("SendMail:sendMail: Exception occurred with message = " + e.getMessage(), e);
       response = false;
-    } finally {
+    }
+    /*finally {
       if (transport != null) {
         try {
           transport.close();
@@ -257,7 +294,7 @@ public class Email {
           logger.error(e.toString(), e);
         }
       }
-    }
+    }*/
     return response;
   }
 

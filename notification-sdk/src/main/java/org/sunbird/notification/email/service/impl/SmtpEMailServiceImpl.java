@@ -15,11 +15,11 @@ public class SmtpEMailServiceImpl implements IEmailService {
   private Email email = null;
 
   public SmtpEMailServiceImpl() {
-    email = new Email();
+    email = Email.getInstance();
   }
 
   public SmtpEMailServiceImpl(EmailConfig config) {
-    email = new Email(config);
+    email = Email.getInstance(config);
   }
 
   @Override
