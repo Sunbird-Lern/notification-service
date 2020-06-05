@@ -44,7 +44,6 @@ public class NotificationRequestMapper {
     try {
       NotificationRequest notificationRequest =
           mapper.convertValue(data, NotificationRequest.class);
-      logger.info("Notification request , " + notificationRequest.toString());
       return notificationRequest;
     } catch (Exception e) {
       throw new BaseException(

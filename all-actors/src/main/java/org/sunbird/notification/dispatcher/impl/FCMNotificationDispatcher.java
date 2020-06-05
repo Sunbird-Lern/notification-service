@@ -15,6 +15,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.sunbird.notification.dispatcher.INotificationDispatcher;
+import org.sunbird.notification.email.Email;
 import org.sunbird.notification.fcm.provider.IFCMNotificationService;
 import org.sunbird.notification.fcm.provider.NotificationFactory;
 import org.sunbird.notification.utils.FCMResponse;
@@ -29,13 +30,27 @@ import org.sunbird.util.kafka.KafkaClient;
 public class FCMNotificationDispatcher implements INotificationDispatcher {
   private static Logger logger = LogManager.getLogger(FCMNotificationDispatcher.class);
   private IFCMNotificationService service =
-      NotificationFactory.getInstance(NotificationFactory.instanceType.httpClinet.name());
-  private static final String RAW_DATA = "rawData";
-  private static ObjectMapper mapper = new ObjectMapper();
-  String topic = null;
-  String BOOTSTRAP_SERVERS = null;
-  Producer<Long, String> producer = null;
-  private static final int BATCH_SIZE = 100;
+     NotificationFactory.getInstance(NotificationFactory.instanceType.httpClinet.name());
+  private ObjectMapper mapper = new ObjectMapper();
+  private String topic = null;
+  private Producer<Long, String> producer = null;
+  private final int BATCH_SIZE = 100;
+  private static FCMNotificationDispatcher instance;
+
+  public static FCMNotificationDispatcher getInstance() {
+    if (null == instance) {
+      synchronized (FCMNotificationDispatcher.class) {
+        if (null == instance) {
+          instance = new FCMNotificationDispatcher();
+        }
+      }
+    }
+    return instance;
+  }
+
+  private FCMNotificationDispatcher() {
+    initKafkaClient();
+  }
 
   @Override
   /**
@@ -57,13 +72,14 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
     if (notification.getIds() == null || notification.getIds().size() == 0) {
       config = notification.getConfig();
       if (StringUtils.isBlank(config.getTopic())) {
-        throw new RuntimeException("neither device registration id nore topic found in request");
+        throw new RuntimeException("neither device registration id nor topic found in request");
       }
     }
     FCMResponse response = null;
     try {
       String notificationData = mapper.writeValueAsString(notification.getRawData());
       Map<String, String> map = new HashMap<String, String>();
+      String RAW_DATA = "rawData";
       map.put(RAW_DATA, notificationData);
       if (config != null && StringUtils.isNotBlank(config.getTopic())) {
         response = service.sendTopicNotification(config.getTopic(), map, isDryRun);
@@ -95,35 +111,34 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
   private void initKafkaClient() {
     if (producer == null) {
       Config config = ConfigUtil.getConfig();
-      BOOTSTRAP_SERVERS = config.getString(Constant.SUNBIRD_NOTIFICATION_KAFKA_SERVICE_CONFIG);
+      String BOOTSTRAP_SERVERS = config.getString(Constant.SUNBIRD_NOTIFICATION_KAFKA_SERVICE_CONFIG);
       topic = config.getString(Constant.SUNBIRD_NOTIFICATION_KAFKA_TOPIC);
 
       logger.info(
-          "KafkaTelemetryDispatcherActor:initKafkaClient: Bootstrap servers = "
+          "FCMNotificationDispatcher:initKafkaClient: Bootstrap servers = "
               + BOOTSTRAP_SERVERS);
-      logger.info("UserMergeActor:initKafkaClient: topic = " + topic);
+      logger.info("FCMNotificationDispatcher:initKafkaClient: topic = " + topic);
       try {
         producer =
             KafkaClient.createProducer(
                 BOOTSTRAP_SERVERS, Constant.KAFKA_CLIENT_NOTIFICATION_PRODUCER);
       } catch (Exception e) {
-        logger.error("UserMergeActor:initKafkaClient: An exception occurred.", e);
+        logger.error("FCMNotificationDispatcher:initKafkaClient: An exception occurred.", e);
       }
     }
   }
 
   private FCMResponse dispatchAsync(NotificationRequest notification) {
-    initKafkaClient();
     FCMResponse response = null;
     if (CollectionUtils.isNotEmpty(notification.getIds())) {
       if (notification.getIds().size() <= BATCH_SIZE) {
         String message = getTopicMessage(notification);
         response = writeDataToKafka(message, topic);
-        logger.info("device id size is less than Batch size " + BATCH_SIZE);
+        logger.info("device id size is less than Batch size");
       } else {
         List<String> deviceIds = notification.getIds();
         logger.info(
-            "device id size is less more than Batch size " + BATCH_SIZE + " - " + deviceIds.size());
+            "device id size is greater than Batch size ");
         List<String> tmp = new ArrayList<String>();
         for (int i = 0; i < deviceIds.size(); i++) {
           tmp.add(deviceIds.get(i));
@@ -154,7 +169,7 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
     } else {
       response.setError(Constant.ERROR_DURING_WRITE_DATA);
       response.setFailure(Constant.FAILURE_CODE);
-      logger.info("UserMergeActor:mergeCertCourseDetails: Kafka producer is not initialised.");
+      logger.info("FCMNotificationDispatcher:writeDataToKafka: Kafka producer is not initialised.");
     }
     return response;
   }

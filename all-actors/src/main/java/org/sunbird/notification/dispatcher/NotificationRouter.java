@@ -40,7 +40,6 @@ import org.sunbird.response.Response;
 import org.sunbird.util.Constant;
 
 /**
- * mojut6de4rnj,
  *
  * @author manzarul
  */
@@ -48,7 +47,7 @@ public class NotificationRouter {
   private static Logger logger = LogManager.getLogger(NotificationRouter.class);
   private static final String TEMPLATE_SUFFIX = ".vm";
   private SyncMessageDispatcher syDispatcher = new SyncMessageDispatcher();
-
+  private ObjectMapper mapper = new ObjectMapper();
   enum DeliveryMode {
     phone,
     email,
@@ -62,14 +61,12 @@ public class NotificationRouter {
     call;
   }
 
-  Msg91SmsProviderFactory mesg91ObjectFactory = new Msg91SmsProviderFactory();
   private ISmsProvider smsProvider = null;
-  INotificationDispatcher FcmDispatcher = new FCMNotificationDispatcher();
-  ObjectMapper mapper = new ObjectMapper();
 
   private ISmsProvider getSMSInstance() {
     if (smsProvider == null) {
       SMSConfig config = new SMSConfig(System.getenv(NotificationConstant.SUNBIRD_MSG_91_AUTH), "");
+      Msg91SmsProviderFactory mesg91ObjectFactory = new Msg91SmsProviderFactory();
       smsProvider = mesg91ObjectFactory.create(config);
     }
     return smsProvider;
@@ -88,7 +85,7 @@ public class NotificationRouter {
                 || notification.getDeliveryType().equalsIgnoreCase(DeliveryType.otp.name()))) {
           response = handleMessageAndOTP(notification, isDryRun, responseMap, isSync);
         } else if (notification.getMode().equalsIgnoreCase(DeliveryMode.device.name())) {
-          response = writeDataToKafa(notification, response, isDryRun, responseMap, isSync);
+          response = writeDataToKafka(notification, response, isDryRun, responseMap, isSync);
         } else if (notification.getMode().equalsIgnoreCase(DeliveryMode.email.name())
             && notification.getDeliveryType().equalsIgnoreCase(DeliveryType.message.name())) {
           String message = null;
@@ -106,7 +103,7 @@ public class NotificationRouter {
           if (isSync) {
             response = syDispatcher.syncDispatch(notification, isDryRun);
           } else {
-            response = writeDataToKafa(notification, response, isDryRun, responseMap, isSync);
+            response = writeDataToKafka(notification, response, isDryRun, responseMap, isSync);
           }
         }
       }
@@ -156,7 +153,7 @@ public class NotificationRouter {
         response = syDispatcher.syncDispatch(notification, isDryRun);
 
       } else {
-        response = writeDataToKafa(notification, response, isDryRun, responseMap, isSync);
+        response = writeDataToKafka(notification, response, isDryRun, responseMap, isSync);
       }
     }
     return response;
@@ -213,14 +210,14 @@ public class NotificationRouter {
     return response;
   }
 
-  private Response writeDataToKafa(
+  private Response writeDataToKafka(
       NotificationRequest notification,
       Response response,
       boolean isDryRun,
       Map<String, Object> responseMap,
       boolean isSync) {
-    FCMResponse responses = FcmDispatcher.dispatch(notification, isDryRun, isSync);
-    logger.info("response from FCM " + responses);
+    FCMNotificationDispatcher.getInstance().dispatch(notification, isDryRun, isSync);
+    logger.info("Got response from FCM ");
     responseMap.put(Constant.RESPONSE, NotificationConstant.SUCCESS);
     response.putAll(responseMap);
     return response;

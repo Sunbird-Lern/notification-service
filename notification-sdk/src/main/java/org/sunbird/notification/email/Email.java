@@ -1,17 +1,5 @@
 package org.sunbird.notification.email;
 
-import java.util.List;
-import java.util.Properties;
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.*;
-import javax.mail.Message.RecipientType;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +7,15 @@ import org.apache.logging.log4j.Logger;
 import org.sunbird.notification.beans.Constants;
 import org.sunbird.notification.beans.EmailConfig;
 import org.sunbird.notification.utils.Util;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.*;
+import javax.mail.Message.RecipientType;
+import javax.mail.internet.*;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * this api is used to sending mail.
@@ -239,7 +236,6 @@ public class Email {
     Multipart multipart = new MimeMultipart();
     multipart.addBodyPart(messageBodyPart);
     DataSource source = new FileDataSource(filePath);
-    messageBodyPart = null;
     messageBodyPart = new MimeBodyPart();
     messageBodyPart.setDataHandler(new DataHandler(source));
     messageBodyPart.setFileName(filePath);
@@ -278,23 +274,12 @@ public class Email {
     Transport transport = null;
     boolean response = true;
     try {
-      // transport = session.getTransport("smtp");
-      // transport.connect(host, userName, password);
       transport = getTransportClient(session);
       transport.sendMessage(message, message.getAllRecipients());
     } catch (Exception e) {
       logger.error("SendMail:sendMail: Exception occurred with message = " + e.getMessage(), e);
       response = false;
     }
-    /*finally {
-      if (transport != null) {
-        try {
-          transport.close();
-        } catch (MessagingException e) {
-          logger.error(e.toString(), e);
-        }
-      }
-    }*/
     return response;
   }
 
