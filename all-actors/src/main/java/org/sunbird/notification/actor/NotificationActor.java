@@ -31,7 +31,8 @@ import org.sunbird.util.validator.OtpRequestValidator;
 /** @author manzarul */
 @ActorConfig(
   tasks = {JsonKey.NOTIFICATION, JsonKey.VERIFY_OTP},
-  asyncTasks = {}
+  asyncTasks = {},
+  dispatcher= "notification-dispatcher"
 )
 public class NotificationActor extends BaseActor {
   Logger logger = LogManager.getLogger(NotificationActor.class);
