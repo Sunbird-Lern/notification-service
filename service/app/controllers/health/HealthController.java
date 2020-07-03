@@ -14,7 +14,6 @@ import org.sunbird.message.ResponseCode;
 import org.sunbird.response.Response;
 import play.libs.Json;
 import play.mvc.Result;
-import play.mvc.Results;
 import utils.module.SignalHandler;
 
 import javax.inject.Inject;

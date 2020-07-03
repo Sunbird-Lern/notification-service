@@ -30,9 +30,7 @@ public class Email {
   private String userName;
   private String password;
   private String fromEmail;
-  private Session session;
   private static Email instance;
-  private Transport transport;
 
   private Email() {
     init();
@@ -112,26 +110,19 @@ public class Email {
   }
 
   private Session getSession() {
-    if (session == null) {
-      session = Session.getInstance(props, new GMailAuthenticator(userName, password));
-    }
-    return session;
+      return Session.getInstance(props, new GMailAuthenticator(userName, password));
   }
 
   private Transport getTransportClient() throws MessagingException {
-    if (null == transport) {
-      transport = getSession().getTransport("smtp");
-      transport.connect(host, userName, password);
-    }
+    Transport transport = getSession().getTransport("smtp");
+    transport.connect(host, userName, password);
     return transport;
   }
 
   private Transport getTransportClient(Session session) throws MessagingException {
-    if (null == transport) {
-      transport = session.getTransport("smtp");
+      Transport transport = session.getTransport("smtp");
       transport.connect(host, userName, password);
-    }
-    return transport;
+      return transport;
   }
 
   private void initProps() {
@@ -168,8 +159,8 @@ public class Email {
   public boolean sendMail(
     List<String> emailList, String subject, String body, List<String> ccEmailList) {
     boolean response = true;
+    Session session = getSession();
     try {
-      Session session = getSession();
       MimeMessage message = new MimeMessage(session);
       addRecipient(message, Message.RecipientType.TO, emailList);
       addRecipient(message, Message.RecipientType.CC, ccEmailList);
@@ -279,6 +270,12 @@ public class Email {
     } catch (Exception e) {
       logger.error("SendMail:sendMail: Exception occurred with message = " + e.getMessage(), e);
       response = false;
+    } finally {
+      try {
+        transport.close();
+      } catch (MessagingException e) {
+        logger.error("Exception occurred while closing client.",e);
+      }
     }
     return response;
   }
