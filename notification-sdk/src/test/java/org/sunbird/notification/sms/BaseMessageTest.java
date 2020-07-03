@@ -37,7 +37,7 @@ import org.sunbird.notification.utils.SMSFactory;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.management.*", "javax.net.ssl.*", "javax.security.*"})
-@PrepareForTest({HttpClients.class, PropertiesCache.class, Unirest.class, GetRequest.class, SMSFactory.class, Msg91SmsProviderFactory.class, Msg91SmsProviderImpl.class})
+@PrepareForTest({HttpClients.class, PropertiesCache.class, Unirest.class, GetRequest.class, SMSFactory.class, Msg91SmsProviderFactory.class, Msg91SmsProviderImpl.class, SMSConfig.class})
 public abstract class BaseMessageTest {
 
   @BeforeClass
@@ -87,9 +87,5 @@ public abstract class BaseMessageTest {
     PowerMockito.when(SMSFactory.getInstance(Mockito.anyString(), Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
   }
 
- /* @Before
-  public void initMock() {
-    Msg91SmsProviderImpl msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
-    PowerMockito.when(SMSFactory.getInstance(Mockito.anyString(),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
-  }*/
+
 }
