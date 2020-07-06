@@ -1,22 +1,5 @@
 package org.sunbird.notification.email;
 
-import java.util.List;
-import java.util.Properties;
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.Message.RecipientType;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -24,6 +7,15 @@ import org.apache.logging.log4j.Logger;
 import org.sunbird.notification.beans.Constants;
 import org.sunbird.notification.beans.EmailConfig;
 import org.sunbird.notification.utils.Util;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.*;
+import javax.mail.Message.RecipientType;
+import javax.mail.internet.*;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * this api is used to sending mail.
@@ -38,34 +30,56 @@ public class Email {
   private String userName;
   private String password;
   private String fromEmail;
-  private Session session;
+  private static Email instance;
 
-  public Email() {
+  private Email() {
     init();
     initProps();
   }
 
-  public Email(EmailConfig config) {
+  public static Email getInstance() {
+    if (null == instance) {
+      synchronized (Email.class){
+        if (null == instance) {
+          instance = new Email();
+        }
+      }
+    }
+    return instance;
+  }
+
+  public static Email getInstance(EmailConfig config) {
+    if (null == instance) {
+      synchronized (Email.class){
+        if (null == instance) {
+          instance = new Email(config);
+        }
+      }
+    }
+    return instance;
+  }
+
+  private Email(EmailConfig config) {
     this.fromEmail =
-        StringUtils.isNotBlank(config.getFromEmail())
-            ? config.getFromEmail()
-            : Util.readValue(Constants.EMAIL_SERVER_FROM);
+      StringUtils.isNotBlank(config.getFromEmail())
+        ? config.getFromEmail()
+        : Util.readValue(Constants.EMAIL_SERVER_FROM);
     this.userName =
-        StringUtils.isNotBlank(config.getUserName())
-            ? config.getUserName()
-            : Util.readValue(Constants.EMAIL_SERVER_USERNAME);
+      StringUtils.isNotBlank(config.getUserName())
+        ? config.getUserName()
+        : Util.readValue(Constants.EMAIL_SERVER_USERNAME);
     this.password =
-        StringUtils.isNotBlank(config.getPassword())
-            ? config.getPassword()
-            : Util.readValue(Constants.EMAIL_SERVER_PASSWORD);
+      StringUtils.isNotBlank(config.getPassword())
+        ? config.getPassword()
+        : Util.readValue(Constants.EMAIL_SERVER_PASSWORD);
     this.host =
-        StringUtils.isNotBlank(config.getHost())
-            ? config.getHost()
-            : Util.readValue(Constants.EMAIL_SERVER_HOST);
+      StringUtils.isNotBlank(config.getHost())
+        ? config.getHost()
+        : Util.readValue(Constants.EMAIL_SERVER_HOST);
     this.port =
-        StringUtils.isNotBlank(config.getPort())
-            ? config.getPort()
-            : Util.readValue(Constants.EMAIL_SERVER_PORT);
+      StringUtils.isNotBlank(config.getPort())
+        ? config.getPort()
+        : Util.readValue(Constants.EMAIL_SERVER_PORT);
     initProps();
   }
 
@@ -77,17 +91,17 @@ public class Email {
     password = Util.readValue(Constants.EMAIL_SERVER_PASSWORD);
     fromEmail = Util.readValue(Constants.EMAIL_SERVER_FROM);
     if (StringUtils.isBlank(host)
-        || StringUtils.isBlank(port)
-        || StringUtils.isBlank(userName)
-        || StringUtils.isBlank(password)
-        || StringUtils.isBlank(fromEmail)) {
+      || StringUtils.isBlank(port)
+      || StringUtils.isBlank(userName)
+      || StringUtils.isBlank(password)
+      || StringUtils.isBlank(fromEmail)) {
       logger.info(
-          "Email setting value is not provided by Env variable=="
-              + host
-              + " "
-              + port
-              + " "
-              + fromEmail);
+        "Email setting value is not provided by Env variable=="
+          + host
+          + " "
+          + port
+          + " "
+          + fromEmail);
       response = false;
     } else {
       logger.info("All email properties are set correctly.");
@@ -96,10 +110,19 @@ public class Email {
   }
 
   private Session getSession() {
-    if (session == null) {
-      session = Session.getInstance(props, new GMailAuthenticator(userName, password));
-    }
-    return session;
+      return Session.getInstance(props, new GMailAuthenticator(userName, password));
+  }
+
+  private Transport getTransportClient() throws MessagingException {
+    Transport transport = getSession().getTransport("smtp");
+    transport.connect(host, userName, password);
+    return transport;
+  }
+
+  private Transport getTransportClient(Session session) throws MessagingException {
+      Transport transport = session.getTransport("smtp");
+      transport.connect(host, userName, password);
+      return transport;
   }
 
   private void initProps() {
@@ -134,10 +157,10 @@ public class Email {
    * @return boolean
    */
   public boolean sendMail(
-      List<String> emailList, String subject, String body, List<String> ccEmailList) {
+    List<String> emailList, String subject, String body, List<String> ccEmailList) {
     boolean response = true;
+    Session session = getSession();
     try {
-      Session session = getSession();
       MimeMessage message = new MimeMessage(session);
       addRecipient(message, Message.RecipientType.TO, emailList);
       addRecipient(message, Message.RecipientType.CC, ccEmailList);
@@ -159,7 +182,7 @@ public class Email {
    * @param filePath Path of attachment file
    */
   public void sendAttachment(
-      List<String> emailList, String emailBody, String subject, String filePath) {
+    List<String> emailList, String emailBody, String subject, String filePath) {
     try {
       Session session = getSession();
       MimeMessage message = new MimeMessage(session);
@@ -198,13 +221,12 @@ public class Email {
   }
 
   private Multipart createMultipartData(String emailBody, String filePath)
-      throws AddressException, MessagingException {
+    throws AddressException, MessagingException {
     BodyPart messageBodyPart = new MimeBodyPart();
     messageBodyPart.setContent(emailBody, "text/html; charset=utf-8");
     Multipart multipart = new MimeMultipart();
     multipart.addBodyPart(messageBodyPart);
     DataSource source = new FileDataSource(filePath);
-    messageBodyPart = null;
     messageBodyPart = new MimeBodyPart();
     messageBodyPart.setDataHandler(new DataHandler(source));
     messageBodyPart.setFileName(filePath);
@@ -213,7 +235,7 @@ public class Email {
   }
 
   private void addRecipient(MimeMessage message, RecipientType type, List<String> recipient)
-      throws AddressException, MessagingException {
+    throws AddressException, MessagingException {
     if (CollectionUtils.isEmpty(recipient)) {
       logger.info("Recipient list is empty or null ");
       return;
@@ -224,16 +246,16 @@ public class Email {
   }
 
   private void setMessageAttribute(
-      MimeMessage message, String fromEmail, String subject, String body)
-      throws AddressException, MessagingException {
+    MimeMessage message, String fromEmail, String subject, String body)
+    throws AddressException, MessagingException {
     message.setFrom(new InternetAddress(fromEmail));
     message.setSubject(subject, "utf-8");
     message.setContent(body, "text/html; charset=utf-8");
   }
 
   private void setMessageAttribute(
-      MimeMessage message, String fromEmail, String subject, Multipart multipart)
-      throws AddressException, MessagingException {
+    MimeMessage message, String fromEmail, String subject, Multipart multipart)
+    throws AddressException, MessagingException {
     message.setFrom(new InternetAddress(fromEmail));
     message.setSubject(subject, "utf-8");
     message.setContent(multipart, "text/html; charset=utf-8");
@@ -243,19 +265,16 @@ public class Email {
     Transport transport = null;
     boolean response = true;
     try {
-      transport = session.getTransport("smtp");
-      transport.connect(host, userName, password);
+      transport = getTransportClient(session);
       transport.sendMessage(message, message.getAllRecipients());
     } catch (Exception e) {
       logger.error("SendMail:sendMail: Exception occurred with message = " + e.getMessage(), e);
       response = false;
     } finally {
-      if (transport != null) {
-        try {
-          transport.close();
-        } catch (MessagingException e) {
-          logger.error(e.toString(), e);
-        }
+      try {
+        transport.close();
+      } catch (MessagingException e) {
+        logger.error("Exception occurred while closing client.",e);
       }
     }
     return response;

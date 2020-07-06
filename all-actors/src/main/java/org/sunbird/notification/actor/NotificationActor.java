@@ -31,17 +31,16 @@ import org.sunbird.util.validator.OtpRequestValidator;
 /** @author manzarul */
 @ActorConfig(
   tasks = {JsonKey.NOTIFICATION, JsonKey.VERIFY_OTP},
-  asyncTasks = {}
+  asyncTasks = {},
+  dispatcher= "notification-dispatcher"
 )
 public class NotificationActor extends BaseActor {
   Logger logger = LogManager.getLogger(NotificationActor.class);
-  private static final String NOTIFICATION = JsonKey.NOTIFICATION;
-  INotificationDispatcher Dispatcher = new FCMNotificationDispatcher();
 
   @Override
   public void onReceive(Request request) throws Throwable {
     String operation = request.getOperation();
-    if (NOTIFICATION.equalsIgnoreCase(operation)) {
+    if (JsonKey.NOTIFICATION.equalsIgnoreCase(operation)) {
       notify(request);
     } else if (JsonKey.VERIFY_OTP.equalsIgnoreCase(operation)) {
       verifyOtp(request);
