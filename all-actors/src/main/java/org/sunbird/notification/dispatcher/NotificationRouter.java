@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 import org.sunbird.ActorServiceException;
 import org.sunbird.BaseException;
@@ -224,15 +225,27 @@ public class NotificationRouter {
   }
 
   private String getMessage(String message, JsonNode node) {
+    VelocityContext context = new VelocityContext();
     if (node != null) {
       Map<String, String> paramValue = mapper.convertValue(node, Map.class);
       Iterator<Entry<String, String>> itr = paramValue.entrySet().iterator();
       while (itr.hasNext()) {
         Entry<String, String> entry = itr.next();
-        message = message.replace("$" + entry.getKey(), entry.getValue());
+        if (null != entry.getValue()) {
+          context.put(entry.getKey(), entry.getValue());
+        }
       }
     }
-    return message;
+    StringWriter writer = null;
+    try {
+      Velocity.init();
+      writer = new StringWriter();
+      Velocity.evaluate(context, writer, "SimpleVelocity", message);
+    } catch (Exception e) {
+      logger.error(
+        "NotificationRouter:getMessage : Exception occurred with message =" + e.getMessage(), e);
+    }
+    return writer.toString();
   }
 
   private VelocityContext getContextObj(JsonNode node) {
