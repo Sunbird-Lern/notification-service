@@ -20,7 +20,7 @@ public class Message91Test extends BaseMessageTest {
   public void initMock() {
     PowerMockito.mockStatic(SMSFactory.class);
     ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
-    PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
+    PowerMockito.when(SMSFactory.getInstance(Mockito.any(),Mockito.any())).thenReturn(msg91SmsProvider);
   }
 
   @Test
@@ -30,7 +30,7 @@ public class Message91Test extends BaseMessageTest {
     Assert.assertTrue(response);
   }
 
-  //@Test
+  @Test
   public void testGetInstanceSuccessWithoutName() {
     ISmsProvider object = SMSFactory.getInstance(null, config);
     Assert.assertTrue(object instanceof Msg91SmsProviderImpl);
