@@ -6,7 +6,6 @@ import controllers.TestHelper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.sunbird.health.actor.HealthActor;
 import play.Application;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -21,7 +20,6 @@ public class HealthControllerTest extends BaseControllerTest {
   TestHelper testHelper;
   public static Application app;
   public static Map<String, String[]> headerMap;
-  private static final Props props = Props.create(HealthActor.class);
 
   @Before
   public void setUp(){
@@ -38,7 +36,7 @@ public class HealthControllerTest extends BaseControllerTest {
     testHelper = null;
   }
 
-  //@Test
+  @Test
   public void testGetHealthSuccess() {
     Map<String, Object> reqMap = new HashMap<>();
     reqMap.put("accept", "yes");
