@@ -36,7 +36,7 @@ import org.sunbird.notification.utils.SMSFactory;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*", "javax.security.*"})
+@PowerMockIgnore({"javax.management.*", "javax.net.ssl.*", "javax.security.*", "jdk.internal.reflect.*"})
 @PrepareForTest({HttpClients.class, PropertiesCache.class, Unirest.class, GetRequest.class, SMSFactory.class, Msg91SmsProviderFactory.class, Msg91SmsProviderImpl.class, SMSConfig.class})
 public abstract class BaseMessageTest {
 

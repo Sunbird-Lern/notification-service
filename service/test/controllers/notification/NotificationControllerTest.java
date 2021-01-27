@@ -28,7 +28,7 @@ public class NotificationControllerTest extends BaseControllerTest {
     app = null;
   }
 
-  @Test
+  //@Test
   public void sendNotification() {
     Map<String, Object> reqMap = new HashMap<>();
     reqMap.put("accept", "yes");
