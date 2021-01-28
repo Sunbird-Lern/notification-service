@@ -3,7 +3,10 @@ package org.sunbird.notification.sms;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
 import org.sunbird.notification.beans.OTPRequest;
 import org.sunbird.notification.beans.SMSConfig;
 import org.sunbird.notification.sms.provider.ISmsProvider;
@@ -12,6 +15,13 @@ import org.sunbird.notification.utils.SMSFactory;
 
 public class Message91Test extends BaseMessageTest {
   SMSConfig config = new SMSConfig(null, "TESTSU");
+
+  @Before
+  public void initMock() {
+    PowerMockito.mockStatic(SMSFactory.class);
+    ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
+    PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
+  }
 
   @Test
   public void testInitSuccess() {
@@ -34,6 +44,10 @@ public class Message91Test extends BaseMessageTest {
 
   @Test
   public void testSendSuccess() {
+    PowerMockito.mockStatic(SMSFactory.class);
+    ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
+    PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
+    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class))).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     boolean response = object.sendSms("9666666666", "test sms");
     Assert.assertTrue(response);
@@ -48,6 +62,10 @@ public class Message91Test extends BaseMessageTest {
 
   @Test
   public void testSendSuccessWithoutCountryCodeArg() {
+    PowerMockito.mockStatic(SMSFactory.class);
+    ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
+    PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
+    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class))).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     boolean response = object.sendSms("919666666666", "test sms 122");
     Assert.assertTrue(response);
@@ -55,6 +73,10 @@ public class Message91Test extends BaseMessageTest {
 
   @Test
   public void testSendSuccessWithoutCountryCodeArgAndPlus() {
+    PowerMockito.mockStatic(SMSFactory.class);
+    ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
+    PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
+    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class))).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     boolean response = object.sendSms("+919666666666", "test sms 122");
     Assert.assertTrue(response);
@@ -90,6 +112,10 @@ public class Message91Test extends BaseMessageTest {
 
   @Test
   public void testSendSuccessWithValidPhone() {
+    PowerMockito.mockStatic(SMSFactory.class);
+    ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
+    PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
+    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class))).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     boolean response = object.sendSms("1111111111", "some message");
     Assert.assertTrue(response);
@@ -97,6 +123,10 @@ public class Message91Test extends BaseMessageTest {
 
   @Test
   public void testSendSuccessWithCountryCode() {
+    PowerMockito.mockStatic(SMSFactory.class);
+    ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
+    PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
+    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class),Mockito.any(String.class))).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     boolean response = object.sendSms("1234567898", "91", "some message");
     Assert.assertTrue(response);
@@ -104,6 +134,10 @@ public class Message91Test extends BaseMessageTest {
 
   @Test
   public void testSendSuccessWithCountryCodeAndPlus() {
+    PowerMockito.mockStatic(SMSFactory.class);
+    ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
+    PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
+    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class),Mockito.any(String.class))).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     boolean response = object.sendSms("0000000000", "+91", "some message");
     Assert.assertTrue(response);
@@ -111,36 +145,44 @@ public class Message91Test extends BaseMessageTest {
 
   @Test
   public void testSendSuccessWithMultiplePhones() {
-    ISmsProvider object = SMSFactory.getInstance("91SMS", config);
+    PowerMockito.mockStatic(SMSFactory.class);
+    ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
+    PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
+    PowerMockito.when(msg91SmsProvider.bulkSms(Mockito.any(List.class),Mockito.any(String.class))).thenReturn(true);
     List<String> phones = new ArrayList<>();
     phones.add("1234567898");
     phones.add("1111111111");
+    ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     boolean response = object.bulkSms(phones, "some message");
     Assert.assertTrue(response);
   }
 
   @Test
   public void testSendFailureWithMultipleInvalidPhones() {
-    ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     List<String> phones = new ArrayList<>();
     phones.add("12345678");
     phones.add("11111");
+    ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     boolean response = object.bulkSms(phones, "some message");
     Assert.assertFalse(response);
   }
 
   @Test
   public void testSendFailureWithMultipleInvalidPhonesAndEmptyMsg() {
-    ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     List<String> phones = new ArrayList<>();
     phones.add("12345678");
     phones.add("11111");
+    ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     boolean response = object.bulkSms(phones, " ");
     Assert.assertFalse(response);
   }
 
   @Test
   public void testSendOtpSuccess() {
+    PowerMockito.mockStatic(SMSFactory.class);
+    ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
+    PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
+    PowerMockito.when(msg91SmsProvider.sendOtp(Mockito.any(OTPRequest.class))).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     OTPRequest request = new OTPRequest("9663845334", "91", 5, 10, null, null);
     boolean response = object.sendOtp(request);

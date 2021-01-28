@@ -16,6 +16,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.runner.RunWith;
@@ -26,16 +27,23 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.sunbird.notification.beans.SMSConfig;
+import org.sunbird.notification.sms.provider.ISmsProvider;
+import org.sunbird.notification.sms.providerimpl.Msg91SmsProviderFactory;
+import org.sunbird.notification.sms.providerimpl.Msg91SmsProviderImpl;
 import org.sunbird.notification.utils.PropertiesCache;
+import org.sunbird.notification.utils.SMSFactory;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.management.*", "javax.net.ssl.*", "javax.security.*"})
-@PrepareForTest({HttpClients.class, PropertiesCache.class, Unirest.class, GetRequest.class})
+@PrepareForTest({HttpClients.class, PropertiesCache.class, Unirest.class, GetRequest.class, SMSFactory.class, Msg91SmsProviderFactory.class, Msg91SmsProviderImpl.class, SMSConfig.class})
 public abstract class BaseMessageTest {
 
   @BeforeClass
   public static void initMockRules() {
+    PowerMockito.mockStatic(SMSFactory.class);
+    PowerMockito.mockStatic(Msg91SmsProviderFactory.class);
     CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
     CloseableHttpResponse httpResp = mock(CloseableHttpResponse.class);
     StatusLine statusLine = mock(StatusLine.class);
@@ -75,5 +83,9 @@ public abstract class BaseMessageTest {
     doCallRealMethod()
         .when(pc)
         .getProperty(AdditionalMatchers.not(Mockito.eq("sunbird_msg_91_auth")));
+    ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
+    PowerMockito.when(SMSFactory.getInstance(Mockito.anyString(), Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
   }
+
+
 }
