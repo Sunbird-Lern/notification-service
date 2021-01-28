@@ -1,5 +1,7 @@
 package org.sunbird.response;
 
+import org.sunbird.message.ResponseCode;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +18,7 @@ public class Response implements Serializable, Cloneable {
   private String ver;
   private String ts;
   private ResponseParams params;
-  private String responseCode;
+  private ResponseCode responseCode = ResponseCode.OK;
   private Map<String, Object> result = new HashMap<>();
 
   /**
@@ -126,7 +128,7 @@ public class Response implements Serializable, Cloneable {
    *
    * @param code ResponseCode
    */
-  public void setResponseCode(String code) {
+  public void setResponseCode(ResponseCode code) {
     this.responseCode = code;
   }
 
@@ -135,7 +137,7 @@ public class Response implements Serializable, Cloneable {
    *
    * @return ResponseCode
    */
-  public String getResponseCode() {
+  public ResponseCode getResponseCode() {
     return this.responseCode;
   }
 
