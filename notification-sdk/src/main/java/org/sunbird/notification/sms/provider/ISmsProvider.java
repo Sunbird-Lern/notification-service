@@ -2,6 +2,7 @@ package org.sunbird.notification.sms.provider;
 
 import java.util.List;
 import org.sunbird.notification.beans.OTPRequest;
+import org.sunbird.request.RequestContext;
 
 /**
  * This interface will provide all method for sending sms.
@@ -18,7 +19,7 @@ public interface ISmsProvider {
    * @param smsText Sms text
    * @return boolean
    */
-  boolean sendSms(String phoneNumber, String smsText);
+  boolean sendSms(String phoneNumber, String smsText, RequestContext context);
 
   /**
    * This method will send SMS on user provider country code, basically it will override the value
@@ -29,7 +30,7 @@ public interface ISmsProvider {
    * @param smsText
    * @return boolean
    */
-  boolean sendSms(String phoneNumber, String countryCode, String smsText);
+  boolean sendSms(String phoneNumber, String countryCode, String smsText, RequestContext context);
 
   /**
    * This method will send SMS to list of phone numbers. default country code value will differ
@@ -39,7 +40,7 @@ public interface ISmsProvider {
    * @param smsText Sms text
    * @return boolean
    */
-  boolean bulkSms(List<String> phoneNumber, String smsText);
+  boolean bulkSms(List<String> phoneNumber, String smsText, RequestContext context);
   /**
    * This method will send OTP to user phone number.
    *
@@ -48,14 +49,14 @@ public interface ISmsProvider {
    *     India
    * @return boolean
    */
-  boolean sendOtp(OTPRequest otpRequest);
+  boolean sendOtp(OTPRequest otpRequest, RequestContext context);
   /**
    * This method is used for resending otp on phone number only.
    *
    * @param OTPRequest otp request countryCode String country code value Ex: 91 for India
    * @return boolean
    */
-  boolean resendOtp(OTPRequest otpRequest);
+  boolean resendOtp(OTPRequest otpRequest, RequestContext context);
   /**
    * This method will verify provided otp.
    *
@@ -63,5 +64,5 @@ public interface ISmsProvider {
    *     value Ex: 91 for India
    * @return boolean
    */
-  boolean verifyOtp(OTPRequest otpRequest);
+  boolean verifyOtp(OTPRequest otpRequest, RequestContext context);
 }

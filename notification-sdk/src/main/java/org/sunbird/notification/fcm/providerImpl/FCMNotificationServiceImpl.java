@@ -8,14 +8,13 @@ import com.google.firebase.messaging.SendResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.sunbird.notification.fcm.provider.FCMInitializer;
 import org.sunbird.notification.fcm.provider.IFCMNotificationService;
 import org.sunbird.notification.utils.FCMResponse;
+import org.sunbird.request.LoggerUtil;
 
 public class FCMNotificationServiceImpl implements IFCMNotificationService {
-  private static Logger logger = LogManager.getLogger("FCMNotificationServiceImpl");
+  private static LoggerUtil logger = new LoggerUtil(FCMNotificationServiceImpl.class);
 
   @Override
   public FCMResponse sendSingleDeviceNotification(
@@ -28,7 +27,7 @@ public class FCMNotificationServiceImpl implements IFCMNotificationService {
       response = FCMInitializer.getInstance().send(message, isDryRun);
       logger.info("Response from FCM :" + response);
     } catch (FirebaseMessagingException e) {
-      logger.error("Exception occured during notification sent: " + e.getMessage());
+      logger.error("Exception occured during notification sent: " + e.getMessage(),e);
       e.printStackTrace();
     }
     return null;
@@ -68,7 +67,7 @@ public class FCMNotificationServiceImpl implements IFCMNotificationService {
       response = FCMInitializer.getInstance().send(message, isDryRun);
       logger.info("Response from FCM :" + response);
     } catch (FirebaseMessagingException e) {
-      logger.error("Exception occured during notification sent: " + e.getMessage());
+      logger.error("Exception occured during notification sent: " + e.getMessage(), e);
       e.printStackTrace();
     }
     return null;

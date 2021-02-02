@@ -12,15 +12,14 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.sunbird.notification.dispatcher.INotificationDispatcher;
-import org.sunbird.notification.email.Email;
 import org.sunbird.notification.fcm.provider.IFCMNotificationService;
 import org.sunbird.notification.fcm.provider.NotificationFactory;
 import org.sunbird.notification.utils.FCMResponse;
 import org.sunbird.pojo.*;
 import org.sunbird.pojo.KafkaMessage;
+import org.sunbird.request.LoggerUtil;
+import org.sunbird.request.RequestContext;
 import org.sunbird.util.ConfigUtil;
 import org.sunbird.util.Constant;
 import org.sunbird.util.DataHash;
@@ -28,7 +27,7 @@ import org.sunbird.util.kafka.KafkaClient;
 
 /** @author manzarul */
 public class FCMNotificationDispatcher implements INotificationDispatcher {
-  private static Logger logger = LogManager.getLogger(FCMNotificationDispatcher.class);
+  private static LoggerUtil logger = new LoggerUtil(FCMNotificationDispatcher.class);
   private IFCMNotificationService service =
      NotificationFactory.getInstance(NotificationFactory.instanceType.httpClinet.name());
   private ObjectMapper mapper = new ObjectMapper();
@@ -52,22 +51,22 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
     initKafkaClient();
   }
 
-  @Override
   /**
    * This map will have key as ids/topic and rawData. ids will have list of device registration ids.
    * topic :it will contains name of fcm topic either ids or topic one key is mandatory. and data
    * will have complete data that need to sent.
    */
-  public FCMResponse dispatch(NotificationRequest notification, boolean isDryRun, boolean isSync) {
+  @Override
+  public FCMResponse dispatch(NotificationRequest notification, boolean isDryRun, boolean isSync, RequestContext context) {
 
     if (isSync) {
-      return dispatchSync(notification, isDryRun);
+      return dispatchSync(notification, isDryRun, context);
     } else {
-      return dispatchAsync(notification);
+      return dispatchAsync(notification, context);
     }
   }
 
-  private FCMResponse dispatchSync(NotificationRequest notification, boolean isDryRun) {
+  private FCMResponse dispatchSync(NotificationRequest notification, boolean isDryRun, RequestContext context) {
     org.sunbird.pojo.Config config = null;
     if (notification.getIds() == null || notification.getIds().size() == 0) {
       config = notification.getConfig();
@@ -94,14 +93,14 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
             if (tmp.size() == BATCH_SIZE || i == (notification.getIds().size() - 1)) {
               response = service.sendMultiDeviceNotification(tmp, map, isDryRun);
               tmp.clear();
-              logger.info("sending message in 100 batch.");
+              logger.info(context, "sending message in 100 batch.");
             }
           }
         }
       }
 
     } catch (JsonProcessingException e) {
-      logger.error("Error during fcm notification processing." + e.getMessage());
+      logger.error(context,"Error during fcm notification processing." + e.getMessage(), e);
       e.printStackTrace();
     }
     return response;
@@ -128,37 +127,37 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
     }
   }
 
-  private FCMResponse dispatchAsync(NotificationRequest notification) {
+  private FCMResponse dispatchAsync(NotificationRequest notification, RequestContext context) {
     FCMResponse response = null;
     if (CollectionUtils.isNotEmpty(notification.getIds())) {
       if (notification.getIds().size() <= BATCH_SIZE) {
-        String message = getTopicMessage(notification);
-        response = writeDataToKafka(message, topic);
-        logger.info("device id size is less than Batch size");
+        String message = getTopicMessage(notification, context);
+        response = writeDataToKafka(message, topic, context);
+        logger.info(context, "device id size is less than Batch size");
       } else {
         List<String> deviceIds = notification.getIds();
-        logger.info(
+        logger.info(context,
             "device id size is greater than Batch size ");
         List<String> tmp = new ArrayList<String>();
         for (int i = 0; i < deviceIds.size(); i++) {
           tmp.add(deviceIds.get(i));
           if (tmp.size() == BATCH_SIZE || i == deviceIds.size() - 1) {
             notification.setIds(tmp);
-            String message = getTopicMessage(notification);
-            response = writeDataToKafka(message, topic);
+            String message = getTopicMessage(notification, context);
+            response = writeDataToKafka(message, topic, context);
             tmp.clear();
           }
         }
       }
     } else {
-      String message = getTopicMessage(notification);
-      response = writeDataToKafka(message, topic);
+      String message = getTopicMessage(notification, context);
+      response = writeDataToKafka(message, topic, context);
     }
 
     return response;
   }
 
-  private FCMResponse writeDataToKafka(String message, String topic) {
+  private FCMResponse writeDataToKafka(String message, String topic, RequestContext context) {
     FCMResponse response = new FCMResponse();
     ProducerRecord<Long, String> record = new ProducerRecord<>(topic, message);
     if (producer != null) {
@@ -169,12 +168,12 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
     } else {
       response.setError(Constant.ERROR_DURING_WRITE_DATA);
       response.setFailure(Constant.FAILURE_CODE);
-      logger.info("FCMNotificationDispatcher:writeDataToKafka: Kafka producer is not initialised.");
+      logger.info(context,"FCMNotificationDispatcher:writeDataToKafka: Kafka producer is not initialised.");
     }
     return response;
   }
 
-  private String getTopicMessage(NotificationRequest notification) {
+  private String getTopicMessage(NotificationRequest notification, RequestContext context) {
     KafkaMessage message = new KafkaMessage();
     Actor actor =
         new Actor(Constant.BROAD_CAST_TOPIC_NOTIFICATION_MESSAGE, Constant.ACTOR_TYPE_VALUE);
@@ -195,7 +194,7 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
       message.setEdata(evnetData);
       topicMessage = mapper.writeValueAsString(message);
     } catch (JsonProcessingException e) {
-      logger.error("Error occured during data parsing==" + e.getMessage());
+      logger.error(context,"Error occured during data parsing==" + e.getMessage(), e);
       e.printStackTrace();
     }
     return topicMessage;
@@ -206,7 +205,7 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
     try {
       val = DataHash.getHashed(mapper.writeValueAsString(request));
     } catch (Exception e) {
-      logger.error("exception occured during hash of request data:" + e.getMessage());
+      logger.error("exception occured during hash of request data:" + e.getMessage(), e);
     }
     return val;
   }

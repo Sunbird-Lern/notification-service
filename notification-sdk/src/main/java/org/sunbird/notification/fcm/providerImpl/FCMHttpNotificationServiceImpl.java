@@ -10,12 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.sunbird.notification.fcm.provider.IFCMNotificationService;
 import org.sunbird.notification.utils.FCMResponse;
 import org.sunbird.notification.utils.NotificationConstant;
+import org.sunbird.request.LoggerUtil;
 
 /**
  * This notification service will make http call to send device notification.
@@ -23,7 +22,7 @@ import org.sunbird.notification.utils.NotificationConstant;
  * @author manzarul
  */
 public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
-  private static Logger logger = LogManager.getLogger("FCMHttpNotificationServiceImpl");
+  private static LoggerUtil logger = new LoggerUtil(FCMHttpNotificationServiceImpl.class);
 
   /** FCM_URL URL of FCM server */
   public static final String FCM_URL = "https://fcm.googleapis.com/fcm/send";

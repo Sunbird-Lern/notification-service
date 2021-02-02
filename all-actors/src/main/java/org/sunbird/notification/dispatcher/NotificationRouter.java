@@ -14,8 +14,6 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -31,12 +29,13 @@ import org.sunbird.notification.beans.SMSConfig;
 import org.sunbird.notification.dispatcher.impl.FCMNotificationDispatcher;
 import org.sunbird.notification.sms.provider.ISmsProvider;
 import org.sunbird.notification.sms.providerimpl.Msg91SmsProviderFactory;
-import org.sunbird.notification.utils.FCMResponse;
 import org.sunbird.notification.utils.NotificationConstant;
 import org.sunbird.notification.utils.Util;
 import org.sunbird.pojo.Config;
 import org.sunbird.pojo.NotificationRequest;
 import org.sunbird.pojo.OTP;
+import org.sunbird.request.LoggerUtil;
+import org.sunbird.request.RequestContext;
 import org.sunbird.response.Response;
 import org.sunbird.util.Constant;
 
@@ -45,10 +44,11 @@ import org.sunbird.util.Constant;
  * @author manzarul
  */
 public class NotificationRouter {
-  private static Logger logger = LogManager.getLogger(NotificationRouter.class);
+  private static LoggerUtil logger = new LoggerUtil(NotificationRouter.class);
   private static final String TEMPLATE_SUFFIX = ".vm";
   private SyncMessageDispatcher syDispatcher = new SyncMessageDispatcher();
   private ObjectMapper mapper = new ObjectMapper();
+
   enum DeliveryMode {
     phone,
     email,
@@ -74,9 +74,9 @@ public class NotificationRouter {
   }
 
   public Response route(
-      List<NotificationRequest> notificationRequestList, boolean isDryRun, boolean isSync)
+      List<NotificationRequest> notificationRequestList, boolean isDryRun, boolean isSync, RequestContext context)
       throws BaseException {
-    logger.info("making call to route method");
+    logger.info(context, "making call to route method");
     Response response = new Response();
     if (CollectionUtils.isNotEmpty(notificationRequestList)) {
       Map<String, Object> responseMap = new HashMap<String, Object>();
@@ -84,9 +84,9 @@ public class NotificationRouter {
         if (notification.getMode().equalsIgnoreCase(DeliveryMode.phone.name())
             && (notification.getDeliveryType().equalsIgnoreCase(DeliveryType.message.name())
                 || notification.getDeliveryType().equalsIgnoreCase(DeliveryType.otp.name()))) {
-          response = handleMessageAndOTP(notification, isDryRun, responseMap, isSync);
+          response = handleMessageAndOTP(notification, isDryRun, responseMap, isSync, context);
         } else if (notification.getMode().equalsIgnoreCase(DeliveryMode.device.name())) {
-          response = writeDataToKafka(notification, response, isDryRun, responseMap, isSync);
+          response = writeDataToKafka(notification, response, isDryRun, responseMap, isSync, context);
         } else if (notification.getMode().equalsIgnoreCase(DeliveryMode.email.name())
             && notification.getDeliveryType().equalsIgnoreCase(DeliveryType.message.name())) {
           String message = null;
@@ -102,14 +102,14 @@ public class NotificationRouter {
             notification.getTemplate().setData(data);
           }
           if (isSync) {
-            response = syDispatcher.syncDispatch(notification, isDryRun);
+            response = syDispatcher.syncDispatch(notification, isDryRun, context);
           } else {
-            response = writeDataToKafka(notification, response, isDryRun, responseMap, isSync);
+            response = writeDataToKafka(notification, response, isDryRun, responseMap, isSync, context);
           }
         }
       }
     } else {
-      logger.info(
+      logger.info(context,
           "requested notification list is either null or empty :" + notificationRequestList);
     }
     return response;
@@ -119,7 +119,8 @@ public class NotificationRouter {
       NotificationRequest notification,
       boolean isDryRun,
       Map<String, Object> responseMap,
-      boolean isSync)
+      boolean isSync,
+      RequestContext context)
       throws BaseException {
     Response response = new Response();
     String message = null;
@@ -143,7 +144,7 @@ public class NotificationRouter {
       }
       OTPRequest request =
           new OTPRequest(ids.get(0), null, otp.getLength(), otp.getExpiryInMinute(), message, null);
-      boolean smsResponse = getSMSInstance().sendOtp(request);
+      boolean smsResponse = getSMSInstance().sendOtp(request, context);
       responseMap.put(ids.get(0), smsResponse);
       response.putAll(responseMap);
     } else {
@@ -151,10 +152,10 @@ public class NotificationRouter {
         notification.getTemplate().setData(message);
       }
       if (isSync) {
-        response = syDispatcher.syncDispatch(notification, isDryRun);
+        response = syDispatcher.syncDispatch(notification, isDryRun, context);
 
       } else {
-        response = writeDataToKafka(notification, response, isDryRun, responseMap, isSync);
+        response = writeDataToKafka(notification, response, isDryRun, responseMap, isSync, context);
       }
     }
     return response;
@@ -200,8 +201,8 @@ public class NotificationRouter {
     return body;
   }
 
-  public Response verifyOtp(OTPRequest otpRequest) {
-    boolean verificationResp = getSMSInstance().verifyOtp(otpRequest);
+  public Response verifyOtp(OTPRequest otpRequest, RequestContext context) {
+    boolean verificationResp = getSMSInstance().verifyOtp(otpRequest, context);
     Response response = new Response();
     if (verificationResp) {
       response.put(NotificationConstant.MESSAGE, NotificationConstant.SUCCESS);
@@ -216,9 +217,10 @@ public class NotificationRouter {
       Response response,
       boolean isDryRun,
       Map<String, Object> responseMap,
-      boolean isSync) {
-    FCMNotificationDispatcher.getInstance().dispatch(notification, isDryRun, isSync);
-    logger.info("Got response from FCM ");
+      boolean isSync,
+      RequestContext context) {
+    FCMNotificationDispatcher.getInstance().dispatch(notification, isDryRun, isSync, context);
+    logger.info(context, "Got response from FCM ");
     responseMap.put(Constant.RESPONSE, NotificationConstant.SUCCESS);
     response.putAll(responseMap);
     return response;

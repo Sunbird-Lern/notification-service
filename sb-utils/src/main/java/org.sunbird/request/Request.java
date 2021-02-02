@@ -11,6 +11,7 @@ import org.sunbird.message.ResponseCode;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 /** @author Manzarul */
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -21,11 +22,15 @@ public class Request implements Serializable {
   private static final Integer MAX_TIMEOUT = 30;
   private static final int WAIT_TIME_VALUE = 30;
 
-  protected Map<String, Object> context;
   private String id;
   private String ver;
   private String ts;
   private RequestParams params;
+
+  // Request context
+  private RequestContext requestContext;
+
+  private Map<String, Object> context;
 
   private Map<String, Object> request = new HashMap<>();
 
@@ -37,6 +42,7 @@ public class Request implements Serializable {
   private Integer timeout; // in seconds
 
   public Request() {
+    this.context = new WeakHashMap<>();
     this.params = new RequestParams();
     this.params.setMsgid(requestId);
   }
@@ -47,12 +53,19 @@ public class Request implements Serializable {
     if (null == this.params) this.params = new RequestParams();
     if (StringUtils.isBlank(this.params.getMsgid()) && !StringUtils.isBlank(requestId))
       this.params.setMsgid(requestId);
-    this.context.putAll(request.getContext());
   }
 
   public String getRequestId() {
     if (null != this.params) return this.params.getMsgid();
     return requestId;
+  }
+
+  public RequestContext getRequestContext() {
+    return requestContext;
+  }
+
+  public void setRequestContext(RequestContext requestContext) {
+    this.requestContext = requestContext;
   }
 
   public Map<String, Object> getContext() {
@@ -104,14 +117,6 @@ public class Request implements Serializable {
     if (null != map && map.size() > 0) {
       this.request.putAll(map);
     }
-  }
-
-  @Override
-  public String toString() {
-    return "Request ["
-        + (context != null ? "context=" + context + ", " : "")
-        + (request != null ? "requestValueObjects=" + request : "")
-        + "]";
   }
 
   public String getId() {

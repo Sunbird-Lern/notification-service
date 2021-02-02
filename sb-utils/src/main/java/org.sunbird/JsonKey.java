@@ -8,29 +8,26 @@ package org.sunbird;
  */
 public interface JsonKey {
 
-  String MESSAGE = "message";
-  String ERRORS = "errors";
-  String SUCCESS = "success";
   String NOTIFICATION = "notification";
   String NOTIFICATIONS = "notifications";
   String DELIVERY_TYPE = "deliveryType";
   String MODE = "mode";
   String IDS = "ids";
-  String PHONE = "phone";
-  String DEVICE = "device";
-  String EMAIL = "email";
-  String CONFIG = "config";
-  String TEMPLATE = "template";
-  String RAWDATA = "rawData";
-  String OTP = "otp";
-  String TOPIC = "topic";
-  String LENGTH = "length";
-  String EXPIRY = "expiry";
-  String SENDER = "sender";
-  String ID = "id";
-  String DATA = "data";
-  String PARAMS = "params";
   String MANDATORY_PARAMETER_MISSING = "MANDATORY_PARAMETER_MISSING";
   String INVALID_VALUE = "INVALID_VALUE";
   String VERIFY_OTP = "verifyOtp";
+
+  String APP_ID = "appId";
+  String DEVICE_ID = "did";
+  String X_Session_ID = "x-session-id";
+  String X_APP_VERSION = "x-app-ver";
+  String X_TRACE_ENABLED = "x-trace-enabled";
+  String X_REQUEST_ID = "x-request-id";
+  String ACTOR_ID = "actorId";
+
+  String TYPE = "type";
+  String LEVEL = "level";
+  String REQUEST_ID = "requestid";
+  String MESSAGE = "message";
+  String PARAMS = "params";
 }

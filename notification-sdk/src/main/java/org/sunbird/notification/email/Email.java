@@ -2,11 +2,10 @@ package org.sunbird.notification.email;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.sunbird.notification.beans.Constants;
 import org.sunbird.notification.beans.EmailConfig;
 import org.sunbird.notification.utils.Util;
+import org.sunbird.request.LoggerUtil;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -23,7 +22,7 @@ import java.util.Properties;
  * @author Manzarul.Haque
  */
 public class Email {
-  private static Logger logger = LogManager.getLogger(Email.class);
+  private static LoggerUtil logger = new LoggerUtil(Email.class);
   private static Properties props = null;
   private String host;
   private String port;

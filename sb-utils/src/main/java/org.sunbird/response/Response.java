@@ -17,7 +17,7 @@ public class Response implements Serializable, Cloneable {
   private String id;
   private String ver;
   private String ts;
-  private ResponseParams params;
+  private ResponseParams params = new ResponseParams();
   private ResponseCode responseCode = ResponseCode.OK;
   private Map<String, Object> result = new HashMap<>();
 

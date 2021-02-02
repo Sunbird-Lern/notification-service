@@ -6,11 +6,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import controllers.RequestHandler;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.sunbird.BaseException;
 import org.sunbird.message.IResponseMessage;
 import org.sunbird.message.ResponseCode;
+import org.sunbird.request.LoggerUtil;
 import org.sunbird.response.Response;
 import play.libs.Json;
 import play.mvc.Result;
@@ -24,7 +23,7 @@ import javax.inject.Inject;
  * @author Anmol
  */
 public class HealthController extends BaseController {
-  Logger logger = LogManager.getLogger(HealthController.class);
+  private static LoggerUtil logger = new LoggerUtil(HealthController.class);
   @Inject
   SignalHandler signalHandler;
   // Service name must be "service" for the devops monitoring.

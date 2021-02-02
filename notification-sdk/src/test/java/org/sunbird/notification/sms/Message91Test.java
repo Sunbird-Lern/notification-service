@@ -12,6 +12,7 @@ import org.sunbird.notification.beans.SMSConfig;
 import org.sunbird.notification.sms.provider.ISmsProvider;
 import org.sunbird.notification.sms.providerimpl.Msg91SmsProviderImpl;
 import org.sunbird.notification.utils.SMSFactory;
+import org.sunbird.request.RequestContext;
 
 public class Message91Test extends BaseMessageTest {
   SMSConfig config = new SMSConfig(null, "TESTSU");
@@ -47,16 +48,16 @@ public class Message91Test extends BaseMessageTest {
     PowerMockito.mockStatic(SMSFactory.class);
     ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
     PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
-    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class))).thenReturn(true);
+    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class), Mockito.any())).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.sendSms("9666666666", "test sms");
+    boolean response = object.sendSms("9666666666", "test sms", new RequestContext());
     Assert.assertTrue(response);
   }
 
   @Test
   public void testSendFailureWithFormattedPhone() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.sendSms("(966) 3890-445", "test sms 122");
+    boolean response = object.sendSms("(966) 3890-445", "test sms 122", new RequestContext());
     Assert.assertFalse(response);
   }
 
@@ -65,9 +66,9 @@ public class Message91Test extends BaseMessageTest {
     PowerMockito.mockStatic(SMSFactory.class);
     ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
     PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
-    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class))).thenReturn(true);
+    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class), Mockito.any())).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.sendSms("919666666666", "test sms 122");
+    boolean response = object.sendSms("919666666666", "test sms 122", new RequestContext());
     Assert.assertTrue(response);
   }
 
@@ -76,37 +77,37 @@ public class Message91Test extends BaseMessageTest {
     PowerMockito.mockStatic(SMSFactory.class);
     ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
     PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
-    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class))).thenReturn(true);
+    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class), Mockito.any())).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.sendSms("+919666666666", "test sms 122");
+    boolean response = object.sendSms("+919666666666", "test sms 122", new RequestContext());
     Assert.assertTrue(response);
   }
 
   @Test
   public void testSendFailureWithEmptyPhone() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.sendSms("", "test sms 122");
+    boolean response = object.sendSms("", "test sms 122", new RequestContext());
     Assert.assertFalse(response);
   }
 
   @Test
   public void testSendFailureWithEmptyMessage() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.sendSms("9663890445", "");
+    boolean response = object.sendSms("9663890445", "", new RequestContext());
     Assert.assertFalse(response);
   }
 
   @Test
   public void testSendWithEmptyPhoneAndMessage() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.sendSms("", "");
+    boolean response = object.sendSms("", "", new RequestContext());
     Assert.assertFalse(response);
   }
 
   @Test
   public void testSendFailureWithInvalidPhone() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.sendSms("981se12345", "some message");
+    boolean response = object.sendSms("981se12345", "some message", new RequestContext());
     Assert.assertFalse(response);
   }
 
@@ -115,9 +116,9 @@ public class Message91Test extends BaseMessageTest {
     PowerMockito.mockStatic(SMSFactory.class);
     ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
     PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
-    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class))).thenReturn(true);
+    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class),Mockito.any())).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.sendSms("1111111111", "some message");
+    boolean response = object.sendSms("1111111111", "some message", new RequestContext());
     Assert.assertTrue(response);
   }
 
@@ -126,9 +127,9 @@ public class Message91Test extends BaseMessageTest {
     PowerMockito.mockStatic(SMSFactory.class);
     ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
     PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
-    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class),Mockito.any(String.class))).thenReturn(true);
+    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class),Mockito.any(String.class), Mockito.any())).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.sendSms("1234567898", "91", "some message");
+    boolean response = object.sendSms("1234567898", "91", "some message", new RequestContext());
     Assert.assertTrue(response);
   }
 
@@ -137,9 +138,9 @@ public class Message91Test extends BaseMessageTest {
     PowerMockito.mockStatic(SMSFactory.class);
     ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
     PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
-    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class),Mockito.any(String.class))).thenReturn(true);
+    PowerMockito.when(msg91SmsProvider.sendSms(Mockito.any(String.class),Mockito.any(String.class),Mockito.any(String.class),Mockito.any())).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.sendSms("0000000000", "+91", "some message");
+    boolean response = object.sendSms("0000000000", "+91", "some message", new RequestContext());
     Assert.assertTrue(response);
   }
 
@@ -148,12 +149,12 @@ public class Message91Test extends BaseMessageTest {
     PowerMockito.mockStatic(SMSFactory.class);
     ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
     PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
-    PowerMockito.when(msg91SmsProvider.bulkSms(Mockito.any(List.class),Mockito.any(String.class))).thenReturn(true);
+    PowerMockito.when(msg91SmsProvider.bulkSms(Mockito.any(List.class),Mockito.any(String.class), Mockito.any())).thenReturn(true);
     List<String> phones = new ArrayList<>();
     phones.add("1234567898");
     phones.add("1111111111");
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.bulkSms(phones, "some message");
+    boolean response = object.bulkSms(phones, "some message", new RequestContext());
     Assert.assertTrue(response);
   }
 
@@ -163,7 +164,7 @@ public class Message91Test extends BaseMessageTest {
     phones.add("12345678");
     phones.add("11111");
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.bulkSms(phones, "some message");
+    boolean response = object.bulkSms(phones, "some message", new RequestContext());
     Assert.assertFalse(response);
   }
 
@@ -173,7 +174,7 @@ public class Message91Test extends BaseMessageTest {
     phones.add("12345678");
     phones.add("11111");
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    boolean response = object.bulkSms(phones, " ");
+    boolean response = object.bulkSms(phones, " ", new RequestContext());
     Assert.assertFalse(response);
   }
 
@@ -182,10 +183,10 @@ public class Message91Test extends BaseMessageTest {
     PowerMockito.mockStatic(SMSFactory.class);
     ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
     PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
-    PowerMockito.when(msg91SmsProvider.sendOtp(Mockito.any(OTPRequest.class))).thenReturn(true);
+    PowerMockito.when(msg91SmsProvider.sendOtp(Mockito.any(OTPRequest.class),Mockito.any())).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     OTPRequest request = new OTPRequest("9663845334", "91", 5, 10, null, null);
-    boolean response = object.sendOtp(request);
+    boolean response = object.sendOtp(request, new RequestContext());
     Assert.assertTrue(response);
   }
 
@@ -193,7 +194,7 @@ public class Message91Test extends BaseMessageTest {
   public void testSendOtpFailureWithIncorrectPhone() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     OTPRequest request = new OTPRequest("96638453", "91", 5, 10, null, null);
-    boolean response = object.sendOtp(request);
+    boolean response = object.sendOtp(request, new RequestContext());
     Assert.assertFalse(response);
   }
 
@@ -201,7 +202,7 @@ public class Message91Test extends BaseMessageTest {
   public void testSendOtpFailureWithPhoneLengthExceed() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     OTPRequest request = new OTPRequest("9663845354321", "91", 5, 10, null, null);
-    boolean response = object.sendOtp(request);
+    boolean response = object.sendOtp(request, new RequestContext());
     Assert.assertFalse(response);
   }
 
@@ -209,7 +210,7 @@ public class Message91Test extends BaseMessageTest {
   public void testSendOtpFailureDueTOMinOtpLength() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     OTPRequest request = new OTPRequest("9663845354", "91", 3, 10, null, null);
-    boolean response = object.sendOtp(request);
+    boolean response = object.sendOtp(request, new RequestContext());
     Assert.assertFalse(response);
   }
 
@@ -217,7 +218,7 @@ public class Message91Test extends BaseMessageTest {
   public void testSendOtpFailureDueTOMaxOtpLength() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     OTPRequest request = new OTPRequest("9663845354", "91", 10, 10, null, null);
-    boolean response = object.sendOtp(request);
+    boolean response = object.sendOtp(request, new RequestContext());
     Assert.assertFalse(response);
   }
 
@@ -225,7 +226,7 @@ public class Message91Test extends BaseMessageTest {
   public void testresendOtpFailure() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     OTPRequest request = new OTPRequest("96638453", "91", 0, 10, null, null);
-    boolean response = object.resendOtp(request);
+    boolean response = object.resendOtp(request, new RequestContext());
     Assert.assertFalse(response);
   }
 
@@ -233,7 +234,7 @@ public class Message91Test extends BaseMessageTest {
   public void testresendOtpFailureWithInvalidPhone() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     OTPRequest request = new OTPRequest("96638453234", "91", 0, 10, null, null);
-    boolean response = object.resendOtp(request);
+    boolean response = object.resendOtp(request, new RequestContext());
     Assert.assertFalse(response);
   }
 
@@ -241,7 +242,7 @@ public class Message91Test extends BaseMessageTest {
   public void testverifyOtpFailureWithInvalidPhone() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     OTPRequest request = new OTPRequest("96638453234", "91", 0, 10, null, null);
-    boolean response = object.verifyOtp(request);
+    boolean response = object.verifyOtp(request, new RequestContext());
     Assert.assertFalse(response);
   }
 
@@ -249,7 +250,7 @@ public class Message91Test extends BaseMessageTest {
   public void testverifyOtpFailureWithInvalidOtpLength() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
     OTPRequest request = new OTPRequest("96638453234", "91", 0, 10, null, "234");
-    boolean response = object.verifyOtp(request);
+    boolean response = object.verifyOtp(request, new RequestContext());
     Assert.assertFalse(response);
   }
 }
