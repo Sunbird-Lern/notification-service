@@ -3,7 +3,7 @@ package org.sunbird.util;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.sunbird.request.LoggerUtil;
 
 /**
  * This util class for providing type safe config to any service that requires it.
@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
  */
 public class ConfigUtil {
 
-  private static Logger logger = Logger.getLogger(ConfigUtil.class);
+  private static LoggerUtil logger = new LoggerUtil(ConfigUtil.class);
   private static Config config;
   private static final String DEFAULT_TYPE_SAFE_CONFIG_FILE_NAME = "service.conf";
   private static final String INVALID_FILE_NAME = "Please provide a valid file name.";
@@ -57,7 +57,7 @@ public class ConfigUtil {
 
   public static void validateMandatoryConfigValue(String configParameter) {
     if (StringUtils.isBlank(configParameter)) {
-      logger.error(
+      logger.info(
           "ConfigUtil:validateMandatoryConfigValue: Missing mandatory configuration parameter: "
               + configParameter);
       throw new RuntimeException("Server Error");
@@ -90,7 +90,7 @@ public class ConfigUtil {
     } catch (Exception e) {
       logger.error(
           "ConfigUtil:getConfigFromJsonString: Exception occurred during parse with error message = "
-              + e.getMessage());
+              + e.getMessage(), e);
       return null;
     }
 

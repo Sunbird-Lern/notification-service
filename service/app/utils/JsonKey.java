@@ -30,4 +30,7 @@ public interface JsonKey {
   String ERRORS = "errors";
   String SUCCESS = "success";
   String VERIFY_OTP = "verifyOtp";
+  String URL = "url";
+  String RESPONSE_CODE = "responseCode";
+  String FAILED = "FAILED";
 }

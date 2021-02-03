@@ -16,12 +16,10 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <jackson.version>2.9.9</jackson.version>
-        <akka.x.version>2.6.0-M2</akka.x.version>
+        <akka.x.version>2.5.22</akka.x.version>
         <junit.version>4.12</junit.version>
 
         <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
-        <slf4j.version>1.6.1</slf4j.version>
-        <logback.version>1.0.7</logback.version>
 
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <play2.version>2.7.2</play2.version>
@@ -30,6 +28,40 @@
         <powermock.version>2.0.2</powermock.version>
         <httpClient.version>4.5.1</httpClient.version>
     </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.7.5.201505241946</version>
+                <configuration>
+                    <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+                    <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+                    <excludes>
+                        <exclude>**/common/**</exclude>
+                        <exclude>**/routes/**</exclude>
+                        <exclude>**/Reverse*/**</exclude>
+                        <exclude>**/*.javascript/**</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jacoco-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-site</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <modules>
         <module>sb-utils</module>

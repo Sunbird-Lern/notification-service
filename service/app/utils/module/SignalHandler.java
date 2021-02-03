@@ -2,8 +2,7 @@ package utils.module;
 
 import akka.actor.ActorSystem;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.sunbird.request.LoggerUtil;
 import play.api.Application;
 import play.api.Play;
 import scala.concurrent.duration.Duration;
@@ -19,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class SignalHandler {
 
   private static String stopDelay = System.getenv("sigterm_stop_delay");
-  Logger logger = LogManager.getLogger(SignalHandler.class);
+  private static LoggerUtil logger = new LoggerUtil(SignalHandler.class);
 
   private volatile boolean isShuttingDown = false;
 

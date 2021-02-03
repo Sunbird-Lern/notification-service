@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.sunbird.ActorServiceException;
 import org.sunbird.BaseActor;
 import org.sunbird.BaseException;
@@ -19,11 +17,10 @@ import org.sunbird.message.IResponseMessage;
 import org.sunbird.message.IUserResponseMessage;
 import org.sunbird.message.ResponseCode;
 import org.sunbird.notification.beans.OTPRequest;
-import org.sunbird.notification.dispatcher.INotificationDispatcher;
 import org.sunbird.notification.dispatcher.NotificationRouter;
-import org.sunbird.notification.dispatcher.impl.FCMNotificationDispatcher;
 import org.sunbird.notification.utils.NotificationConstant;
 import org.sunbird.pojo.NotificationRequest;
+import org.sunbird.request.LoggerUtil;
 import org.sunbird.request.Request;
 import org.sunbird.response.Response;
 import org.sunbird.util.validator.OtpRequestValidator;
@@ -35,7 +32,7 @@ import org.sunbird.util.validator.OtpRequestValidator;
   dispatcher= "notification-dispatcher"
 )
 public class NotificationActor extends BaseActor {
-  Logger logger = LogManager.getLogger(NotificationActor.class);
+  private static LoggerUtil logger = new LoggerUtil(NotificationActor.class);
 
   @Override
   public void onReceive(Request request) throws Throwable {
@@ -48,12 +45,12 @@ public class NotificationActor extends BaseActor {
     } else {
       onReceiveUnsupportedMessage(request.getOperation());
     }
-    logger.info("onReceive method call End");
+    logger.info(request.getRequestContext(),"onReceive method call End");
   }
 
   public void notify(Request request) throws BaseException {
     boolean isSyncDelivery = false;
-    logger.info("Call started for notify method");
+    logger.info(request.getRequestContext(),"Call started for notify method");
     List<NotificationRequest> notificationRequestList =
         NotificationRequestMapper.toList(
             (List<Map<String, Object>>) request.getRequest().get(JsonKey.NOTIFICATIONS));
@@ -70,13 +67,13 @@ public class NotificationActor extends BaseActor {
     if (StringUtils.isNotBlank(deliveryMode) && "sync".equalsIgnoreCase(deliveryMode)) {
       isSyncDelivery = true;
     }
-    Response response = routes.route(notificationRequestList, false, isSyncDelivery);
-    logger.info("response got from notification service " + response);
+    Response response = routes.route(notificationRequestList, false, isSyncDelivery, request.getRequestContext());
+    logger.info(request.getRequestContext(),"response got from notification service " + response);
     sender().tell(response, getSelf());
   }
 
   public void verifyOtp(Request request) throws BaseException {
-    logger.info("call started for verify otp method");
+    logger.info(request.getRequestContext(),"call started for verify otp method");
     Map<String, Object> requestMap = request.getRequest();
     boolean response =
         OtpRequestValidator.isOtpVerifyRequestValid(
@@ -98,8 +95,8 @@ public class NotificationActor extends BaseActor {
             0,
             null,
             (String) request.get(NotificationConstant.VALUE));
-    Response responseData = routes.verifyOtp(otpRequest);
-    logger.info("response got from notification service " + response);
+    Response responseData = routes.verifyOtp(otpRequest, request.getRequestContext());
+    logger.info(request.getRequestContext(),"response got from notification service " + response);
     sender().tell(responseData, getSelf());
   }
 }
