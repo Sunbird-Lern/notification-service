@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-alpine
+FROM adoptopenjdk/openjdk11:alpine-slim
 RUN apk update \
     && apk add  unzip \
     && apk add curl \

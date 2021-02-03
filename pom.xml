@@ -11,14 +11,14 @@
         <project.version>1.0.0</project.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <maven.compiler.release>11</maven.compiler.release>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <jackson.version>2.9.9</jackson.version>
         <akka.x.version>2.6.0-M2</akka.x.version>
         <junit.version>4.12</junit.version>
 
-        <version.compiler.plugin>2.3.1</version.compiler.plugin>
         <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
         <slf4j.version>1.6.1</slf4j.version>
         <logback.version>1.0.7</logback.version>
@@ -27,7 +27,7 @@
         <play2.version>2.7.2</play2.version>
         <play2.plugin.version>1.0.0-rc5</play2.plugin.version>
         <scala.version>2.12.8</scala.version>
-        <powermock.version>1.6.5</powermock.version>
+        <powermock.version>2.0.2</powermock.version>
         <httpClient.version>4.5.1</httpClient.version>
     </properties>
 
