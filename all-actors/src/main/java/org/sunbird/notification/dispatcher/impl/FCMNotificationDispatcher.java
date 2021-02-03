@@ -81,17 +81,17 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
       String RAW_DATA = "rawData";
       map.put(RAW_DATA, notificationData);
       if (config != null && StringUtils.isNotBlank(config.getTopic())) {
-        response = service.sendTopicNotification(config.getTopic(), map, isDryRun);
+        response = service.sendTopicNotification(config.getTopic(), map, isDryRun, context);
       } else {
         if (notification.getIds().size() <= BATCH_SIZE) {
-          response = service.sendMultiDeviceNotification(notification.getIds(), map, isDryRun);
+          response = service.sendMultiDeviceNotification(notification.getIds(), map, isDryRun, context);
         } else {
           // Split into 100 batch
           List<String> tmp = new ArrayList<String>();
           for (int i = 0; i < notification.getIds().size(); i++) {
             tmp.add(notification.getIds().get(i));
             if (tmp.size() == BATCH_SIZE || i == (notification.getIds().size() - 1)) {
-              response = service.sendMultiDeviceNotification(tmp, map, isDryRun);
+              response = service.sendMultiDeviceNotification(tmp, map, isDryRun, context);
               tmp.clear();
               logger.info(context, "sending message in 100 batch.");
             }

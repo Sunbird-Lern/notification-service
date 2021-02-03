@@ -94,11 +94,11 @@ public class NotificationRouter {
               && StringUtils.isNotBlank(notification.getTemplate().getData())) {
             message =
                 getMessage(
-                    notification.getTemplate().getData(), notification.getTemplate().getParams());
+                    notification.getTemplate().getData(), notification.getTemplate().getParams(), context);
             notification.getTemplate().setData(message);
           } else if (notification.getTemplate() != null
               && StringUtils.isNotBlank(notification.getTemplate().getId())) {
-            String data = createNotificationBody(notification);
+            String data = createNotificationBody(notification, context);
             notification.getTemplate().setData(data);
           }
           if (isSync) {
@@ -127,7 +127,7 @@ public class NotificationRouter {
     if (notification.getTemplate() != null
         && StringUtils.isNotBlank(notification.getTemplate().getData())) {
       message =
-          getMessage(notification.getTemplate().getData(), notification.getTemplate().getParams());
+          getMessage(notification.getTemplate().getData(), notification.getTemplate().getParams(), context);
     }
 
     Config config = notification.getConfig();
@@ -161,11 +161,11 @@ public class NotificationRouter {
     return response;
   }
 
-  private String createNotificationBody(NotificationRequest notification) throws BaseException {
-    return readVm(notification.getTemplate().getId(), notification.getTemplate().getParams());
+  private String createNotificationBody(NotificationRequest notification, RequestContext context) throws BaseException {
+    return readVm(notification.getTemplate().getId(), notification.getTemplate().getParams(), context);
   }
 
-  private String readVm(String templateName, JsonNode node) throws BaseException {
+  private String readVm(String templateName, JsonNode node, RequestContext requestContext) throws BaseException {
     VelocityEngine engine = new VelocityEngine();
     VelocityContext context = getContextObj(node);
     Properties p = new Properties();
@@ -182,7 +182,7 @@ public class NotificationRouter {
       template.merge(context, writer);
       body = writer.toString();
     } catch (Exception e) {
-      logger.error("Failed to load velocity template =" + templateName + " " + e.getMessage(), e);
+      logger.error(requestContext,"Failed to load velocity template =" + templateName + " " + e.getMessage(), e);
       throw new ActorServiceException.InvalidRequestData(
           IUserResponseMessage.TEMPLATE_NOT_FOUND,
           MessageFormat.format(
@@ -194,7 +194,7 @@ public class NotificationRouter {
         try {
           writer.close();
         } catch (IOException e) {
-          logger.error("Failed to closed writer object =" + e.getMessage(), e);
+          logger.error(requestContext,"Failed to closed writer object =" + e.getMessage(), e);
         }
       }
     }
@@ -226,7 +226,7 @@ public class NotificationRouter {
     return response;
   }
 
-  private String getMessage(String message, JsonNode node) {
+  private String getMessage(String message, JsonNode node, RequestContext requestContext) {
     VelocityContext context = new VelocityContext();
     if (node != null) {
       Map<String, String> paramValue = mapper.convertValue(node, Map.class);
@@ -244,7 +244,7 @@ public class NotificationRouter {
       writer = new StringWriter();
       Velocity.evaluate(context, writer, "SimpleVelocity", message);
     } catch (Exception e) {
-      logger.error(
+      logger.error(requestContext,
         "NotificationRouter:getMessage : Exception occurred with message =" + e.getMessage(), e);
     }
     return writer.toString();
