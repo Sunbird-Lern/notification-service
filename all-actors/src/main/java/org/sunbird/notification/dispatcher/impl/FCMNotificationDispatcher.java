@@ -185,7 +185,7 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
           Constant.NOTIFICATION,
           (Map<String, Object>) mapper.convertValue(notification, Map.class));
       Map<String, Object> object = new HashMap<String, Object>();
-      object.put(Constant.ID, getRequestHashed(requestMap));
+      object.put(Constant.ID, getRequestHashed(requestMap, context));
       object.put(Constant.TYPE, Constant.TYPE_VALUE);
       message.setObject(object);
       EventData evnetData = new EventData();
@@ -200,12 +200,12 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
     return topicMessage;
   }
 
-  private String getRequestHashed(Map<String, Object> request) {
+  private String getRequestHashed(Map<String, Object> request, RequestContext context) {
     String val = null;
     try {
       val = DataHash.getHashed(mapper.writeValueAsString(request));
     } catch (Exception e) {
-      logger.error("exception occured during hash of request data:" + e.getMessage(), e);
+      logger.error(context,"exception occured during hash of request data:" + e.getMessage(), e);
     }
     return val;
   }
