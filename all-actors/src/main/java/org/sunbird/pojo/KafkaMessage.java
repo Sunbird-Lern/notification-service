@@ -17,6 +17,7 @@ public class KafkaMessage implements Serializable {
   private String eid;
 
   private String mid;
+  private Map<String, String> trace;
   long ets;
   EventData edata;
   Context context;
@@ -92,5 +93,13 @@ public class KafkaMessage implements Serializable {
     pdata.put(Constant.ID, Constant.ID_VALUE);
     context.setPdata(pdata);
     this.context = context;
+  }
+  
+  public Map<String, String> getTrace() {
+    return trace;
+  }
+  
+  public void setTrace(Map<String, String> trace) {
+    this.trace = trace;
   }
 }

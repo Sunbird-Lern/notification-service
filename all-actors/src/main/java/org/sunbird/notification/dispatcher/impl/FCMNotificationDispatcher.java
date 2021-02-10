@@ -192,6 +192,10 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
       evnetData.setAction(Constant.BROAD_CAST_TOPIC_NOTIFICATION_KEY);
       evnetData.setRequest(requestMap);
       message.setEdata(evnetData);
+      Map<String, String> traceMap = new HashMap<>();
+      traceMap.put(Constant.X_REQUEST_ID, context.getReqId());
+      traceMap.put(Constant.X_TRACE_ENABLED, "false");
+      message.setTrace(traceMap);
       topicMessage = mapper.writeValueAsString(message);
     } catch (JsonProcessingException e) {
       logger.error(context,"Error occured during data parsing==" + e.getMessage(), e);
