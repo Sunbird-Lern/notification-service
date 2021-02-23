@@ -3,13 +3,13 @@ package org.sunbird.notification.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.sunbird.request.LoggerUtil;
 
 public class PropertiesCache {
-  private static Logger logger = LogManager.getLogger(PropertiesCache.class);
+  private static LoggerUtil logger = new LoggerUtil(PropertiesCache.class);
   private final String fileName = "configuration.properties";
   private final Properties configProp = new Properties();
+  private static PropertiesCache instance;
 
   /** private default constructor */
   private PropertiesCache() {
@@ -21,12 +21,16 @@ public class PropertiesCache {
     }
   }
 
-  private static class LazyHolder {
-    private static final PropertiesCache INSTANCE = new PropertiesCache();
-  }
-
   public static PropertiesCache getInstance() {
-    return LazyHolder.INSTANCE;
+    if (instance == null) {
+      // To make thread safe
+      synchronized (PropertiesCache.class) {
+        // check again as multiple threads
+        // can reach above step
+        if (instance == null) instance = new PropertiesCache();
+      }
+    }
+    return instance;
   }
 
   /**

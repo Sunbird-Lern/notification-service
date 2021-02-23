@@ -3,6 +3,7 @@ package org.sunbird.notification.fcm.provider;
 import java.util.List;
 import java.util.Map;
 import org.sunbird.notification.utils.FCMResponse;
+import org.sunbird.request.RequestContext;
 
 /**
  * This interface will handle all call regarding FCM notification
@@ -20,7 +21,7 @@ public interface IFCMNotificationService {
    * @return FCMResponse
    */
   public FCMResponse sendSingleDeviceNotification(
-      String deviceId, Map<String, String> data, boolean isDryRun);
+      String deviceId, Map<String, String> data, boolean isDryRun, RequestContext context);
 
   /**
    * This api will be used for sending notification to multiple device. max 100 device notification
@@ -32,7 +33,7 @@ public interface IFCMNotificationService {
    * @return FCMResponse
    */
   public FCMResponse sendMultiDeviceNotification(
-      List<String> deviceIds, Map<String, String> data, boolean isDryRun);
+      List<String> deviceIds, Map<String, String> data, boolean isDryRun, RequestContext context);
 
   /**
    * Method used for sending topic based notification
@@ -43,5 +44,5 @@ public interface IFCMNotificationService {
    * @return FCMResponse
    */
   public FCMResponse sendTopicNotification(
-      String topic, Map<String, String> data, boolean isDryRun);
+    String topic, Map<String, String> data, boolean isDryRun, RequestContext context);
 }

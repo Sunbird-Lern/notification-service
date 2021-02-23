@@ -1,10 +1,10 @@
 package org.sunbird;
 
 import akka.actor.UntypedAbstractActor;
-import org.apache.log4j.Logger;
 import org.sunbird.message.IResponseMessage;
 import org.sunbird.message.Localizer;
 import org.sunbird.message.ResponseCode;
+import org.sunbird.request.LoggerUtil;
 import org.sunbird.request.Request;
 
 import java.util.Locale;
@@ -14,7 +14,7 @@ import java.util.Locale;
  */
 public abstract class BaseActor extends UntypedAbstractActor {
 
-    private Logger logger = Logger.getLogger(BaseActor.class);
+    private static LoggerUtil logger = new LoggerUtil(BaseActor.class);
     public abstract void onReceive(Request request) throws Throwable;
     protected Localizer localizer = Localizer.getInstance();
 
@@ -23,11 +23,11 @@ public abstract class BaseActor extends UntypedAbstractActor {
         if (message instanceof Request) {
             Request request = (Request) message;
             String operation = request.getOperation();
-            logger.info("BaseActor:onReceive called for operation:" + operation);
+            logger.info(request.getRequestContext(),"BaseActor:onReceive called for operation:" + operation);
             try {
-                logger.info(String.format("%s:%s:method started at %s",this.getClass().getSimpleName(),operation,System.currentTimeMillis()));
+                logger.info(request.getRequestContext(),String.format("%s:%s:method started at %s",this.getClass().getSimpleName(),operation,System.currentTimeMillis()));
                 onReceive(request);
-                logger.info(String.format("%s:%s:method ended at %s",this.getClass().getSimpleName(),operation,System.currentTimeMillis()));
+                logger.info(request.getRequestContext(),String.format("%s:%s:method ended at %s",this.getClass().getSimpleName(),operation,System.currentTimeMillis()));
             } catch (Exception e) {
                 onReceiveException(operation, e);
             }
