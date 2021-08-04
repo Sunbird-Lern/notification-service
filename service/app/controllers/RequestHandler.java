@@ -41,77 +41,77 @@ import static utils.PrintEntryExitLog.printExitLogOnSuccessResponse;
  * @author amitkumar
  */
 public class RequestHandler extends BaseController {
-
+  
   private static LoggerUtil logger = new LoggerUtil(RequestHandler.class);
-
-    /**
-     * this methis responsible to handle the request and ask from actor
-     *
-     * @param request
-     * @param httpExecutionContext
-     * @param operation
-     * @return CompletionStage<Result>
-     * @throws Exception
-     */
-    public CompletionStage<Result> handleRequest(
-            Request request,
-            HttpExecutionContext httpExecutionContext,
-            String operation,
-            play.mvc.Http.Request req)
-            throws Exception {
-        request.setOperation(operation);
-        setContextData(req, request);
-        printEntryLog(request);
-        Function<Object, Result> fn =
-                object -> handleResponse(object, httpExecutionContext, req, request);
-
-        Timeout t = new Timeout(Long.valueOf(request.getTimeout()), TimeUnit.SECONDS);
-        Future<Object> future = Patterns.ask(getActorRef(operation), request, t);
-        return FutureConverters.toJava(future).thenApplyAsync(fn);
+  
+  /**
+   * this methis responsible to handle the request and ask from actor
+   *
+   * @param request
+   * @param httpExecutionContext
+   * @param operation
+   * @return CompletionStage<Result>
+   * @throws Exception
+   */
+  public CompletionStage<Result> handleRequest(
+    Request request,
+    HttpExecutionContext httpExecutionContext,
+    String operation,
+    play.mvc.Http.Request req)
+    throws Exception {
+    request.setOperation(operation);
+    setContextData(req, request);
+    printEntryLog(request);
+    Function<Object, Result> fn =
+      object -> handleResponse(object, httpExecutionContext, req, request);
+    
+    Timeout t = new Timeout(Long.valueOf(request.getTimeout()), TimeUnit.SECONDS);
+    Future<Object> future = Patterns.ask(getActorRef(operation), request, t);
+    return FutureConverters.toJava(future).thenApplyAsync(fn);
+  }
+  
+  /**
+   * This method will handle all the failure response of Api calls.
+   *
+   * @param exception
+   * @return
+   */
+  public static Result handleFailureResponse(
+    Object exception, HttpExecutionContext httpExecutionContext ,play.mvc.Http.Request req, Request request) {
+    
+    Response response = new Response();
+    response.getParams().setStatus(JsonKey.FAILED);
+    response.getParams().setMsgid(request.getRequestId());
+    CompletableFuture<JsonNode> future = new CompletableFuture<>();
+    if (exception instanceof BaseException) {
+      BaseException ex = (BaseException) exception;
+      response.setResponseCode(ResponseCode.getResponseCode(ex.getResponseCode()));
+      response.put(JsonKey.MESSAGE, ex.getMessage());
+      String apiId = getApiId(req.path());
+      response.setId(apiId);
+      response.setVer("v1");
+      response.setTs(System.currentTimeMillis() + "");
+      future.complete(Json.toJson(response));
+      printExitLogOnFailure(request,ex);
+      if (ex.getResponseCode() == Results.badRequest().status()) {
+        return  Results.badRequest(Json.toJson(response));
+      } else if (ex.getResponseCode() == 503) {
+        return Results.status(
+          ex.getResponseCode(),
+          Json.toJson(createResponseOnException(ex)));
+      } else {
+        return Results.internalServerError();
+      }
+    } else {
+      response.setResponseCode(ResponseCode.SERVER_ERROR);
+      response.put(
+        JsonKey.MESSAGE, locale.getMessage(IResponseMessage.INTERNAL_ERROR, null));
+      future.complete(Json.toJson(response));
+      printExitLogOnFailure(request, null);
+      return Results.internalServerError(Json.toJson(response));
     }
-
-    /**
-     * This method will handle all the failure response of Api calls.
-     *
-     * @param exception
-     * @return
-     */
-    public static Result handleFailureResponse(
-            Object exception, HttpExecutionContext httpExecutionContext ,play.mvc.Http.Request req, Request request) {
-
-        Response response = new Response();
-        response.getParams().setStatus(JsonKey.FAILED);
-        response.getParams().setMsgid(request.getRequestId());
-        CompletableFuture<JsonNode> future = new CompletableFuture<>();
-        if (exception instanceof BaseException) {
-            BaseException ex = (BaseException) exception;
-            response.setResponseCode(ResponseCode.getResponseCode(ex.getResponseCode()));
-            response.put(JsonKey.MESSAGE, ex.getMessage());
-            String apiId = getApiId(req.path());
-            response.setId(apiId);
-            response.setVer("v1");
-            response.setTs(System.currentTimeMillis() + "");
-            future.complete(Json.toJson(response));
-            printExitLogOnFailure(request,ex);
-            if (ex.getResponseCode() == Results.badRequest().status()) {
-                return  Results.badRequest(Json.toJson(response));
-            } else if (ex.getResponseCode() == 503) {
-                return Results.status(
-                        ex.getResponseCode(),
-                        Json.toJson(createResponseOnException(ex)));
-            } else {
-                return Results.internalServerError();
-            }
-        } else {
-            response.setResponseCode(ResponseCode.SERVER_ERROR);
-            response.put(
-                    JsonKey.MESSAGE, locale.getMessage(IResponseMessage.INTERNAL_ERROR, null));
-            future.complete(Json.toJson(response));
-            printExitLogOnFailure(request, null);
-            return Results.internalServerError(Json.toJson(response));
-        }
-    }
-
+  }
+  
   /**
    * This method will handle all the failure response of Api calls.
    *
@@ -120,7 +120,7 @@ public class RequestHandler extends BaseController {
    */
   public static Result handleFailureResponse(
     Object exception, HttpExecutionContext httpExecutionContext ,play.mvc.Http.Request req) {
-
+    
     Response response = new Response();
     CompletableFuture<JsonNode> future = new CompletableFuture<>();
     if (exception instanceof BaseException) {
@@ -149,80 +149,80 @@ public class RequestHandler extends BaseController {
       return Results.internalServerError(Json.toJson(response));
     }
   }
-
-
+  
+  
   public static Response createResponseOnException(BaseException exception) {
-        Response response = new Response();
-        response.setResponseCode(ResponseCode.getResponseCode(exception.getResponseCode()));
-        response.setParams(createResponseParamObj(response.getResponseCode(), exception.getMessage()));
-        return response;
+    Response response = new Response();
+    response.setResponseCode(ResponseCode.getResponseCode(exception.getResponseCode()));
+    response.setParams(createResponseParamObj(response.getResponseCode(), exception.getMessage()));
+    return response;
+  }
+  
+  public static ResponseParams createResponseParamObj(ResponseCode code, String message) {
+    ResponseParams params = new ResponseParams();
+    if (code.getCode() != 200) {
+      params.setErr(code.name());
+      params.setErrmsg(StringUtils.isNotBlank(message) ? message : code.name());
     }
-
-    public static ResponseParams createResponseParamObj(ResponseCode code, String message) {
-        ResponseParams params = new ResponseParams();
-        if (code.getCode() != 200) {
-            params.setErr(code.name());
-            params.setErrmsg(StringUtils.isNotBlank(message) ? message : code.name());
-        }
-        params.setStatus(ResponseCode.getResponseCode(code.getCode()).name());
-        return params;
+    params.setStatus(ResponseCode.getResponseCode(code.getCode()).name());
+    return params;
+  }
+  
+  /**
+   * this method will divert the response on the basis of success and failure
+   *
+   * @param object
+   * @param httpExecutionContext
+   * @return
+   */
+  public static Result handleResponse(
+    Object object, HttpExecutionContext httpExecutionContext, play.mvc.Http.Request req, Request request) {
+    
+    if (object instanceof Response) {
+      Response response = (Response) object;
+      response.setParams(createResponseParamObj(response.getResponseCode(), null));
+      response.getParams().setMsgid(request.getRequestContext().getReqId());
+      printExitLogOnSuccessResponse(request, response);
+      return handleSuccessResponse(response, httpExecutionContext, req);
+    } else {
+      return handleFailureResponse(object, httpExecutionContext, req, request);
     }
-
-    /**
-     * this method will divert the response on the basis of success and failure
-     *
-     * @param object
-     * @param httpExecutionContext
-     * @return
-     */
-    public static Result handleResponse(
-            Object object, HttpExecutionContext httpExecutionContext, play.mvc.Http.Request req, Request request) {
-
-        if (object instanceof Response) {
-            Response response = (Response) object;
-            response.setParams(createResponseParamObj(response.getResponseCode(), null));
-            response.getParams().setMsgid(request.getRequestContext().getReqId());
-            printExitLogOnSuccessResponse(request, response);
-            return handleSuccessResponse(response, httpExecutionContext, req);
+  }
+  
+  /**
+   * This method will handle all the success response of Api calls.
+   *
+   * @param response
+   * @return
+   */
+  public static Result handleSuccessResponse(
+    Response response, HttpExecutionContext httpExecutionContext, play.mvc.Http.Request req) {
+    CompletableFuture<JsonNode> future = new CompletableFuture<>();
+    String apiId = getApiId(req.path());
+    response.setId(apiId);
+    response.setVer("v1");
+    response.setTs(System.currentTimeMillis() + "");
+    response.getParams().setStatus(JsonKey.SUCCESS);
+    future.complete(Json.toJson(response));
+    return Results.ok(Json.toJson(response));
+  }
+  
+  public static String getApiId(String uri) {
+    StringBuilder builder = new StringBuilder();
+    if (StringUtils.isNotBlank(uri)) {
+      String temVal[] = uri.split("/");
+      for (int i = 1; i < temVal.length; i++) {
+        if (i < temVal.length - 1) {
+          builder.append(temVal[i] + ".");
         } else {
-            return handleFailureResponse(object, httpExecutionContext, req, request);
+          builder.append(temVal[i]);
         }
+      }
     }
-
-    /**
-     * This method will handle all the success response of Api calls.
-     *
-     * @param response
-     * @return
-     */
-    public static Result handleSuccessResponse(
-            Response response, HttpExecutionContext httpExecutionContext, play.mvc.Http.Request req) {
-        CompletableFuture<JsonNode> future = new CompletableFuture<>();
-        String apiId = getApiId(req.path());
-        response.setId(apiId);
-        response.setVer("v1");
-        response.setTs(System.currentTimeMillis() + "");
-        response.getParams().setStatus(JsonKey.SUCCESS);
-        future.complete(Json.toJson(response));
-        return Results.ok(Json.toJson(response));
-    }
-
-    public static String getApiId(String uri) {
-        StringBuilder builder = new StringBuilder();
-        if (StringUtils.isNotBlank(uri)) {
-            String temVal[] = uri.split("/");
-            for (int i = 1; i < temVal.length; i++) {
-                if (i < temVal.length - 1) {
-                    builder.append(temVal[i] + ".");
-                } else {
-                    builder.append(temVal[i]);
-                }
-            }
-        }
-        return builder.toString();
-    }
-
-
+    return builder.toString();
+  }
+  
+  
   public void setContextData(play.mvc.Http.Request httpReq, Request request) {
     try {
       Map<String, Object> reqContext = new WeakHashMap<>();
@@ -234,22 +234,22 @@ public class RequestHandler extends BaseController {
       if (optionalDeviceId.isPresent()) {
         reqContext.put(org.sunbird.JsonKey.DEVICE_ID, optionalDeviceId.get());
       }
-
+      
       Optional<String> optionalSessionId = httpReq.header(HeaderParam.X_Session_ID.getName());
       if (optionalSessionId.isPresent()) {
         reqContext.put(org.sunbird.JsonKey.X_Session_ID, optionalSessionId.get());
       }
-
+      
       Optional<String> optionalAppVersion = httpReq.header(HeaderParam.X_APP_VERSION.getName());
       if (optionalAppVersion.isPresent()) {
         reqContext.put(org.sunbird.JsonKey.X_APP_VERSION, optionalAppVersion.get());
       }
-
+      
       Optional<String> optionalTraceEnabled = httpReq.header(HeaderParam.X_TRACE_ENABLED.getName());
       if (optionalTraceEnabled.isPresent()) {
         reqContext.put(org.sunbird.JsonKey.X_TRACE_ENABLED, optionalTraceEnabled.get());
       }
-
+      
       Optional<String> optionalTraceId = httpReq.header(HeaderParam.X_REQUEST_ID.getName());
       if (optionalTraceId.isPresent()) {
         String reqId = optionalTraceId.get();
@@ -269,7 +269,7 @@ public class RequestHandler extends BaseController {
       logger.error("Exception occurred while setting request context.", ex);
     }
   }
-
+  
   private RequestContext getRequestContext(Map<String, Object> context, String actorOperation) {
     return new RequestContext(
       (String) context.get(org.sunbird.JsonKey.ACTOR_ID),

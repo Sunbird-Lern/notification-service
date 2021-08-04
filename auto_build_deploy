@@ -1,4 +1,4 @@
-@Library('deploy-conf') _ 
+@Library('deploy-conf') _
 node('build-slave') {
     try {
         String ANSI_GREEN = "\u001B[32m"
@@ -34,7 +34,7 @@ node('build-slave') {
 		sh "cd $currentDir"
 		// Build the dependencies for sunbird user-org service
                 sh 'mvn clean install'
-            
+
    //         stage Package
 		// Create a deployment package
                 dir('service') {
@@ -43,15 +43,15 @@ node('build-slave') {
                 }
                 sh('chmod 777 ./build.sh')
                 sh("./build.sh ${build_tag} ${env.NODE_NAME} ${hub_org}")
-            
+
    //         stage ArchiveArtifacts
                 archiveArtifacts "metadata.json"
                 currentBuild.description = "${build_tag}"
             }
         }
-        currentBuild.result = "SUCCESS"    
+        currentBuild.result = "SUCCESS"
         slack_notify(currentBuild.result, tag_name)
-        email_notify()  
+        email_notify()
         auto_build_deploy()
     }
     catch (err) {

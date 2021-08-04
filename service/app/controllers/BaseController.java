@@ -32,11 +32,11 @@ public class BaseController extends Controller {
   public static final String NOTIFICATION_DELIVERY_MODE = "notification-delivery-mode";
   /** We injected HttpExecutionContext to decrease the response time of APIs. */
   @Inject public HttpExecutionContext httpExecutionContext;
-
+  
   protected static Localizer locale = Localizer.getInstance();
   public static final String RESPONSE = "Response";
   public static final String SUCCESS = "Success";
-
+  
   /**
    * This method will return the current timestamp.
    *
@@ -45,7 +45,7 @@ public class BaseController extends Controller {
   public long getTimeStamp() {
     return System.currentTimeMillis();
   }
-
+  
   /**
    * This method we used to print the logs of starting time of methods
    *
@@ -54,11 +54,11 @@ public class BaseController extends Controller {
   public void startTrace(String tag) {
     logger.info("Method call started.");
   }
-
+  
   protected ActorRef getActorRef(String operation) throws BaseException {
     return Application.getInstance().getActorRef(operation);
   }
-
+  
   /**
    * this method will take play.mv.http request and a validation function and lastly operation(Actor
    * operation) this method is validating the request and , it will map the request to our sunbird
@@ -71,7 +71,7 @@ public class BaseController extends Controller {
    * @return
    */
   public CompletionStage<Result> handleRequest(
-      play.mvc.Http.Request req, RequestValidatorFunction validatorFunction, String operation) {
+    play.mvc.Http.Request req, RequestValidatorFunction validatorFunction, String operation) {
     Request request = new Request();
     try {
       List<String> list = req.getHeaders().toMap().get(NOTIFICATION_DELIVERY_MODE);
@@ -87,13 +87,13 @@ public class BaseController extends Controller {
       return new RequestHandler().handleRequest(request, httpExecutionContext, operation, req);
     } catch (BaseException ex) {
       return (CompletionStage<Result>)
-              RequestHandler.handleFailureResponse(ex, httpExecutionContext, req, request);
+        RequestHandler.handleFailureResponse(ex, httpExecutionContext, req, request);
     } catch (Exception ex) {
       return (CompletionStage<Result>)
-              RequestHandler.handleFailureResponse(ex, httpExecutionContext, req, request);
+        RequestHandler.handleFailureResponse(ex, httpExecutionContext, req, request);
     }
   }
-
+  
   /**
    * This method is used specifically to handel Log Apis request this will set log levels and then
    * return the CompletionStage of Result
@@ -108,9 +108,9 @@ public class BaseController extends Controller {
       request = (Request) RequestMapper.mapRequest(request(), Request.class);
     } catch (Exception ex) {
       return (CompletionStage<Result>)
-      RequestHandler.handleFailureResponse(ex, httpExecutionContext, null, request);
+        RequestHandler.handleFailureResponse(ex, httpExecutionContext, null, request);
     }
     return (CompletionStage<Result>)
-            RequestHandler.handleSuccessResponse(response, httpExecutionContext, null);
+      RequestHandler.handleSuccessResponse(response, httpExecutionContext, null);
   }
 }

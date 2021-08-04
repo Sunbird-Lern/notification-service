@@ -26,15 +26,15 @@ import static org.mockito.Mockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({org.sunbird.Application.class, BaseController.class, Patterns.class,FutureConverters.class})
 @PowerMockIgnore({
-  "javax.management.*",
-  "javax.net.ssl.*",
-  "javax.security.*",
-  "jdk.internal.reflect.*",
-  "javax.crypto.*",
-  "javax.script.*",
-  "javax.xml.*",
-  "com.sun.org.apache.xerces.*",
-  "org.xml.*"
+	"javax.management.*",
+	"javax.net.ssl.*",
+	"javax.security.*",
+	"jdk.internal.reflect.*",
+	"javax.crypto.*",
+	"javax.script.*",
+	"javax.xml.*",
+	"com.sun.org.apache.xerces.*",
+	"org.xml.*"
 })
 
 public class BaseControllerTest {
@@ -42,13 +42,13 @@ public class BaseControllerTest {
 	public static Map<String, String[]> headerMap;
 	private org.sunbird.Application application;
 	private static BaseController baseController;
-
+	
 	public BaseControllerTest() {
 		testHelper = new TestHelper();
 		headerMap = testHelper.getHeaderMap();
 		baseControllerTestsetUp();
 	}
-
+	
 	public void baseControllerTestsetUp() {
 		application = PowerMockito.mock(org.sunbird.Application.class);
 		PowerMockito.mockStatic(org.sunbird.Application.class);
@@ -56,10 +56,10 @@ public class BaseControllerTest {
 		application.init();
 		mockRequestHandler();
 	}
-
-
+	
+	
 	public void mockRequestHandler() {
-
+		
 		try {
 			baseController = Mockito.mock(BaseController.class);
 			PowerMockito.mockStatic(Patterns.class);
@@ -69,17 +69,17 @@ public class BaseControllerTest {
 			ex.printStackTrace();
 		}
 	}
-
+	
 	private Response getResponseObject() {
-
+		
 		Response response = new Response();
 		response.put("ResponseCode", "success");
 		return response;
 	}
-
-	  @Test
-	  public void getTimeStampSuccess() {
-		 Long val = new BaseController().getTimeStamp();
-		 Assert.assertTrue(val<=System.currentTimeMillis());
-	  }
+	
+	@Test
+	public void getTimeStampSuccess() {
+		Long val = new BaseController().getTimeStamp();
+		Assert.assertTrue(val<=System.currentTimeMillis());
+	}
 }

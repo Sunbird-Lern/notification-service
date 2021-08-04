@@ -18,20 +18,20 @@ import play.api.inject.ApplicationLifecycle;
  */
 @Singleton
 public class ApplicationStart {
-  private static LoggerUtil logger = new LoggerUtil(ApplicationStart.class);
+	private static LoggerUtil logger = new LoggerUtil(ApplicationStart.class);
 	/**
-	   *
-	   * All one time initialization which required during server startup will fall here.
-	   * @param lifecycle ApplicationLifecycle
-	   * @param environment Environment
-	   */
-	  @Inject
-	  public ApplicationStart(ApplicationLifecycle lifecycle, Environment environment) {
-		  Application.getInstance().init();
-	    // Shut-down hook
-	    lifecycle.addStopHook(
-	        () -> {
-	          return CompletableFuture.completedFuture(null);
-	        });
-	  }
+	 *
+	 * All one time initialization which required during server startup will fall here.
+	 * @param lifecycle ApplicationLifecycle
+	 * @param environment Environment
+	 */
+	@Inject
+	public ApplicationStart(ApplicationLifecycle lifecycle, Environment environment) {
+		Application.getInstance().init();
+		// Shut-down hook
+		lifecycle.addStopHook(
+			() -> {
+				return CompletableFuture.completedFuture(null);
+			});
+	}
 }
