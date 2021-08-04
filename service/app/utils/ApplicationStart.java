@@ -4,10 +4,9 @@ import java.util.concurrent.CompletableFuture;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
 import org.sunbird.Application;
 
+import org.sunbird.request.LoggerUtil;
 import play.api.Environment;
 import play.api.inject.ApplicationLifecycle;
 
@@ -19,7 +18,7 @@ import play.api.inject.ApplicationLifecycle;
  */
 @Singleton
 public class ApplicationStart {
-	Logger logger = Logger.getLogger(ApplicationStart.class);
+  private static LoggerUtil logger = new LoggerUtil(ApplicationStart.class);
 	/**
 	   *
 	   * All one time initialization which required during server startup will fall here.
@@ -29,7 +28,6 @@ public class ApplicationStart {
 	  @Inject
 	  public ApplicationStart(ApplicationLifecycle lifecycle, Environment environment) {
 		  Application.getInstance().init();
-		  BasicConfigurator.configure();
 	    // Shut-down hook
 	    lifecycle.addStopHook(
 	        () -> {

@@ -3,6 +3,7 @@ package org.sunbird.notification.dispatcher;
 
 import org.sunbird.notification.utils.FCMResponse;
 import org.sunbird.pojo.NotificationRequest;
+import org.sunbird.request.RequestContext;
 
 /**
  * This interface is responsible for handling different mode of notification
@@ -11,5 +12,5 @@ import org.sunbird.pojo.NotificationRequest;
  */
 public interface INotificationDispatcher {
 
-  public FCMResponse dispatch(NotificationRequest data, boolean isDryRun, boolean isSync);
+  public FCMResponse dispatch(NotificationRequest data, boolean isDryRun, boolean isSync, RequestContext context);
 }

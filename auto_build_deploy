@@ -8,6 +8,7 @@ node('build-slave') {
         String ANSI_YELLOW = "\u001B[33m"
 
         ansiColor('xterm') {
+           withEnv(["JAVA_HOME=${JAVA11_HOME}"]) {
             stage('Checkout') {
                 tag_name = env.JOB_NAME.split("/")[-1]
                 pre_checks()
@@ -46,7 +47,7 @@ node('build-slave') {
    //         stage ArchiveArtifacts
                 archiveArtifacts "metadata.json"
                 currentBuild.description = "${build_tag}"
-            
+            }
         }
         currentBuild.result = "SUCCESS"    
         slack_notify(currentBuild.result, tag_name)
