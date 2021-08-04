@@ -2,12 +2,11 @@
 package org.sunbird.notification.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.sunbird.request.LoggerUtil;
 
 /** @author manzarul */
 public class Util {
-  private static Logger logger = LogManager.getLogger(Util.class);
+  private static LoggerUtil logger = new LoggerUtil(Util.class);
   private static PropertiesCache propertiesCache = PropertiesCache.getInstance();
 
   /**
@@ -27,7 +26,7 @@ public class Util {
     if (StringUtils.isBlank(val)) {
       val = propertiesCache.getProperty(key);
     }
-    logger.info("found value for key:" + key + " value: " + val);
+    logger.debug("found value for key:" + key + " value: " + val);
     return val;
   }
 }

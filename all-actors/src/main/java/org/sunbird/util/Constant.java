@@ -35,4 +35,6 @@ public class Constant {
   public static final int SUCCESS_CODE = 200;
   public static final int FAILURE_CODE = 500;
   public static final String ERROR_DURING_WRITE_DATA = "Data write error to kafka topic";
+  public static final String X_REQUEST_ID = "X-Request-ID";
+  public static final String X_TRACE_ENABLED  = "X-Trace-Enabled";
 }

@@ -3,12 +3,11 @@ package org.sunbird.util;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.sunbird.request.LoggerUtil;
 
 /** @author manzarul */
 public class DataHash {
-  private static Logger logger = LogManager.getLogger(DataHash.class);
+  private static LoggerUtil logger = new LoggerUtil(DataHash.class);
 
   private DataHash() {}
 

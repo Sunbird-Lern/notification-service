@@ -11,9 +11,8 @@ public interface IResponseMessage extends IUserResponseMessage, IOrgResponseMess
   String INVALID_OPERATION_NAME = "INVALID_OPERATION_NAME";
   String INTERNAL_ERROR = "INTERNAL_ERROR";
   String SERVER_ERROR = "INTERNAL_ERROR";
-  String UNAUTHORIZED = "UNAUTHORIZED";
   String MANDATORY_PARAMETER_MISSING = "Mandatory parameter {0} is missing.";
   String INVALID_VALUE = "{0} VALUE IS INVALID, {1}";
-  String DATA_TYPE_REQUIRED = "{0} SHOULD BE {1}";
   String MAX_NOTIFICATION_SIZE = "Max supported id in single playload is {0}";
+  String SERVICE_UNAVAILABLE = "SERVICE UNAVAILABLE";
 }
