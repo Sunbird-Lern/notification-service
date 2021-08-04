@@ -5,17 +5,16 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.sunbird.message.IResponseMessage;
 import org.sunbird.message.ResponseCode;
 import org.sunbird.pojo.NotificationRequest;
+import org.sunbird.request.LoggerUtil;
 
 public class NotificationRequestMapper {
 
   private static ObjectMapper mapper = new ObjectMapper();
 
-  private static Logger logger = LogManager.getLogger(NotificationRequestMapper.class);
+  private static LoggerUtil logger = new LoggerUtil(NotificationRequestMapper.class);
 
   /**
    * maps request to notification request
@@ -44,7 +43,6 @@ public class NotificationRequestMapper {
     try {
       NotificationRequest notificationRequest =
           mapper.convertValue(data, NotificationRequest.class);
-      logger.info("Notification request , " + notificationRequest.toString());
       return notificationRequest;
     } catch (Exception e) {
       throw new BaseException(

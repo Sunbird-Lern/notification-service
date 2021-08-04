@@ -18,21 +18,34 @@
             <artifactId>reflections</artifactId>
             <version>0.9.10</version>
         </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.9</version>
         </dependency>
+
+        <dependency>
+          <groupId>com.typesafe.akka</groupId>
+          <artifactId>akka-slf4j_2.12</artifactId>
+          <version>${akka.x.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>6.6</version>
+            <scope>compile</scope>
+        </dependency>
+
+
     </dependencies>
 
 </project>

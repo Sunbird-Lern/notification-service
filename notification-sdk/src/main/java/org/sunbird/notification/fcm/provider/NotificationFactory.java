@@ -1,12 +1,11 @@
 package org.sunbird.notification.fcm.provider;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.sunbird.notification.fcm.providerImpl.FCMHttpNotificationServiceImpl;
 import org.sunbird.notification.fcm.providerImpl.FCMNotificationServiceImpl;
+import org.sunbird.request.LoggerUtil;
 
 public class NotificationFactory {
-  private static Logger logger = LogManager.getLogger(NotificationFactory.class);
+  private static LoggerUtil logger = new LoggerUtil(NotificationFactory.class);
 
   public enum instanceType {
     adminClient(),

@@ -3,8 +3,7 @@ package controllers.notification;
 
 import controllers.BaseController;
 import java.util.concurrent.CompletionStage;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.sunbird.request.LoggerUtil;
 import play.mvc.Result;
 import utils.JsonKey;
 
@@ -14,7 +13,7 @@ import utils.JsonKey;
  * @author manzarul
  */
 public class NotificationController extends BaseController {
-  Logger logger = LogManager.getLogger(NotificationController.class);
+  private static LoggerUtil logger = new LoggerUtil(NotificationController.class);
 
   public static final String NOTIFICATION = "notification";
 
