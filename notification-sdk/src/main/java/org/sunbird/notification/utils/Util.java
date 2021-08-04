@@ -26,7 +26,7 @@ public class Util {
     if (StringUtils.isBlank(val)) {
       val = propertiesCache.getProperty(key);
     }
-    logger.info("found value for key:" + key + " value: " + val);
+    logger.debug("found value for key:" + key + " value: " + val);
     return val;
   }
 }

@@ -47,8 +47,8 @@
                     <artifactId>akka-actor_2.12</artifactId>
                 </exclusion>
                 <exclusion>
-                  <artifactId>slf4j-api</artifactId>
-                  <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -56,6 +56,39 @@
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-guice_2.12</artifactId>
             <version>${play2.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.inject</groupId>
+                    <artifactId>guice</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.inject.extensions</groupId>
+                    <artifactId>guice-assistedinject</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>3.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.inject.extensions/guice-assistedinject -->
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+            <version>3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-netty-server_2.12</artifactId>
+            <version>${play2.version}</version>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.scala-lang</groupId>
+                    <artifactId>scala-library</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -117,47 +150,47 @@
         </dependency>
 
         <dependency>
-          <groupId>com.typesafe.play</groupId>
-          <artifactId>play-logback_2.12</artifactId>
-          <version>${play2.version}</version>
-          <scope>runtime</scope>
-          <exclusions>
-            <exclusion>
-              <artifactId>slf4j-api</artifactId>
-              <groupId>org.slf4j</groupId>
-            </exclusion>
-          </exclusions>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-logback_2.12</artifactId>
+            <version>${play2.version}</version>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
-          <groupId>net.logstash.logback</groupId>
-          <artifactId>logstash-logback-encoder</artifactId>
-          <version>6.6</version>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>6.6</version>
         </dependency>
 
         <dependency>
-          <groupId>ch.qos.logback.contrib</groupId>
-          <artifactId>logback-jackson</artifactId>
-          <version>0.1.5</version>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-jackson</artifactId>
+            <version>0.1.5</version>
         </dependency>
 
         <!-- ch.qos.logback.contrib.json.classic.JsonLayout -->
         <dependency>
-          <groupId>ch.qos.logback.contrib</groupId>
-          <artifactId>logback-json-classic</artifactId>
-          <version>0.1.5</version>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-json-classic</artifactId>
+            <version>0.1.5</version>
         </dependency>
 
         <dependency>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
-          <version>1.2.3</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
         </dependency>
 
         <dependency>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-core</artifactId>
-          <version>1.2.3</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.2.3</version>
         </dependency>
     </dependencies>
     <build>
@@ -189,7 +222,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                  <release>11</release>
+                    <release>11</release>
                 </configuration>
             </plugin>
             <plugin>
