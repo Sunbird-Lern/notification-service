@@ -33,4 +33,7 @@ public interface JsonKey {
   String URL = "url";
   String RESPONSE_CODE = "responseCode";
   String FAILED = "FAILED";
+  String READ_FEED = "readFeed";
+  String UPDATE_FEED = "updateFeed";
+  String CREATE_NOTIFICATION = "createNotification";
 }

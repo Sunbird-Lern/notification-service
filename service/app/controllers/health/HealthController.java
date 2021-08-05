@@ -10,6 +10,7 @@ import org.sunbird.BaseException;
 import org.sunbird.message.IResponseMessage;
 import org.sunbird.message.ResponseCode;
 import org.sunbird.request.LoggerUtil;
+import org.sunbird.request.Request;
 import org.sunbird.response.Response;
 import play.libs.Json;
 import play.mvc.Result;
@@ -39,7 +40,14 @@ public class HealthController extends BaseController {
     try {
       handleSigTerm();
       logger.info("complete health method called.");
-      CompletionStage<Result> response = handleRequest(request(), null, HEALTH_ACTOR_OPERATION_NAME);
+      Request request = new Request();
+      try {
+        request = createSBRequest(request());
+      }catch (BaseException ex){
+        return (CompletionStage<Result>)
+                RequestHandler.handleFailureResponse(ex, httpExecutionContext, request(), request);
+      }
+      CompletionStage<Result> response = handleRequest(request, null, HEALTH_ACTOR_OPERATION_NAME, request());
       return response;
     }  catch (Exception e) {
       return CompletableFuture.completedFuture(RequestHandler.handleFailureResponse(e,httpExecutionContext,request()));

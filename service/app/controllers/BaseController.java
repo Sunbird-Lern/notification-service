@@ -4,7 +4,9 @@ import akka.actor.ActorRef;
 import org.apache.commons.collections.CollectionUtils;
 import org.sunbird.Application;
 import org.sunbird.BaseException;
+import org.sunbird.message.IResponseMessage;
 import org.sunbird.message.Localizer;
+import org.sunbird.message.ResponseCode;
 import org.sunbird.request.LoggerUtil;
 import org.sunbird.request.Request;
 import org.sunbird.response.Response;
@@ -71,19 +73,13 @@ public class BaseController extends Controller {
    * @return
    */
   public CompletionStage<Result> handleRequest(
-      play.mvc.Http.Request req, RequestValidatorFunction validatorFunction, String operation) {
-    Request request = new Request();
+          Request request , RequestValidatorFunction validatorFunction, String operation, play.mvc.Http.Request req) {
+
     try {
-      List<String> list = req.getHeaders().toMap().get(NOTIFICATION_DELIVERY_MODE);
-      if (req.body() != null && req.body().asJson() != null) {
-        request = (Request) RequestMapper.mapRequest(req, Request.class);
-      }
       if (validatorFunction != null) {
         validatorFunction.apply(request);
       }
-      if (CollectionUtils.isNotEmpty(list)) {
-        request.setManagerName(list.get(0));
-      }
+
       return new RequestHandler().handleRequest(request, httpExecutionContext, operation, req);
     } catch (BaseException ex) {
       return (CompletionStage<Result>)
@@ -92,6 +88,23 @@ public class BaseController extends Controller {
       return (CompletionStage<Result>)
               RequestHandler.handleFailureResponse(ex, httpExecutionContext, req, request);
     }
+  }
+
+  protected Request createSBRequest(play.mvc.Http.Request req) throws BaseException {
+     Request request = new Request();
+    try {
+      List<String> list = req.getHeaders().toMap().get(NOTIFICATION_DELIVERY_MODE);
+      if (req.body() != null && req.body().asJson() != null) {
+        request = (Request) RequestMapper.mapRequest(req, Request.class);
+      }
+      if (CollectionUtils.isNotEmpty(list)) {
+        request.setManagerName(list.get(0));
+      }
+      return request;
+    }catch (Exception ex){
+      throw new BaseException(IResponseMessage.SERVER_ERROR,IResponseMessage.SERVER_ERROR, ResponseCode.SERVER_ERROR.getCode());
+    }
+
   }
 
   /**
