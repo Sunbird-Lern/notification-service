@@ -30,4 +30,7 @@ public interface JsonKey {
   String REQUEST_ID = "requestid";
   String MESSAGE = "message";
   String PARAMS = "params";
+  String READ_FEED = "readFeed";
+  String UPDATE_FEED = "updateFeed";
+  String CREATE_NOTIFICATION = "createNotification";
 }
