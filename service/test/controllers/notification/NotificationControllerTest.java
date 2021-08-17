@@ -1,6 +1,7 @@
 package controllers.notification;
 
 import controllers.BaseControllerTest;
+import controllers.DummyActor;
 import controllers.TestHelper;
 import org.junit.After;
 import org.junit.Before;
@@ -20,7 +21,7 @@ public class NotificationControllerTest extends BaseControllerTest {
   public static Application app;
   @Before
   public void setUp() {
-    app = Helpers.fakeApplication();
+    setup(DummyActor.class);
   }
 
   @After
@@ -32,8 +33,8 @@ public class NotificationControllerTest extends BaseControllerTest {
   public void sendNotification() {
     Map<String, Object> reqMap = new HashMap<>();
     reqMap.put("accept", "yes");
-    Result result = testHelper.performTest("/v1/notification/send", "POST",reqMap,headerMap);
-    assertTrue(testHelper.getResponseStatus(result) == Response.Status.OK.getStatusCode());
+    Result result = performTest("/v1/notification/send", "POST",reqMap);
+    assertTrue(getResponseStatus(result) == Response.Status.OK.getStatusCode());
   }
 
 
