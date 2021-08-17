@@ -47,8 +47,8 @@
                     <artifactId>akka-actor_2.12</artifactId>
                 </exclusion>
                 <exclusion>
-                  <artifactId>slf4j-api</artifactId>
-                  <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -107,7 +107,18 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-netty-server_2.11</artifactId>
+            <version>2.7.2</version>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.scala-lang</groupId>
+                    <artifactId>scala-library</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <!--Play Helper Class for Testing Controllers-->
         <dependency>
             <groupId>com.typesafe.play</groupId>
@@ -117,47 +128,51 @@
         </dependency>
 
         <dependency>
-          <groupId>com.typesafe.play</groupId>
-          <artifactId>play-logback_2.12</artifactId>
-          <version>${play2.version}</version>
-          <scope>runtime</scope>
-          <exclusions>
-            <exclusion>
-              <artifactId>slf4j-api</artifactId>
-              <groupId>org.slf4j</groupId>
-            </exclusion>
-          </exclusions>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-logback_2.12</artifactId>
+            <version>${play2.version}</version>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.danielwegener</groupId>
+            <artifactId>logback-kafka-appender</artifactId>
+            <version>0.2.0-RC2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>6.6</version>
         </dependency>
 
         <dependency>
-          <groupId>net.logstash.logback</groupId>
-          <artifactId>logstash-logback-encoder</artifactId>
-          <version>6.6</version>
-        </dependency>
-
-        <dependency>
-          <groupId>ch.qos.logback.contrib</groupId>
-          <artifactId>logback-jackson</artifactId>
-          <version>0.1.5</version>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-jackson</artifactId>
+            <version>0.1.5</version>
         </dependency>
 
         <!-- ch.qos.logback.contrib.json.classic.JsonLayout -->
         <dependency>
-          <groupId>ch.qos.logback.contrib</groupId>
-          <artifactId>logback-json-classic</artifactId>
-          <version>0.1.5</version>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-json-classic</artifactId>
+            <version>0.1.5</version>
         </dependency>
 
         <dependency>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
-          <version>1.2.3</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
         </dependency>
 
         <dependency>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-core</artifactId>
-          <version>1.2.3</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.2.3</version>
         </dependency>
     </dependencies>
     <build>
@@ -202,6 +217,28 @@
                         <include>**/*Test.java</include>
                     </includes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals><goal>shade</goal></goals>
+                        <configuration>
+                            <filters>
+                                <filter>
+                                    <!-- filter out signature files from signed dependencies, else repackaging fails with security ex -->
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>

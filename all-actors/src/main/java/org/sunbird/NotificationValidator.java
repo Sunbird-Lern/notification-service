@@ -4,9 +4,10 @@ import java.text.MessageFormat;
 import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.sunbird.message.IResponseMessage;
-import org.sunbird.message.IUserResponseMessage;
-import org.sunbird.message.ResponseCode;
+import org.sunbird.common.exception.BaseException;
+import org.sunbird.common.message.IResponseMessage;
+import org.sunbird.common.message.IUserResponseMessage;
+import org.sunbird.common.message.ResponseCode;
 import org.sunbird.pojo.NotificationMode;
 import org.sunbird.pojo.NotificationRequest;
 
@@ -39,7 +40,7 @@ public class NotificationValidator {
       throw new BaseException(
           "MANDATORY_PARAMETER_MISSING",
           MessageFormat.format(
-              IResponseMessage.MANDATORY_PARAMETER_MISSING, JsonKey.NOTIFICATIONS + "." + key),
+              IResponseMessage.Message.MANDATORY_PARAMETER_MISSING, JsonKey.NOTIFICATIONS + "." + key),
           ResponseCode.CLIENT_ERROR.getCode());
     }
   }
@@ -69,7 +70,7 @@ public class NotificationValidator {
       throw new BaseException(
           "MANDATORY_PARAMETER_MISSING",
           MessageFormat.format(
-              IResponseMessage.MANDATORY_PARAMETER_MISSING,
+              IResponseMessage.Message.MANDATORY_PARAMETER_MISSING,
               JsonKey.NOTIFICATIONS + "." + JsonKey.IDS),
           ResponseCode.CLIENT_ERROR.getCode());
     }

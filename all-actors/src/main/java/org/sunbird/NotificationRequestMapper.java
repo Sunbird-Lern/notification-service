@@ -5,8 +5,10 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.sunbird.message.IResponseMessage;
-import org.sunbird.message.ResponseCode;
+
+import org.sunbird.common.exception.BaseException;
+import org.sunbird.common.message.IResponseMessage;
+import org.sunbird.common.message.ResponseCode;
 import org.sunbird.pojo.NotificationRequest;
 import org.sunbird.request.LoggerUtil;
 
@@ -28,7 +30,7 @@ public class NotificationRequestMapper {
     if (request.isEmpty()) {
       throw new BaseException(
           "MANDATORY_PARAMETER_MISSING",
-          MessageFormat.format(IResponseMessage.MANDATORY_PARAMETER_MISSING, JsonKey.NOTIFICATIONS),
+          MessageFormat.format(IResponseMessage.Message.MANDATORY_PARAMETER_MISSING, JsonKey.NOTIFICATIONS),
           ResponseCode.CLIENT_ERROR.getCode());
     }
     List<NotificationRequest> notificationList = new ArrayList<>();

@@ -14,6 +14,8 @@ POST /v1/notification/otp/verify           @controllers.notification.Notificatio
 
 POST /v2/notification/send                 @controllers.notification.NotificationController.sendV2Notification()
 
-GET  /v2/notification/feed/read/:userId    @controllers.notification.NotificationController.readFeedNotification(userId: String, request: play.mvc.Http.Request)
+GET  /v1/notification/feed/read/:userId    @controllers.notification.NotificationController.readFeedNotification(userId: String, request: play.mvc.Http.Request)
 
 PATCH /v1/notification/feed/update         @controllers.notification.NotificationController.updateNotificationFeed()
+
+POST /v2/notification/send/sync            @controllers.notification.NotificationController.sendSyncV2Notification()

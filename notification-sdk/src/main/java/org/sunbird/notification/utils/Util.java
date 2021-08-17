@@ -2,6 +2,7 @@
 package org.sunbird.notification.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import org.sunbird.utils.PropertiesCache;
 import org.sunbird.request.LoggerUtil;
 
 /** @author manzarul */

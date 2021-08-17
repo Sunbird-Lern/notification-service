@@ -5,16 +5,16 @@ import controllers.BaseController;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import controllers.RequestHandler;
-import org.sunbird.BaseException;
-import org.sunbird.message.IResponseMessage;
-import org.sunbird.message.ResponseCode;
+import controllers.ResponseHandler;
+import org.sunbird.common.exception.BaseException;
+import org.sunbird.common.message.IResponseMessage;
+import org.sunbird.common.message.ResponseCode;
+import org.sunbird.common.request.Request;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.request.Request;
-import org.sunbird.response.Response;
+import org.sunbird.common.response.Response;
 import play.libs.Json;
 import play.mvc.Result;
-import utils.module.SignalHandler;
+import utils.RequestMapper;
 
 import javax.inject.Inject;
 
@@ -26,7 +26,7 @@ import javax.inject.Inject;
 public class HealthController extends BaseController {
   private static LoggerUtil logger = new LoggerUtil(HealthController.class);
   @Inject
-  SignalHandler signalHandler;
+  utils.module.SignalHandler signalHandler;
   // Service name must be "service" for the devops monitoring.
   private static final String service = "service";
   private static final String HEALTH_ACTOR_OPERATION_NAME = "health";
@@ -37,20 +37,15 @@ public class HealthController extends BaseController {
    * @return a CompletableFuture of success response
    */
   public CompletionStage<Result> getHealth() {
+    Request request = new Request();
     try {
       handleSigTerm();
       logger.info("complete health method called.");
-      Request request = new Request();
-      try {
-        request = createSBRequest(request());
-      }catch (BaseException ex){
-        return (CompletionStage<Result>)
-                RequestHandler.handleFailureResponse(ex, httpExecutionContext, request(), request);
-      }
+      request = RequestMapper.createSBRequest(request());
       CompletionStage<Result> response = handleRequest(request, null, HEALTH_ACTOR_OPERATION_NAME, request());
       return response;
     }  catch (Exception e) {
-      return CompletableFuture.completedFuture(RequestHandler.handleFailureResponse(e,httpExecutionContext,request()));
+      return CompletableFuture.completedFuture(ResponseHandler.handleFailureResponse(request,e ,httpExecutionContext,request()));
     }
   }
 
@@ -60,17 +55,18 @@ public class HealthController extends BaseController {
    * @return a CompletableFuture of success response
    */
   public CompletionStage<Result> getServiceHealth(String health) {
-
+    Request request = new Request();
     try {
       handleSigTerm();
       logger.info("get healh called for service =." + health);
+      request = RequestMapper.createSBRequest(request());
       CompletableFuture<JsonNode> cf = new CompletableFuture<>();
       Response response = new Response();
       response.put(RESPONSE, SUCCESS);
       cf.complete(Json.toJson(response));
       return CompletableFuture.completedFuture(ok(play.libs.Json.toJson(response)));
       }  catch (Exception e) {
-        return CompletableFuture.completedFuture(RequestHandler.handleFailureResponse(e,httpExecutionContext,request()));
+        return CompletableFuture.completedFuture(ResponseHandler.handleFailureResponse(request,e,httpExecutionContext,request()));
       }
   }
 

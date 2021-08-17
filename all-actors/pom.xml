@@ -17,18 +17,34 @@
 		</dependency>
         <dependency>
             <groupId>org.sunbird</groupId>
+            <artifactId>sb-telemetry-utils</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.sunbird</groupId>
             <artifactId>sb-actor</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.sunbird</groupId>
-            <artifactId>sb-utils</artifactId>
+            <artifactId>cassandra-utils</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
         <groupId>org.sunbird</groupId>
 	    <artifactId>notification-sdk</artifactId>
 	    <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.everit.json</groupId>
+            <artifactId>org.everit.json.schema</artifactId>
+            <version>1.5.1</version>
         </dependency>
         <dependency>
             <groupId>commons-collections</groupId>

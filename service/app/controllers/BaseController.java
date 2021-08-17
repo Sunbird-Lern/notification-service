@@ -3,21 +3,20 @@ package controllers;
 import akka.actor.ActorRef;
 import org.apache.commons.collections.CollectionUtils;
 import org.sunbird.Application;
-import org.sunbird.BaseException;
-import org.sunbird.message.IResponseMessage;
-import org.sunbird.message.Localizer;
-import org.sunbird.message.ResponseCode;
+import org.sunbird.common.exception.BaseException;
+import org.sunbird.common.message.Localizer;
+import org.sunbird.common.request.Request;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.request.Request;
-import org.sunbird.response.Response;
+import org.sunbird.common.response.Response;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;
 import play.mvc.Result;
 import utils.RequestMapper;
-import utils.RequestValidatorFunction;
+import validators.RequestValidatorFunction;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 /**
@@ -79,32 +78,16 @@ public class BaseController extends Controller {
       if (validatorFunction != null) {
         validatorFunction.apply(request);
       }
-
-      return new RequestHandler().handleRequest(request, httpExecutionContext, operation, req);
-    } catch (BaseException ex) {
-      return (CompletionStage<Result>)
-              RequestHandler.handleFailureResponse(ex, httpExecutionContext, req, request);
-    } catch (Exception ex) {
-      return (CompletionStage<Result>)
-              RequestHandler.handleFailureResponse(ex, httpExecutionContext, req, request);
-    }
-  }
-
-  protected Request createSBRequest(play.mvc.Http.Request req) throws BaseException {
-     Request request = new Request();
-    try {
       List<String> list = req.getHeaders().toMap().get(NOTIFICATION_DELIVERY_MODE);
-      if (req.body() != null && req.body().asJson() != null) {
-        request = (Request) RequestMapper.mapRequest(req, Request.class);
-      }
       if (CollectionUtils.isNotEmpty(list)) {
         request.setManagerName(list.get(0));
       }
-      return request;
-    }catch (Exception ex){
-      throw new BaseException(IResponseMessage.SERVER_ERROR,IResponseMessage.SERVER_ERROR, ResponseCode.SERVER_ERROR.getCode());
+      return new ResponseHandler().handleRequest(request, httpExecutionContext, operation, req);
+    } catch (BaseException ex) {
+      return CompletableFuture.completedFuture(ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, req));
+    } catch (Exception ex) {
+      return CompletableFuture.completedFuture( ResponseHandler.handleFailureResponse(request,ex, httpExecutionContext, req));
     }
-
   }
 
   /**
@@ -120,10 +103,10 @@ public class BaseController extends Controller {
     try {
       request = (Request) RequestMapper.mapRequest(request(), Request.class);
     } catch (Exception ex) {
-      return (CompletionStage<Result>)
-      RequestHandler.handleFailureResponse(ex, httpExecutionContext, null, request);
+      return CompletableFuture.completedFuture(
+      ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, null ));
     }
-    return (CompletionStage<Result>)
-            RequestHandler.handleSuccessResponse(response, httpExecutionContext, null);
+    return CompletableFuture.completedFuture(
+            ResponseHandler.handleSuccessResponse(request, response, httpExecutionContext, null));
   }
 }

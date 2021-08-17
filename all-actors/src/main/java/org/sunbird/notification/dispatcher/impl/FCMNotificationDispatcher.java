@@ -12,6 +12,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.sunbird.JsonKey;
 import org.sunbird.notification.dispatcher.INotificationDispatcher;
 import org.sunbird.notification.fcm.provider.IFCMNotificationService;
 import org.sunbird.notification.fcm.provider.NotificationFactory;
@@ -19,7 +20,6 @@ import org.sunbird.notification.utils.FCMResponse;
 import org.sunbird.pojo.*;
 import org.sunbird.pojo.KafkaMessage;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.request.RequestContext;
 import org.sunbird.util.ConfigUtil;
 import org.sunbird.util.Constant;
 import org.sunbird.util.DataHash;
@@ -57,7 +57,7 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
    * will have complete data that need to sent.
    */
   @Override
-  public FCMResponse dispatch(NotificationRequest notification, boolean isDryRun, boolean isSync, RequestContext context) {
+  public FCMResponse dispatch(NotificationRequest notification, boolean isDryRun, boolean isSync, Map<String,Object> context) {
 
     if (isSync) {
       return dispatchSync(notification, isDryRun, context);
@@ -66,7 +66,7 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
     }
   }
 
-  private FCMResponse dispatchSync(NotificationRequest notification, boolean isDryRun, RequestContext context) {
+  private FCMResponse dispatchSync(NotificationRequest notification, boolean isDryRun, Map<String,Object> context) {
     org.sunbird.pojo.Config config = null;
     if (notification.getIds() == null || notification.getIds().size() == 0) {
       config = notification.getConfig();
@@ -109,7 +109,7 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
   /** Initialises Kafka producer required for dispatching messages on Kafka. */
   private void initKafkaClient() {
     if (producer == null) {
-      Config config = ConfigUtil.getConfig();
+      /*Config config = ConfigUtil.getConfig();
       String BOOTSTRAP_SERVERS = config.getString(Constant.SUNBIRD_NOTIFICATION_KAFKA_SERVICE_CONFIG);
       topic = config.getString(Constant.SUNBIRD_NOTIFICATION_KAFKA_TOPIC);
 
@@ -123,11 +123,11 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
                 BOOTSTRAP_SERVERS, Constant.KAFKA_CLIENT_NOTIFICATION_PRODUCER);
       } catch (Exception e) {
         logger.error("FCMNotificationDispatcher:initKafkaClient: An exception occurred.", e);
-      }
+      }*/
     }
   }
 
-  private FCMResponse dispatchAsync(NotificationRequest notification, RequestContext context) {
+  private FCMResponse dispatchAsync(NotificationRequest notification, Map<String,Object> context) {
     FCMResponse response = null;
     if (CollectionUtils.isNotEmpty(notification.getIds())) {
       if (notification.getIds().size() <= BATCH_SIZE) {
@@ -157,23 +157,24 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
     return response;
   }
 
-  private FCMResponse writeDataToKafka(String message, String topic, RequestContext context) {
+  private FCMResponse writeDataToKafka(String message, String topic, Map<String,Object> context) {
     FCMResponse response = new FCMResponse();
-    ProducerRecord<Long, String> record = new ProducerRecord<>(topic, message);
-    if (producer != null) {
-      producer.send(record);
-      response.setMessage_id(1);
-      response.setCanonical_ids(System.currentTimeMillis());
-      response.setSuccess(Constant.SUCCESS_CODE);
-    } else {
-      response.setError(Constant.ERROR_DURING_WRITE_DATA);
-      response.setFailure(Constant.FAILURE_CODE);
-      logger.info(context,"FCMNotificationDispatcher:writeDataToKafka: Kafka producer is not initialised.");
-    }
+    logger.info(message);
+   // ProducerRecord<Long, String> record = new ProducerRecord<>(topic, message);
+//    if (producer != null) {
+//      producer.send(record);
+//      response.setMessage_id(1);
+//      response.setCanonical_ids(System.currentTimeMillis());
+//      response.setSuccess(Constant.SUCCESS_CODE);
+//    } else {
+//      response.setError(Constant.ERROR_DURING_WRITE_DATA);
+//      response.setFailure(Constant.FAILURE_CODE);
+//      logger.info(context,"FCMNotificationDispatcher:writeDataToKafka: Kafka producer is not initialised.");
+//    }
     return response;
   }
 
-  private String getTopicMessage(NotificationRequest notification, RequestContext context) {
+  private String getTopicMessage(NotificationRequest notification, Map<String,Object> context) {
     KafkaMessage message = new KafkaMessage();
     Actor actor =
         new Actor(Constant.BROAD_CAST_TOPIC_NOTIFICATION_MESSAGE, Constant.ACTOR_TYPE_VALUE);
@@ -188,12 +189,12 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
       object.put(Constant.ID, getRequestHashed(requestMap, context));
       object.put(Constant.TYPE, Constant.TYPE_VALUE);
       message.setObject(object);
-      EventData evnetData = new EventData();
-      evnetData.setAction(Constant.BROAD_CAST_TOPIC_NOTIFICATION_KEY);
-      evnetData.setRequest(requestMap);
-      message.setEdata(evnetData);
+      EventData eventData = new EventData();
+      eventData.setAction(Constant.BROAD_CAST_TOPIC_NOTIFICATION_KEY);
+      eventData.setRequest(requestMap);
+      message.setEdata(eventData);
       Map<String, String> traceMap = new HashMap<>();
-      traceMap.put(Constant.X_REQUEST_ID, context.getReqId());
+      traceMap.put(Constant.X_REQUEST_ID, (String) context.get(JsonKey.REQUEST_ID));
       traceMap.put(Constant.X_TRACE_ENABLED, "false");
       message.setTrace(traceMap);
       topicMessage = mapper.writeValueAsString(message);
@@ -204,7 +205,7 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
     return topicMessage;
   }
 
-  private String getRequestHashed(Map<String, Object> request, RequestContext context) {
+  private String getRequestHashed(Map<String, Object> request, Map<String,Object> context) {
     String val = null;
     try {
       val = DataHash.getHashed(mapper.writeValueAsString(request));

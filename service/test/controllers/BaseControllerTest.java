@@ -12,9 +12,8 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.sunbird.message.Localizer;
-import org.sunbird.request.Request;
-import org.sunbird.response.Response;
+import org.sunbird.common.request.Request;
+import org.sunbird.common.response.Response;
 import scala.compat.java8.FutureConverters;
 import scala.concurrent.Future;
 

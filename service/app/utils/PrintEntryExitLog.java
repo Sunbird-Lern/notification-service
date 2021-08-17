@@ -1,15 +1,16 @@
 package utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.JsonKey;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.sunbird.BaseException;
-import org.sunbird.message.ResponseCode;
+import org.sunbird.common.exception.BaseException;
+import org.sunbird.common.message.ResponseCode;
+import org.sunbird.common.request.Request;
 import org.sunbird.request.EntryExitLogEvent;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.request.Request;
-import org.sunbird.response.Response;
-import org.sunbird.response.ResponseParams;
+import org.sunbird.common.response.Response;
+import org.sunbird.common.response.ResponseParams;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class PrintEntryExitLog {
       List<Map<String, Object>> params = new ArrayList<>();
       params.add(request.getRequest());
       entryLogEvent.setEdataParams(params);
-      logger.info(request.getRequestContext(), entryLogEvent.toString());
+      logger.info(request.getContext(), entryLogEvent.toString());
     } catch (Exception ex) {
       logger.error("Exception occurred while logging entry log", ex);
     }
@@ -52,7 +53,7 @@ public class PrintEntryExitLog {
         }
       }
       exitLogEvent.setEdataParams(params);
-      logger.info(request.getRequestContext(), exitLogEvent.toString());
+      logger.info(request.getContext(), exitLogEvent.toString());
     } catch (Exception ex) {
       logger.error("Exception occurred while logging exit log", ex);
     }
@@ -62,7 +63,7 @@ public class PrintEntryExitLog {
       Request request, BaseException exception) {
     try {
       EntryExitLogEvent exitLogEvent = getLogEvent(request, "EXIT");
-      String requestId = request.getRequestContext().getReqId();
+      String requestId = (String) request.getContext().get(JsonKey.REQUEST_ID);
       List<Map<String, Object>> params = new ArrayList<>();
       if (null == exception) {
         exception =
@@ -95,7 +96,7 @@ public class PrintEntryExitLog {
         params.add(resParam);
       }
       exitLogEvent.setEdataParams(params);
-      logger.info(request.getRequestContext(), exitLogEvent.toString());
+      logger.info(request.getContext(), exitLogEvent.toString());
     } catch (Exception ex) {
       logger.error("Exception occurred while logging exit log", ex);
     }
@@ -113,7 +114,7 @@ public class PrintEntryExitLog {
             + url
             + " , For Operation : "
             + request.getOperation();
-    String requestId = request.getRequestContext().getReqId();
+    String requestId = (String) request.getContext().get(JsonKey.REQUEST_ID);
     entryLogEvent.setEdata("system", "trace", requestId, entryLogMsg, null);
     return entryLogEvent;
   }

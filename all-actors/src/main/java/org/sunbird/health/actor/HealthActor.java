@@ -5,8 +5,8 @@ package org.sunbird.health.actor;
 
 import org.sunbird.BaseActor;
 import org.sunbird.actor.core.ActorConfig;
-import org.sunbird.request.Request;
-import org.sunbird.response.Response;
+import org.sunbird.common.request.Request;
+import org.sunbird.common.response.Response;
 /**
  * @author manzarul
  *

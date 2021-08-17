@@ -11,9 +11,10 @@ import org.sunbird.notification.email.service.impl.IEmailProviderFactory;
 import org.sunbird.notification.sms.provider.ISmsProvider;
 import org.sunbird.notification.sms.providerimpl.Msg91SmsProviderFactory;
 import org.sunbird.pojo.NotificationRequest;
-import org.sunbird.request.RequestContext;
-import org.sunbird.response.Response;
+import org.sunbird.common.response.Response;
 import org.sunbird.util.Constant;
+
+import java.util.Map;
 
 /** @author manzarul */
 public class SyncMessageDispatcher {
@@ -21,7 +22,7 @@ public class SyncMessageDispatcher {
   private IEmailService emailservice;
   private ISmsProvider smsProvider;
 
-  public Response syncDispatch(NotificationRequest notification, boolean isDryRun, RequestContext context) {
+  public Response syncDispatch(NotificationRequest notification, boolean isDryRun, Map<String,Object> context) {
     if (notification.getMode().equalsIgnoreCase(DeliveryMode.phone.name())
         && notification.getDeliveryType().equalsIgnoreCase(DeliveryType.message.name())) {
       return syncMessageDispatch(notification, isDryRun, context);
@@ -30,7 +31,7 @@ public class SyncMessageDispatcher {
     return syncEmailDispatch(notification, isDryRun, context);
   }
 
-  private Response syncEmailDispatch(NotificationRequest notificationRequest, boolean isDryRun, RequestContext context) {
+  private Response syncEmailDispatch(NotificationRequest notificationRequest, boolean isDryRun, Map<String,Object> context) {
     EmailRequest request =
         new EmailRequest(
             notificationRequest.getConfig().getSubject(),
@@ -46,7 +47,7 @@ public class SyncMessageDispatcher {
     return response;
   }
 
-  private Response syncMessageDispatch(NotificationRequest notificationRequest, boolean isDryRun, RequestContext context) {
+  private Response syncMessageDispatch(NotificationRequest notificationRequest,boolean isDryRun, Map<String,Object> context) {
     Response response = new Response();
     boolean smsResponse =
         getSmsInstance()

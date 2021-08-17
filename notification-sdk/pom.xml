@@ -98,7 +98,6 @@
         <groupId>org.sunbird</groupId>
         <artifactId>sb-utils</artifactId>
         <version>1.0.0</version>
-        <scope>compile</scope>
       </dependency>
     </dependencies>
 
