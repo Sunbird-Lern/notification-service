@@ -109,7 +109,7 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
   /** Initialises Kafka producer required for dispatching messages on Kafka. */
   private void initKafkaClient() {
     if (producer == null) {
-      /*Config config = ConfigUtil.getConfig();
+      Config config = ConfigUtil.getConfig();
       String BOOTSTRAP_SERVERS = config.getString(Constant.SUNBIRD_NOTIFICATION_KAFKA_SERVICE_CONFIG);
       topic = config.getString(Constant.SUNBIRD_NOTIFICATION_KAFKA_TOPIC);
 
@@ -123,7 +123,7 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
                 BOOTSTRAP_SERVERS, Constant.KAFKA_CLIENT_NOTIFICATION_PRODUCER);
       } catch (Exception e) {
         logger.error("FCMNotificationDispatcher:initKafkaClient: An exception occurred.", e);
-      }*/
+      }
     }
   }
 
@@ -160,17 +160,17 @@ public class FCMNotificationDispatcher implements INotificationDispatcher {
   private FCMResponse writeDataToKafka(String message, String topic, Map<String,Object> context) {
     FCMResponse response = new FCMResponse();
     logger.info(message);
-   // ProducerRecord<Long, String> record = new ProducerRecord<>(topic, message);
-//    if (producer != null) {
-//      producer.send(record);
-//      response.setMessage_id(1);
-//      response.setCanonical_ids(System.currentTimeMillis());
-//      response.setSuccess(Constant.SUCCESS_CODE);
-//    } else {
-//      response.setError(Constant.ERROR_DURING_WRITE_DATA);
-//      response.setFailure(Constant.FAILURE_CODE);
-//      logger.info(context,"FCMNotificationDispatcher:writeDataToKafka: Kafka producer is not initialised.");
-//    }
+    ProducerRecord<Long, String> record = new ProducerRecord<>(topic, message);
+    if (producer != null) {
+      producer.send(record);
+      response.setMessage_id(1);
+      response.setCanonical_ids(System.currentTimeMillis());
+      response.setSuccess(Constant.SUCCESS_CODE);
+   } else {
+      response.setError(Constant.ERROR_DURING_WRITE_DATA);
+      response.setFailure(Constant.FAILURE_CODE);
+      logger.info(context,"FCMNotificationDispatcher:writeDataToKafka: Kafka producer is not initialised.");
+    }
     return response;
   }
 

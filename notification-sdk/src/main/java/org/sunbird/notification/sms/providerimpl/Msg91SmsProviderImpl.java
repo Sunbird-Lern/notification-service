@@ -297,10 +297,10 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
         HttpEntity entity = new ByteArrayEntity(providerDetailsString.getBytes("UTF-8"));
         httpPost.setEntity(entity);
         logger.info(entity.toString());
-        //CloseableHttpResponse response = httpClient.execute(httpPost);
-        //StatusLine sl = response.getStatusLine();
-        //response.close();
-        /*if (sl.getStatusCode() != 200) {
+        CloseableHttpResponse response = httpClient.execute(httpPost);
+        StatusLine sl = response.getStatusLine();
+        response.close();
+        if (sl.getStatusCode() != 200) {
           logger.info(
                   "SMS code for "
                           + phoneNumberList
@@ -309,7 +309,7 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
                           + " - "
                           + sl.getReasonPhrase());
         }
-        return sl.getStatusCode() == 200;*/
+        return sl.getStatusCode() == 200;
       } else {
         return false;
       }
@@ -353,12 +353,12 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
       return false;
     }
     boolean otpResponse = true;
-    //try {
+    try {
       String data = createOtpReqData(request);
       logger.info(data);
-//      HttpResponse<String> response =
-//              Unirest.get(OTP_BASE_URL + "sendotp.php?authkey=" + authKey + data).asString();
-      /*if (response != null) {
+      HttpResponse<String> response =
+              Unirest.get(OTP_BASE_URL + "sendotp.php?authkey=" + authKey + data).asString();
+      if (response != null) {
         if (response.getStatus() == NotificationConstant.SUCCESS_CODE) {
           MessageResponse messageResponse = convertMsg91Response(response.getBody());
           if (NotificationConstant.SUCCESS.equalsIgnoreCase(messageResponse.getType())) {
@@ -372,14 +372,14 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
                           + response.getStatus()
                           + " "
                           + response.getBody());
-        }*/
-    //  }
+        }
+     }
 
-//    } catch (UnirestException e) {
-//      logger.error(
-//              "Msg91SmsProviderImpl:sendOtp  exception occured during otp send :" + e.getMessage(), e);
-//      e.printStackTrace();
-//    }
+    } catch (UnirestException e) {
+      logger.error(
+              "Msg91SmsProviderImpl:sendOtp  exception occured during otp send :" + e.getMessage(), e);
+     e.printStackTrace();
+    }
     return otpResponse;
   }
 
