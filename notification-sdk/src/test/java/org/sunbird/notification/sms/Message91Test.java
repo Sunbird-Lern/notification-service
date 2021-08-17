@@ -13,6 +13,9 @@ import org.sunbird.notification.beans.SMSConfig;
 import org.sunbird.notification.sms.provider.ISmsProvider;
 import org.sunbird.notification.sms.providerimpl.Msg91SmsProviderImpl;
 import org.sunbird.notification.utils.SMSFactory;
+import org.sunbird.utils.PropertiesCache;
+
+import static org.powermock.api.mockito.PowerMockito.*;
 
 public class Message91Test extends BaseMessageTest {
   SMSConfig config = new SMSConfig(null, "TESTSU");
@@ -185,7 +188,7 @@ public class Message91Test extends BaseMessageTest {
     PowerMockito.when(SMSFactory.getInstance(Mockito.any(String.class),Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
     PowerMockito.when(msg91SmsProvider.sendOtp(Mockito.any(OTPRequest.class),Mockito.any())).thenReturn(true);
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    OTPRequest request = new OTPRequest("9663845334", "91", 5, 10, null, null);
+    OTPRequest request = new OTPRequest("9663845334", "91", 5, 10, "Your verification code is ##OTP##", "123");
     boolean response = object.sendOtp(request, new HashMap<>());
     Assert.assertTrue(response);
   }
@@ -193,7 +196,7 @@ public class Message91Test extends BaseMessageTest {
   @Test
   public void testSendOtpFailureWithIncorrectPhone() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    OTPRequest request = new OTPRequest("96638453", "91", 5, 10, null, null);
+    OTPRequest request = new OTPRequest("96638453", "91", 5, 10, "Your verification code is ##OTP##", "123");
     boolean response = object.sendOtp(request, new HashMap<>());
     Assert.assertFalse(response);
   }
@@ -201,7 +204,7 @@ public class Message91Test extends BaseMessageTest {
   @Test
   public void testSendOtpFailureWithPhoneLengthExceed() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    OTPRequest request = new OTPRequest("9663845354321", "91", 5, 10, null, null);
+    OTPRequest request = new OTPRequest("9663845354321", "91", 5, 10, "Your verification code is ##OTP##", "123");
     boolean response = object.sendOtp(request, new HashMap<>());
     Assert.assertFalse(response);
   }
@@ -209,7 +212,7 @@ public class Message91Test extends BaseMessageTest {
   @Test
   public void testSendOtpFailureDueTOMinOtpLength() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    OTPRequest request = new OTPRequest("9663845354", "91", 3, 10, null, null);
+    OTPRequest request = new OTPRequest("9663845354", "91", 3, 10, "Your verification code is ##OTP##", "123");
     boolean response = object.sendOtp(request, new HashMap<>());
     Assert.assertFalse(response);
   }
@@ -217,7 +220,7 @@ public class Message91Test extends BaseMessageTest {
   @Test
   public void testSendOtpFailureDueTOMaxOtpLength() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    OTPRequest request = new OTPRequest("9663845354", "91", 10, 10, null, null);
+    OTPRequest request = new OTPRequest("9663845354", "91", 10, 10, "Your verification code is ##OTP##", "123");
     boolean response = object.sendOtp(request, new HashMap<>());
     Assert.assertFalse(response);
   }
@@ -225,7 +228,7 @@ public class Message91Test extends BaseMessageTest {
   @Test
   public void testresendOtpFailure() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    OTPRequest request = new OTPRequest("96638453", "91", 0, 10, null, null);
+    OTPRequest request = new OTPRequest("96638453", "91", 1, 10, "Your verification code is ##OTP##", "123");
     boolean response = object.resendOtp(request, new HashMap<>());
     Assert.assertFalse(response);
   }
@@ -233,7 +236,7 @@ public class Message91Test extends BaseMessageTest {
   @Test
   public void testresendOtpFailureWithInvalidPhone() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    OTPRequest request = new OTPRequest("96638453234", "91", 0, 10, null, null);
+    OTPRequest request = new OTPRequest("96638453234", "91", 1, 10, "Your verification code is ##OTP##", "123");
     boolean response = object.resendOtp(request, new HashMap<>());
     Assert.assertFalse(response);
   }
@@ -241,7 +244,7 @@ public class Message91Test extends BaseMessageTest {
   @Test
   public void testverifyOtpFailureWithInvalidPhone() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    OTPRequest request = new OTPRequest("96638453234", "91", 0, 10, null, null);
+    OTPRequest request = new OTPRequest("96638453234", "91", 1, 10, "Your verification code is ##OTP##", "123");
     boolean response = object.verifyOtp(request, new HashMap<>());
     Assert.assertFalse(response);
   }
@@ -249,7 +252,7 @@ public class Message91Test extends BaseMessageTest {
   @Test
   public void testverifyOtpFailureWithInvalidOtpLength() {
     ISmsProvider object = SMSFactory.getInstance("91SMS", config);
-    OTPRequest request = new OTPRequest("96638453234", "91", 0, 10, null, "234");
+    OTPRequest request = new OTPRequest("96638453234", "91", 1, 10, "Your verification code is ##OTP##", "234");
     boolean response = object.verifyOtp(request, new HashMap<>());
     Assert.assertFalse(response);
   }

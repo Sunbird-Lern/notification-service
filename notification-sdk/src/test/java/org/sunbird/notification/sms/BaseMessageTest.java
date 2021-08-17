@@ -1,10 +1,5 @@
 package org.sunbird.notification.sms;
 
-import static org.powermock.api.mockito.PowerMockito.doCallRealMethod;
-import static org.powermock.api.mockito.PowerMockito.doReturn;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.spy;
-
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.request.GetRequest;
@@ -33,16 +28,20 @@ import org.sunbird.notification.sms.providerimpl.Msg91SmsProviderFactory;
 import org.sunbird.notification.sms.providerimpl.Msg91SmsProviderImpl;
 import org.sunbird.notification.utils.SMSFactory;
 
+import static org.powermock.api.mockito.PowerMockito.*;
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"javax.management.*", "javax.net.ssl.*", "javax.security.*", "jdk.internal.reflect.*"})
-@PrepareForTest({HttpClients.class, PropertiesCache.class, Unirest.class, GetRequest.class, SMSFactory.class, Msg91SmsProviderFactory.class, Msg91SmsProviderImpl.class, SMSConfig.class})
+@PrepareForTest({HttpClients.class, PropertiesCache.class, Unirest.class, GetRequest.class, SMSFactory.class, Msg91SmsProviderFactory.class, Msg91SmsProviderImpl.class, SMSConfig.class,System.class})
 public abstract class BaseMessageTest {
+  public static PropertiesCache propertiesCache;
 
   @BeforeClass
   public static void initMockRules() {
     PowerMockito.mockStatic(SMSFactory.class);
     PowerMockito.mockStatic(Msg91SmsProviderFactory.class);
+    PowerMockito.mockStatic(System.class);
     CloseableHttpClient httpClient = mock(CloseableHttpClient.class);
     CloseableHttpResponse httpResp = mock(CloseableHttpResponse.class);
     StatusLine statusLine = mock(StatusLine.class);
@@ -71,17 +70,12 @@ public abstract class BaseMessageTest {
       Assert.fail("Exception while mocking static " + e.getLocalizedMessage());
     }
 
-    PropertiesCache pc = spy(PropertiesCache.getInstance());
     PowerMockito.mockStatic(PropertiesCache.class);
-    try {
-      doReturn(pc).when(PropertiesCache.class, "getInstance");
-    } catch (Exception e) {
-      Assert.fail("Exception while mocking static " + e.getLocalizedMessage());
-    }
-    doReturn("randomString").when(pc).getProperty(Mockito.eq("sunbird_msg_91_auth"));
-    doCallRealMethod()
-        .when(pc)
-        .getProperty(AdditionalMatchers.not(Mockito.eq("sunbird_msg_91_auth")));
+    propertiesCache = mock(PropertiesCache.class);
+    when(PropertiesCache.getInstance()).thenReturn(propertiesCache);
+
+    doReturn("randomString").when(propertiesCache).getProperty(Mockito.anyString());
+    when(System.getenv(Mockito.anyString())).thenReturn("randomString");
     ISmsProvider msg91SmsProvider = PowerMockito.mock(Msg91SmsProviderImpl.class);
     PowerMockito.when(SMSFactory.getInstance(Mockito.anyString(), Mockito.any(SMSConfig.class))).thenReturn(msg91SmsProvider);
   }
