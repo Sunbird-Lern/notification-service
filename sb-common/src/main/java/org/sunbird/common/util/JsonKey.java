@@ -144,4 +144,6 @@ public interface JsonKey {
   String MAX_BATCH_LIMIT = "max_batch_limit";
   String GROUP_ROLE = "groupRole";
   String NOTIFICATIONS = "notifications";
+  String ACTION = "action";
+  String IDS = "ids";
 }

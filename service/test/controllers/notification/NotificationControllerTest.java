@@ -2,18 +2,16 @@ package controllers.notification;
 
 import controllers.BaseControllerTest;
 import controllers.DummyActor;
-import controllers.TestHelper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.sunbird.common.util.JsonKey;
 import play.Application;
 import play.mvc.Result;
-import play.test.Helpers;
 
 import javax.ws.rs.core.Response;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -35,6 +33,54 @@ public class NotificationControllerTest extends BaseControllerTest {
     reqMap.put("accept", "yes");
     Result result = performTest("/v1/notification/send", "POST",reqMap);
     assertTrue(getResponseStatus(result) == Response.Status.OK.getStatusCode());
+  }
+
+  @Test
+  public void sendV2Notification() {
+    Map<String, Object> request = getV2NotificationRequest();
+    Result result = performTest("/v2/notification/send", "POST",request);
+    assertTrue(getResponseStatus(result) == Response.Status.OK.getStatusCode());
+  }
+
+  @Test
+  public void readFeedNotification() {
+    Result result = performTest("/v1/notification/feed/read/12345", "GET",null);
+    assertTrue(getResponseStatus(result) == Response.Status.OK.getStatusCode());
+  }
+
+  @Test
+  public void updateFeedNotification() {
+    Map<String,Object> req = new HashMap<>();
+    req.put(JsonKey.IDS,Arrays.asList("12323423232"));
+    req.put(JsonKey.STATUS,"read");
+    Map<String,Object> reqObj = new HashMap<>();
+    reqObj.put(JsonKey.REQUEST,req);
+    Result result = performTest("/v1/notification/feed/update", "PATCH",reqObj);
+    assertTrue(getResponseStatus(result) == Response.Status.OK.getStatusCode());
+  }
+
+  private Map<String, Object> getV2NotificationRequest() {
+    Map<String,Object> request = new HashMap<>();
+    Map<String, Object> reqMap = new HashMap<>();
+    Map<String,Object> notification = new HashMap<>();
+    Map<String,Object> action = new HashMap<>();
+    Map<String,Object> template = new HashMap<>();
+    template.put(JsonKey.PARAMS,new HashMap<>());
+    action.put(JsonKey.TEMPLATE,template);
+    Map<String,Object> createdBy = new HashMap<>();
+    createdBy.put(JsonKey.ID,"12354");
+    createdBy.put(JsonKey.TYPE,JsonKey.USER);
+    action.put(JsonKey.CREATED_BY,createdBy);
+    action.put(JsonKey.ADDITIONAL_INFO,new HashMap<>());
+    action.put(JsonKey.TYPE,"add-member");
+    action.put(JsonKey.CATEGORY,"groups");
+    notification.put(JsonKey.ACTION,action);
+    notification.put(JsonKey.IDS,Arrays.asList("1234"));
+    notification.put(JsonKey.TYPE,"feed");
+    notification.put("priority",1);
+    reqMap.put(JsonKey.NOTIFICATIONS,Arrays.asList(notification));
+    request.put(JsonKey.REQUEST,reqMap);
+    return request;
   }
 
 

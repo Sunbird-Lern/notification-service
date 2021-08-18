@@ -29,7 +29,7 @@ public class FeedNotificationHandler implements INotificationHandler{
              dataTemplate.put(JsonKey.VER,template.get(JsonKey.VER));
              dataTemplate.put(JsonKey.TYPE,template.get(JsonKey.TYPE));
              dataTemplate.put(JsonKey.DATA,
-                       notificationService.transformTemplate((String)template.get(JsonKey.TEMPLATE),(Map<String, Object>) template.get(JsonKey.PARAMS)));
+                       notificationService.transformTemplate((String)template.get(JsonKey.DATA),(Map<String, Object>) template.get(JsonKey.PARAMS)));
              notificationRequest.getAction().setTemplate(dataTemplate);
              response = notificationService.createNotificationFeed(notificationRequest,reqContext);
         }

@@ -323,7 +323,6 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
     } finally {
       closeHttpResource(httpClient);
     }
-    return true;
   }
 
   /**
