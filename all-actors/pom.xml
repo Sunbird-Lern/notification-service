@@ -93,10 +93,6 @@
             <resource>
                 <directory>${project.basedir}/src/main/resources</directory>
             </resource>
-            <resource>
-                <directory>${project.basedir}/public</directory>
-                <targetPath>public</targetPath>
-            </resource>
         </resources>
         <plugins>
             <plugin>

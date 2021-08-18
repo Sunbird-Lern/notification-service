@@ -35,28 +35,23 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.5.201505241946</version>
+                <version>0.8.4</version>
                 <configuration>
                     <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
                     <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
                     <excludes>
                         <exclude>**/common/**</exclude>
-                        <exclude>**/routes/**</exclude>
+                        <exclude>**/router/**</exclude>
                         <exclude>**/Reverse*/**</exclude>
-                        <exclude>**/*.javascript/**</exclude>
+                        <exclude>**/routes.*</exclude>
+                        <exclude>**/routes$javascript.**</exclude>
+                        <exclude>org/sunbird/models/**/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>jacoco-initialize</id>
                         <goals>
                             <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jacoco-site</id>
-                        <phase>package</phase>
-                        <goals>
                             <goal>report</goal>
                         </goals>
                     </execution>
