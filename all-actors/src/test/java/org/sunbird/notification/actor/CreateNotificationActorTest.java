@@ -181,7 +181,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
 
-    @Test
+   /* @Test
     public void testCreatePhoneSyncNotificationSuccess(){
 
         TestKit probe = new TestKit(system);
@@ -228,56 +228,8 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
 
-   /* @Test
-    public void testCreateDeviceSyncNotificationSuccess(){
 
-        TestKit probe = new TestKit(system);
-        ActorRef subject = system.actorOf(props);
-        try {
-            Mockito.when(propertiesCache.getProperty(Mockito.anyString())).thenReturn("randomString");
-            Mockito.when(config.getString(Mockito.anyString())).thenReturn("randomString");
-                }catch (BaseException ex) {
-            Assert.assertTrue(false);
-        }
-
-        Request request = getV2NotificationDeviceRequest();
-        subject.tell(request, probe.getRef());
-        Response res = probe.expectMsgClass(Duration.ofSeconds(30), Response.class);
-        Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
-    }
-*/
-    private Request getV2NotificationDeviceRequest() {
-        Request reqObj = new Request();
-        Map<String, Object> context = new HashMap<>();
-        context.put(JsonKey.USER_ID, "user1");
-        reqObj.setContext(context);
-        reqObj.setOperation("createNotification");
-        Map<String, Object> reqMap = new HashMap<>();
-        Map<String,Object> notification = new HashMap<>();
-        Map<String,Object> action = new HashMap<>();
-        Map<String,Object> createdBy = new HashMap<>();
-        createdBy.put(JsonKey.ID,"12354");
-        createdBy.put(JsonKey.TYPE,JsonKey.SYSTEM);
-        action.put(JsonKey.CREATED_BY,createdBy);
-        Map<String,Object> additionalInfo = new HashMap<>();
-        additionalInfo.put("topic","device-topic");
-        Map<String,Object> rawData = new HashMap<>();
-        rawData.put("key1","value1");
-        additionalInfo.put("rawData",rawData);
-        action.put(JsonKey.ADDITIONAL_INFO,additionalInfo);
-        action.put(JsonKey.TYPE,"add-member");
-        action.put(JsonKey.CATEGORY,"groups");
-        notification.put(JsonKey.ACTION,action);
-        notification.put(JsonKey.IDS, Arrays.asList());
-        notification.put(JsonKey.TYPE,"device");
-        notification.put("priority",1);
-        reqMap.put(JsonKey.NOTIFICATIONS,Arrays.asList(notification));
-        reqObj.setManagerName("sync");
-        reqObj.setRequest(reqMap);
-        return reqObj;
-    }
-
-
+  */
     private Request getV2NotificationEmailRequest() {
         Request reqObj = new Request();
         Map<String, Object> context = new HashMap<>();
