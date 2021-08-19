@@ -28,7 +28,7 @@
         <httpClient.version>4.5.1</httpClient.version>
         <commons-collections4.version>4.1</commons-collections4.version>
         <spotbugs.plugin.version>3.0.4</spotbugs.plugin.version>
-        <surefire.plugin.version>2.22.0</surefire.plugin.version>
+        <surefire.plugin.version>2.20</surefire.plugin.version>
     </properties>
     <build>
         <plugins>
