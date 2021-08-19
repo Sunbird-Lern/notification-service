@@ -1,11 +1,13 @@
 package org.sunbird.notification.actor;
 
 import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.testkit.javadsl.TestKit;
 import com.datastax.driver.core.ResultSet;
 import org.apache.commons.math3.analysis.function.Pow;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,22 +52,28 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @PowerMockIgnore({"javax.management.*", "jdk.internal.reflect.*"})
 public class CreateNotificationActorTest extends BaseActorTest{
 
+    public  final Props props = Props.create(CreateNotificationActor.class);
 
-    public static PropertiesCache propertiesCache;
-    @BeforeClass
-    public static void setUp() throws Exception {
+    public  PropertiesCache propertiesCache;
+    public  Email emailService ;
+
+    @Before
+    public void setUp() throws Exception {
+
         PowerMockito.mockStatic(Localizer.class);
         Mockito.when(Localizer.getInstance()).thenReturn(null);
         PowerMockito.mockStatic(SystemConfigUtil.class);
         PowerMockito.mockStatic(PropertiesCache.class);
         propertiesCache = Mockito.mock(PropertiesCache.class);
 
-
+        PowerMockito.mockStatic(Email.class);
+        emailService= Mockito.mock(Email.class);
+        Mockito.when(Email.getInstance(Mockito.any())).thenReturn(emailService);
     }
 
-    /*@Test
+    @Test
     public void testCreateFeedNotificationSuccess(){
-        Props props = Props.create(CreateNotificationActor.class);
+
         TestKit probe = new TestKit(system);
         ActorRef subject = system.actorOf(props);
         try {
@@ -99,19 +107,16 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Response res = probe.expectMsgClass(Duration.ofSeconds(40), Response.class);
         System.out.println(res.getResult());
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
-    }*/
+
+    }
 
     @Test
     public void testCreateEmailSyncNotificationSuccess(){
-        Props props = Props.create(CreateNotificationActor.class);
+
         TestKit probe = new TestKit(system);
         ActorRef subject = system.actorOf(props);
         try {
-            Email emailService ;
-            PowerMockito.mockStatic(Email.class);
-            emailService= Mockito.mock(Email.class);
-            Mockito.when(Email.getInstance(Mockito.any())).thenReturn(emailService);
-            CassandraOperation cassandraOperation;
+            CassandraOperation cassandraOperation ;
             PowerMockito.mockStatic(ServiceFactory.class);
             cassandraOperation = mock(CassandraOperationImpl.class);
             when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);

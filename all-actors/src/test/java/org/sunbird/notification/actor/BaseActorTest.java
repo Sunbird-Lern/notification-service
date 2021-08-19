@@ -2,7 +2,9 @@ package org.sunbird.notification.actor;
 
 import akka.actor.ActorSystem;
 import akka.testkit.javadsl.TestKit;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.sunbird.Application;
@@ -18,17 +20,17 @@ import java.util.Map;
 @PrepareForTest({Application.class})
 public abstract class BaseActorTest {
 
-    static ActorSystem system;
     static Map<String, Object> headerMap = new HashMap<>();
+    ActorSystem system;
 
-    @BeforeClass
-    public static void setup() {
+    @Before
+    public  void setup() {
         system = ActorSystem.create("system");
         setReqId();
     }
 
-    @AfterClass
-    public static void teardown() {
+    @After
+    public  void teardown() {
         TestKit.shutdownActorSystem(system);
         system = null;
     }
