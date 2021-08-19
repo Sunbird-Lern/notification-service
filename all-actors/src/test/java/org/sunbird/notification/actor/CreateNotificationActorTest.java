@@ -63,7 +63,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
     }
 
-    @Test
+    /*@Test
     public void testCreateFeedNotificationSuccess(){
         Props props = Props.create(CreateNotificationActor.class);
         TestKit probe = new TestKit(system);
@@ -99,7 +99,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Response res = probe.expectMsgClass(Duration.ofSeconds(40), Response.class);
         System.out.println(res.getResult());
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
-    }
+    }*/
 
     @Test
     public void testCreateEmailSyncNotificationSuccess(){
