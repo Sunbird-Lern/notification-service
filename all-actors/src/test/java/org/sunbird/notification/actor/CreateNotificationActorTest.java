@@ -97,7 +97,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
         Request request = getV2NotificationRequest();
         subject.tell(request, probe.getRef());
-        Response res = probe.expectMsgClass(Duration.ofSeconds(20), Response.class);
+        Response res = probe.expectMsgClass(Duration.ofSeconds(40), Response.class);
         System.out.println(res.getResult());
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
