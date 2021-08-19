@@ -52,8 +52,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
 
     public static PropertiesCache propertiesCache;
-    public static CassandraOperation cassandraOperation;
-    public static Email emailService ;
+    public static
     @BeforeClass
     public static void setUp() throws Exception {
         PowerMockito.mockStatic(Localizer.class);
@@ -61,12 +60,8 @@ public class CreateNotificationActorTest extends BaseActorTest{
         PowerMockito.mockStatic(SystemConfigUtil.class);
         PowerMockito.mockStatic(PropertiesCache.class);
         propertiesCache = Mockito.mock(PropertiesCache.class);
-        PowerMockito.mockStatic(ServiceFactory.class);
-        cassandraOperation = mock(CassandraOperationImpl.class);
-        when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
-        PowerMockito.mockStatic(Email.class);
-        emailService= Mockito.mock(Email.class);
-        Mockito.when(Email.getInstance(Mockito.any())).thenReturn(emailService);
+
+
     }
 
     @Test
@@ -75,6 +70,10 @@ public class CreateNotificationActorTest extends BaseActorTest{
         TestKit probe = new TestKit(system);
         ActorRef subject = system.actorOf(props);
         try {
+            CassandraOperation cassandraOperation;
+            PowerMockito.mockStatic(ServiceFactory.class);
+            cassandraOperation = mock(CassandraOperationImpl.class);
+            when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
             when(cassandraOperation.getRecordsByProperty(
                     Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
                     Mockito.eq("action_template"),
@@ -109,6 +108,14 @@ public class CreateNotificationActorTest extends BaseActorTest{
         TestKit probe = new TestKit(system);
         ActorRef subject = system.actorOf(props);
         try {
+            Email emailService ;
+            PowerMockito.mockStatic(Email.class);
+            emailService= Mockito.mock(Email.class);
+            Mockito.when(Email.getInstance(Mockito.any())).thenReturn(emailService);
+            CassandraOperation cassandraOperation;
+            PowerMockito.mockStatic(ServiceFactory.class);
+            cassandraOperation = mock(CassandraOperationImpl.class);
+            when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
             Mockito.when(emailService.sendMail(Mockito.anyList(),Mockito.anyString(),Mockito.anyString())).thenReturn(true);
 
             when(cassandraOperation.getRecordsByProperty(
