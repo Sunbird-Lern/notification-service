@@ -102,7 +102,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
 
-    @Test
+  /*  @Test
     public void testCreateEmailSyncNotificationSuccess(){
         TestKit probe = new TestKit(system);
         ActorRef subject = system.actorOf(props);
@@ -133,7 +133,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Response res = probe.expectMsgClass(Duration.ofSeconds(80), Response.class);
         System.out.println(res.getResult());
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
-    }
+    }*/
 
     private Request getV2NotificationEmailRequest() {
         Request reqObj = new Request();
