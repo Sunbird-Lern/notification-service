@@ -50,7 +50,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @PowerMockIgnore({"javax.management.*", "jdk.internal.reflect.*"})
 public class CreateNotificationActorTest extends BaseActorTest{
 
-    private final Props props = Props.create(CreateNotificationActor.class);
+
     public static PropertiesCache propertiesCache;
     public static CassandraOperation cassandraOperation;
     public static Email emailService ;
@@ -71,6 +71,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
     @Test
     public void testCreateFeedNotificationSuccess(){
+        Props props = Props.create(CreateNotificationActor.class);
         TestKit probe = new TestKit(system);
         ActorRef subject = system.actorOf(props);
         try {
@@ -102,8 +103,9 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
 
-  /*  @Test
+    @Test
     public void testCreateEmailSyncNotificationSuccess(){
+        Props props = Props.create(CreateNotificationActor.class);
         TestKit probe = new TestKit(system);
         ActorRef subject = system.actorOf(props);
         try {
@@ -133,7 +135,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Response res = probe.expectMsgClass(Duration.ofSeconds(80), Response.class);
         System.out.println(res.getResult());
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
-    }*/
+    }
 
     private Request getV2NotificationEmailRequest() {
         Request reqObj = new Request();
