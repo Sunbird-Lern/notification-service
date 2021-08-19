@@ -52,7 +52,6 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
 
     public static PropertiesCache propertiesCache;
-    public static
     @BeforeClass
     public static void setUp() throws Exception {
         PowerMockito.mockStatic(Localizer.class);
