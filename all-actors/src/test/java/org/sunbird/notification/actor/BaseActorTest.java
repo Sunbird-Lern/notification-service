@@ -21,16 +21,16 @@ import java.util.Map;
 public abstract class BaseActorTest {
 
     static Map<String, Object> headerMap = new HashMap<>();
-    ActorSystem system;
+    static ActorSystem system;
 
-    @Before
-    public  void setup() {
+    @BeforeClass
+    public  static void setup() {
         system = ActorSystem.create("system");
         setReqId();
     }
 
-    @After
-    public  void teardown() {
+    @AfterClass
+    public static void teardown() {
         TestKit.shutdownActorSystem(system);
         system = null;
     }

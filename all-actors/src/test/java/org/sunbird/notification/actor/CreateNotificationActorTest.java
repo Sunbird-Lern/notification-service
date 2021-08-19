@@ -5,6 +5,12 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.testkit.javadsl.TestKit;
 import com.datastax.driver.core.ResultSet;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.mashape.unirest.http.HttpMethod;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.request.HttpRequestWithBody;
+import com.typesafe.config.Config;
 import org.apache.commons.math3.analysis.function.Pow;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
@@ -12,6 +18,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicStatusLine;
+import org.apache.kafka.clients.producer.Producer;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -36,7 +43,11 @@ import org.sunbird.notification.beans.EmailConfig;
 import org.sunbird.notification.email.Email;
 import org.sunbird.notification.email.service.IEmailService;
 import org.sunbird.notification.email.service.impl.SmtpEMailServiceImpl;
+import org.sunbird.notification.fcm.provider.FCMInitializer;
+import org.sunbird.notification.utils.FCMResponse;
+import org.sunbird.util.ConfigUtil;
 import org.sunbird.util.SystemConfigUtil;
+import org.sunbird.util.kafka.KafkaClient;
 import org.sunbird.utils.PropertiesCache;
 import org.sunbird.utils.ServiceFactory;
 
@@ -55,7 +66,9 @@ import static org.powermock.api.mockito.PowerMockito.*;
         SystemConfigUtil.class,
         PropertiesCache.class,
         Email.class,
-        HttpClients.class
+        HttpClients.class,
+        ConfigUtil.class,
+        KafkaClient.class,
 })
 @PowerMockIgnore({"javax.management.*", "jdk.internal.reflect.*"})
 public class CreateNotificationActorTest extends BaseActorTest{
@@ -65,6 +78,8 @@ public class CreateNotificationActorTest extends BaseActorTest{
     public  PropertiesCache propertiesCache;
     public  Email emailService ;
     public  CloseableHttpClient httpClients;
+    public Producer<Long, String> producer;
+    Config config;
     @Before
     public void setUp() throws Exception {
 
@@ -80,6 +95,13 @@ public class CreateNotificationActorTest extends BaseActorTest{
         PowerMockito.mockStatic(HttpClients.class);
         httpClients = Mockito.mock(CloseableHttpClient.class);
         Mockito.when(HttpClients.createDefault()).thenReturn(httpClients);
+        PowerMockito.mockStatic(ConfigUtil.class);
+        config = Mockito.mock(Config.class);
+        Mockito.when(ConfigUtil.getConfig()).thenReturn(config);
+        PowerMockito.mockStatic(KafkaClient.class);
+        producer = Mockito.mock(Producer.class);
+        Mockito.when(KafkaClient.createProducer(Mockito.anyString(),Mockito.anyString())).thenReturn(producer);
+
     }
 
     @Test
@@ -115,7 +137,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
         Request request = getV2NotificationRequest();
         subject.tell(request, probe.getRef());
-        Response res = probe.expectMsgClass(Duration.ofSeconds(40), Response.class);
+        Response res = probe.expectMsgClass(Duration.ofSeconds(30), Response.class);
         System.out.println(res.getResult());
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
 
@@ -154,7 +176,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
         Request request = getV2NotificationEmailRequest();
         subject.tell(request, probe.getRef());
-        Response res = probe.expectMsgClass(Duration.ofSeconds(80), Response.class);
+        Response res = probe.expectMsgClass(Duration.ofSeconds(30), Response.class);
         System.out.println(res.getResult());
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
@@ -201,10 +223,60 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
         Request request = getV2NotificationPhoneRequest();
         subject.tell(request, probe.getRef());
-        Response res = probe.expectMsgClass(Duration.ofSeconds(80), Response.class);
+        Response res = probe.expectMsgClass(Duration.ofSeconds(30), Response.class);
         System.out.println(res.getResult());
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
+
+   /* @Test
+    public void testCreateDeviceSyncNotificationSuccess(){
+
+        TestKit probe = new TestKit(system);
+        ActorRef subject = system.actorOf(props);
+        try {
+            Mockito.when(propertiesCache.getProperty(Mockito.anyString())).thenReturn("randomString");
+            Mockito.when(config.getString(Mockito.anyString())).thenReturn("randomString");
+                }catch (BaseException ex) {
+            Assert.assertTrue(false);
+        }
+
+        Request request = getV2NotificationDeviceRequest();
+        subject.tell(request, probe.getRef());
+        Response res = probe.expectMsgClass(Duration.ofSeconds(30), Response.class);
+        Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
+    }
+*/
+    private Request getV2NotificationDeviceRequest() {
+        Request reqObj = new Request();
+        Map<String, Object> context = new HashMap<>();
+        context.put(JsonKey.USER_ID, "user1");
+        reqObj.setContext(context);
+        reqObj.setOperation("createNotification");
+        Map<String, Object> reqMap = new HashMap<>();
+        Map<String,Object> notification = new HashMap<>();
+        Map<String,Object> action = new HashMap<>();
+        Map<String,Object> createdBy = new HashMap<>();
+        createdBy.put(JsonKey.ID,"12354");
+        createdBy.put(JsonKey.TYPE,JsonKey.SYSTEM);
+        action.put(JsonKey.CREATED_BY,createdBy);
+        Map<String,Object> additionalInfo = new HashMap<>();
+        additionalInfo.put("topic","device-topic");
+        Map<String,Object> rawData = new HashMap<>();
+        rawData.put("key1","value1");
+        additionalInfo.put("rawData",rawData);
+        action.put(JsonKey.ADDITIONAL_INFO,additionalInfo);
+        action.put(JsonKey.TYPE,"add-member");
+        action.put(JsonKey.CATEGORY,"groups");
+        notification.put(JsonKey.ACTION,action);
+        notification.put(JsonKey.IDS, Arrays.asList());
+        notification.put(JsonKey.TYPE,"device");
+        notification.put("priority",1);
+        reqMap.put(JsonKey.NOTIFICATIONS,Arrays.asList(notification));
+        reqObj.setManagerName("sync");
+        reqObj.setRequest(reqMap);
+        return reqObj;
+    }
+
 
     private Request getV2NotificationEmailRequest() {
         Request reqObj = new Request();

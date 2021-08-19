@@ -85,11 +85,11 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
       object.put(NotificationConstant.DRY_RUN, isDryRun);
       object.put(NotificationConstant.TO, TOPIC_SUFFIX + topic);
       logger.info(object.toString());
-      /*HttpResponse<JsonNode> httpResponse =
+      HttpResponse<JsonNode> httpResponse =
           Unirest.post(FCM_URL).headers(headerMap).body(object.toString()).asJson();
       String responsebody = httpResponse.getBody().toString();
       logger.info(context, "FCM Notification response== for topic " + topic + response);
-      response = mapper.readValue(responsebody, FCMResponse.class);*/
+      response = mapper.readValue(responsebody, FCMResponse.class);
     } catch (Exception e) {
       logger.error(context, e.getMessage(), e);
     }
@@ -119,11 +119,11 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
       object.put(NotificationConstant.REGISTRATION_IDS, deviceIds);
       logger.info(object.toString());
 
-      /*HttpResponse<JsonNode> httpResponse =
+      HttpResponse<JsonNode> httpResponse =
           Unirest.post(FCM_URL).headers(headerMap).body(object).asJson();
       String response = httpResponse.getBody().toString();
       logger.info(context, "FCM Notification response== for device ids " + deviceIds + " " + response);
-      fcmResponse = mapper.readValue(response, FCMResponse.class);*/
+      fcmResponse = mapper.readValue(response, FCMResponse.class);
     } catch (Exception e) {
       logger.error(context, e.getMessage(), e);
     }
