@@ -6,12 +6,19 @@ import akka.actor.Props;
 import akka.testkit.javadsl.TestKit;
 import com.datastax.driver.core.ResultSet;
 import org.apache.commons.math3.analysis.function.Pow;
+import org.apache.http.ProtocolVersion;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicStatusLine;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -33,11 +40,11 @@ import org.sunbird.util.SystemConfigUtil;
 import org.sunbird.utils.PropertiesCache;
 import org.sunbird.utils.ServiceFactory;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
 
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({
@@ -47,7 +54,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
         Localizer.class,
         SystemConfigUtil.class,
         PropertiesCache.class,
-        Email.class
+        Email.class,
+        HttpClients.class
 })
 @PowerMockIgnore({"javax.management.*", "jdk.internal.reflect.*"})
 public class CreateNotificationActorTest extends BaseActorTest{
@@ -56,7 +64,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
     public  PropertiesCache propertiesCache;
     public  Email emailService ;
-
+    public  CloseableHttpClient httpClients;
     @Before
     public void setUp() throws Exception {
 
@@ -65,10 +73,13 @@ public class CreateNotificationActorTest extends BaseActorTest{
         PowerMockito.mockStatic(SystemConfigUtil.class);
         PowerMockito.mockStatic(PropertiesCache.class);
         propertiesCache = Mockito.mock(PropertiesCache.class);
-
+        Mockito.when(PropertiesCache.getInstance()).thenReturn(propertiesCache);
         PowerMockito.mockStatic(Email.class);
         emailService= Mockito.mock(Email.class);
         Mockito.when(Email.getInstance(Mockito.any())).thenReturn(emailService);
+        PowerMockito.mockStatic(HttpClients.class);
+        httpClients = Mockito.mock(CloseableHttpClient.class);
+        Mockito.when(HttpClients.createDefault()).thenReturn(httpClients);
     }
 
     @Test
@@ -148,6 +159,53 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
 
+    @Test
+    public void testCreatePhoneSyncNotificationSuccess(){
+
+        TestKit probe = new TestKit(system);
+        ActorRef subject = system.actorOf(props);
+        try {
+            Mockito.when(propertiesCache.getProperty(Mockito.anyString())).thenReturn("randomString");
+            CassandraOperation cassandraOperation ;
+            PowerMockito.mockStatic(ServiceFactory.class);
+            cassandraOperation = mock(CassandraOperationImpl.class);
+            when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
+            Mockito.when(emailService.sendMail(Mockito.anyList(),Mockito.anyString(),Mockito.anyString())).thenReturn(true);
+            CloseableHttpResponse closeableHttpResponse = mock(CloseableHttpResponse.class);
+            Mockito.when(closeableHttpResponse.getStatusLine()).thenReturn(new BasicStatusLine(new ProtocolVersion("http",1,1),200,null));
+            Mockito.doNothing().when(closeableHttpResponse).close();
+            when(cassandraOperation.getRecordsByProperty(
+                    Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
+                    Mockito.eq("action_template"),
+                    Mockito.anyString(),
+                    Mockito.anyString(),
+                    Mockito.any()))
+                    .thenReturn(getAddActionTemplate());
+            when(cassandraOperation.getRecordsByProperty(
+                    Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
+                    Mockito.eq("notification_template"),
+                    Mockito.anyString(),
+                    Mockito.anyString(),
+                    Mockito.any()))
+                    .thenReturn(getNotificationTemplate());
+
+            Mockito.when(httpClients.execute(Mockito.any())).thenReturn(closeableHttpResponse);
+
+        }catch (BaseException be) {
+            Assert.assertTrue(false);
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Request request = getV2NotificationPhoneRequest();
+        subject.tell(request, probe.getRef());
+        Response res = probe.expectMsgClass(Duration.ofSeconds(80), Response.class);
+        System.out.println(res.getResult());
+        Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
+    }
+
     private Request getV2NotificationEmailRequest() {
         Request reqObj = new Request();
         Map<String, Object> context = new HashMap<>();
@@ -181,6 +239,41 @@ public class CreateNotificationActorTest extends BaseActorTest{
         reqObj.setRequest(reqMap);
         return reqObj;
     }
+
+    private Request getV2NotificationPhoneRequest() {
+        Request reqObj = new Request();
+        Map<String, Object> context = new HashMap<>();
+        context.put(JsonKey.USER_ID, "user1");
+        reqObj.setContext(context);
+        reqObj.setOperation("createNotification");
+        Map<String, Object> reqMap = new HashMap<>();
+        Map<String,Object> notification = new HashMap<>();
+        Map<String,Object> action = new HashMap<>();
+        Map<String,Object> template = new HashMap<>();
+        Map<String,Object> params = new HashMap<>();
+        params.put("param1","group");
+        template.put(JsonKey.PARAMS,params);
+        action.put(JsonKey.TEMPLATE,template);
+        Map<String,Object> createdBy = new HashMap<>();
+        createdBy.put(JsonKey.ID,"12354");
+        createdBy.put(JsonKey.TYPE,JsonKey.SYSTEM);
+        action.put(JsonKey.CREATED_BY,createdBy);
+        Map<String,Object> additionalInfo = new HashMap<>();
+        additionalInfo.put("sender","sender@subird.com");
+        additionalInfo.put("subject","Hello User");
+        action.put(JsonKey.ADDITIONAL_INFO,additionalInfo);
+        action.put(JsonKey.TYPE,"sms");
+        action.put(JsonKey.CATEGORY,"user-service");
+        notification.put(JsonKey.ACTION,action);
+        notification.put(JsonKey.IDS, Arrays.asList("98128121212"));
+        notification.put(JsonKey.TYPE,"phone");
+        notification.put("priority",1);
+        reqMap.put(JsonKey.NOTIFICATIONS,Arrays.asList(notification));
+        reqObj.setManagerName("sync");
+        reqObj.setRequest(reqMap);
+        return reqObj;
+    }
+
 
 
     private Response getNotificationTemplate() {
