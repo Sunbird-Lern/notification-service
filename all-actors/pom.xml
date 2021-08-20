@@ -119,8 +119,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M4</version>
                 <configuration>
-                    <argLine>-Xmx1024m</argLine>
-                       <includes>
+                    <argLine>-XX:MaxPermSize=500M</argLine>
+                    <includes>
                         <include>**/*Spec.java</include>
                         <include>**/*Test.java</include>
                        </includes>
