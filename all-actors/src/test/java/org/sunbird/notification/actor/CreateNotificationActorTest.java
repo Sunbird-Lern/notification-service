@@ -229,7 +229,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
     }
 
 
-  
+
     private Request getV2NotificationEmailRequest() {
         Request reqObj = new Request();
         Map<String, Object> context = new HashMap<>();

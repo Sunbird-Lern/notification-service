@@ -30,7 +30,7 @@
         <spotbugs.plugin.version>3.0.4</spotbugs.plugin.version>
         <surefire.plugin.version>3.0.0-M4</surefire.plugin.version>
         <sbt-compiler.plugin.version>1.0.0</sbt-compiler.plugin.version>
-
+        <argLine>-XX:MaxPermSize=512m</argLine>
     </properties>
     <build>
         <plugins>
