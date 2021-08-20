@@ -1,24 +1,23 @@
 package org.sunbird.util;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
-import org.sunbird.JsonKey;
 import org.sunbird.common.exception.BaseException;
+import org.sunbird.common.util.JsonKey;
 import org.sunbird.utils.CassandraConnectionManager;
 import org.sunbird.utils.CassandraConnectionMngrFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class DBUtil {
     public static final Map<String, DbInfo> dbInfoMap = new HashMap<>();
-    public static final String KEY_SPACE_NAME = JsonKey.SUNBIRD_NOTIFICATIONS;
+    public static final String KEY_SPACE_NAME = JsonKey.SUNBIRD_GROUPS;
 
     private static void initializeDBProperty() {
         // setting db info (keyspace , table) into static map
         // this map will be used during cassandra data base interaction.
         // this map will have each DB name and it's corresponding keyspace and table
         // name.
-        dbInfoMap.put(JsonKey.SUNBIRD_NOTIFICATIONS, getDbInfoObject(KEY_SPACE_NAME, "group"));
+        dbInfoMap.put(JsonKey.USER_DB, getDbInfoObject(KEY_SPACE_NAME, "sunbird_notifications"));
     }
 
     /**
@@ -34,7 +33,7 @@ public class DBUtil {
         if (StringUtils.isNotBlank(nodes)) {
             hosts = nodes.split(",");
         } else {
-            hosts = new String[]{"localhost"};
+            hosts = new String[] {"localhost"};
         }
         cassandraConnectionManager.createConnection(hosts);
     }
@@ -49,9 +48,7 @@ public class DBUtil {
         return dbInfo;
     }
 
-    /**
-     * class to hold cassandra db info.
-     */
+    /** class to hold cassandra db info. */
     public static class DbInfo {
         private String keySpace;
         private String tableName;
@@ -81,11 +78,8 @@ public class DBUtil {
             this.port = port;
         }
 
-        /**
-         * No-arg constructor
-         */
-        DbInfo() {
-        }
+        /** No-arg constructor */
+        DbInfo() {}
 
         @Override
         public boolean equals(Object obj) {

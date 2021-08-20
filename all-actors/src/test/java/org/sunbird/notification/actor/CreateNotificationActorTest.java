@@ -70,7 +70,6 @@ public class CreateNotificationActorTest extends BaseActorTest{
     public  PropertiesCache propertiesCache;
     public  Email emailService ;
     public  CloseableHttpClient httpClients;
-    public Producer<Long, String> producer;
     @Before
     public void setUp() throws Exception {
 

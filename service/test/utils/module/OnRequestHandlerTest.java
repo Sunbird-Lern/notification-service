@@ -7,14 +7,13 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
+import controllers.JsonKey;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.sunbird.common.message.IResponseMessage;
-import org.sunbird.common.util.JsonKey;
 import play.mvc.Result;
 import play.mvc.Http;
 
