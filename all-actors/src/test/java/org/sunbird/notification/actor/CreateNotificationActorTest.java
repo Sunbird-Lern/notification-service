@@ -33,21 +33,14 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.sunbird.cassandra.CassandraOperation;
 import org.sunbird.cassandraimpl.CassandraOperationImpl;
-import org.sunbird.common.CassandraUtil;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.message.Localizer;
 import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
 import org.sunbird.common.util.JsonKey;
-import org.sunbird.notification.beans.EmailConfig;
 import org.sunbird.notification.email.Email;
-import org.sunbird.notification.email.service.IEmailService;
-import org.sunbird.notification.email.service.impl.SmtpEMailServiceImpl;
-import org.sunbird.notification.fcm.provider.FCMInitializer;
-import org.sunbird.notification.utils.FCMResponse;
-import org.sunbird.util.ConfigUtil;
+
 import org.sunbird.util.SystemConfigUtil;
-import org.sunbird.util.kafka.KafkaClient;
 import org.sunbird.utils.PropertiesCache;
 import org.sunbird.utils.ServiceFactory;
 
@@ -66,9 +59,8 @@ import static org.powermock.api.mockito.PowerMockito.*;
         SystemConfigUtil.class,
         PropertiesCache.class,
         Email.class,
-        HttpClients.class,
-        ConfigUtil.class,
-        KafkaClient.class,
+        HttpClients.class
+
 })
 @PowerMockIgnore({"javax.management.*", "jdk.internal.reflect.*"})
 public class CreateNotificationActorTest extends BaseActorTest{
@@ -79,7 +71,6 @@ public class CreateNotificationActorTest extends BaseActorTest{
     public  Email emailService ;
     public  CloseableHttpClient httpClients;
     public Producer<Long, String> producer;
-    Config config;
     @Before
     public void setUp() throws Exception {
 
@@ -95,12 +86,6 @@ public class CreateNotificationActorTest extends BaseActorTest{
         PowerMockito.mockStatic(HttpClients.class);
         httpClients = Mockito.mock(CloseableHttpClient.class);
         Mockito.when(HttpClients.createDefault()).thenReturn(httpClients);
-        PowerMockito.mockStatic(ConfigUtil.class);
-        config = Mockito.mock(Config.class);
-        Mockito.when(ConfigUtil.getConfig()).thenReturn(config);
-        PowerMockito.mockStatic(KafkaClient.class);
-        producer = Mockito.mock(Producer.class);
-        Mockito.when(KafkaClient.createProducer(Mockito.anyString(),Mockito.anyString())).thenReturn(producer);
 
     }
 
@@ -137,7 +122,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
         Request request = getV2NotificationRequest();
         subject.tell(request, probe.getRef());
-        Response res = probe.expectMsgClass(Duration.ofSeconds(100), Response.class);
+        Response res = probe.expectMsgClass(Duration.ofSeconds(30), Response.class);
         System.out.println(res.getResult());
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
 
@@ -176,7 +161,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
         Request request = getV2NotificationEmailRequest();
         subject.tell(request, probe.getRef());
-        Response res = probe.expectMsgClass(Duration.ofSeconds(100), Response.class);
+        Response res = probe.expectMsgClass(Duration.ofSeconds(30), Response.class);
         System.out.println(res.getResult());
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
@@ -223,7 +208,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
         Request request = getV2NotificationPhoneRequest();
         subject.tell(request, probe.getRef());
-        Response res = probe.expectMsgClass(Duration.ofSeconds(100), Response.class);
+        Response res = probe.expectMsgClass(Duration.ofSeconds(30), Response.class);
         System.out.println(res.getResult());
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
