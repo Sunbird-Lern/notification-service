@@ -181,7 +181,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
 
-   /* @Test
+    @Test
     public void testCreatePhoneSyncNotificationSuccess(){
 
         TestKit probe = new TestKit(system);
@@ -229,7 +229,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
     }
 
 
-  */
+  
     private Request getV2NotificationEmailRequest() {
         Request reqObj = new Request();
         Map<String, Object> context = new HashMap<>();
