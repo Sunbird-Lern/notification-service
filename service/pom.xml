@@ -12,7 +12,6 @@
     <name>notification-service</name>
     <version>1.0.0</version>
     <packaging>play2</packaging>
-
     <pluginRepositories>
         <pluginRepository>
             <id>typesafe-releases-plugins</id>
@@ -213,14 +212,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
-                <configuration>
-                  <release>11</release>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.plugin.version}</version>
                 <configuration>
@@ -229,41 +220,6 @@
                         <include>**/*Test.java</include>
                     </includes>
                 </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-shade-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals><goal>shade</goal></goals>
-                        <configuration>
-                            <filters>
-                                <filter>
-                                    <!-- filter out signature files from signed dependencies, else repackaging fails with security ex -->
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
-                <version>${spotbugs.plugin.version}</version>
-                <dependencies>
-                    <!-- overwrite dependency on spotbugs if you want to specify the version of spotbugs -->
-                    <dependency>
-                        <groupId>com.github.spotbugs</groupId>
-                        <artifactId>spotbugs</artifactId>
-                        <version>4.2.0</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
