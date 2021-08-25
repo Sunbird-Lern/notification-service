@@ -1,31 +1,15 @@
 package org.sunbird.notification.actor;
 
 import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.testkit.javadsl.TestKit;
-import com.datastax.driver.core.ResultSet;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
-import com.mashape.unirest.http.HttpMethod;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.request.HttpRequestWithBody;
-import com.typesafe.config.Config;
-import org.apache.commons.math3.analysis.function.Pow;
-import org.apache.http.ProtocolVersion;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.CloseableHttpResponse;
+
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicStatusLine;
-import org.apache.kafka.clients.producer.Producer;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -44,7 +28,6 @@ import org.sunbird.util.SystemConfigUtil;
 import org.sunbird.utils.PropertiesCache;
 import org.sunbird.utils.ServiceFactory;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.*;
 
@@ -127,7 +110,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
     }
 
-    @Test
+   /* @Test
     public void testCreateEmailSyncNotificationSuccess(){
 
         TestKit probe = new TestKit(system);
@@ -163,7 +146,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Response res = probe.expectMsgClass(Duration.ofSeconds(40), Response.class);
         System.out.println(res.getResult());
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
-    }
+    }*/
 
    /* @Test
     public void testCreatePhoneSyncNotificationSuccess(){
