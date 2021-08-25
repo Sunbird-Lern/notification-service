@@ -232,7 +232,6 @@
                     </includes>
                 </configuration>
             </plugin>
-            
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>

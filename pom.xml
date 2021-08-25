@@ -63,7 +63,6 @@
             </plugin>
         </plugins>
     </build>
-
     <modules>
         <module>sb-utils</module>
         <module>all-actors</module>
