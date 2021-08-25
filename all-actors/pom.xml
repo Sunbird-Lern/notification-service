@@ -10,7 +10,6 @@
     <artifactId>all-actors</artifactId>
     <properties>
         <scala.binary.version>2.11</scala.binary.version>
-        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../target/jacoco.exec</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
     <dependencies>
         <dependency>
