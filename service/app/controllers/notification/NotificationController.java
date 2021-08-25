@@ -16,6 +16,7 @@ public class NotificationController extends BaseController {
   private static LoggerUtil logger = new LoggerUtil(NotificationController.class);
 
   public static final String NOTIFICATION = "notification";
+  public static final String NOTIFICATIONS = "notifications";
 
   /**
    * This method will accept request for sending notification. notification can be sent on email,
