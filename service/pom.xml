@@ -12,7 +12,9 @@
     <name>notification-service</name>
     <version>1.0.0</version>
     <packaging>play2</packaging>
-
+    <properties>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../target/jacoco.exec</sonar.coverage.jacoco.xmlReportPaths>
+    </properties>
     <pluginRepositories>
         <pluginRepository>
             <id>typesafe-releases-plugins</id>

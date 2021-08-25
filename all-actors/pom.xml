@@ -10,6 +10,7 @@
     <artifactId>all-actors</artifactId>
     <properties>
         <scala.binary.version>2.11</scala.binary.version>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../target/jacoco.exec</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
     <dependencies>
         <dependency>
@@ -119,11 +120,23 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.plugin.version}</version>
                 <configuration>
+                    <!-- <skipTests>true</skipTests> -->
                     <includes>
                         <include>**/*Spec.java</include>
                         <include>**/*Test.java</include>
-                       </includes>
+                    </includes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -144,36 +157,6 @@
                                 </filter>
                             </filters>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
-                <configuration>
-                    <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
-                    <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
-                    <excludes>
-                        <exclude>**/common/**</exclude>
-                        <exclude>**/routes/**</exclude>
-                        <exclude>**/Reverse*/**</exclude>
-                        <exclude>**/*.javascript/**</exclude>
-                    </excludes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>jacoco-initialize</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>jacoco-site</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
