@@ -165,7 +165,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
 
-    @Test
+   /* @Test
     public void testCreatePhoneSyncNotificationSuccess(){
 
         TestKit probe = new TestKit(system);
@@ -211,7 +211,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         System.out.println(res.getResult());
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
-
+*/
 
 
     private Request getV2NotificationEmailRequest() {
