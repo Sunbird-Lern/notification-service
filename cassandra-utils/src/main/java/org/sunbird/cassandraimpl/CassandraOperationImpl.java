@@ -1141,7 +1141,7 @@ public abstract class CassandraOperationImpl implements CassandraOperation {
                 });
         if (ttlIterator.hasNext()) {
           Integer ttlVal = ttlIterator.next();
-          if (ttlVal != null & ttlVal > 0) {
+          if (ttlVal != null && ttlVal > 0) {
             insert.using(QueryBuilder.ttl(ttlVal));
           }
         }
