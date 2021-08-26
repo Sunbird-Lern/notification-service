@@ -1,8 +1,8 @@
 package org.sunbird.notification.sms.providerimpl;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.JsonParseException;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -31,7 +31,6 @@ import org.sunbird.notification.utils.JsonUtil;
 import org.sunbird.notification.utils.NotificationConstant;
 import org.sunbird.notification.utils.Util;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.request.RequestContext;
 
 /** @author manzarul */
 public class Msg91SmsProviderImpl implements ISmsProvider {
@@ -77,12 +76,12 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
   }
 
   @Override
-  public boolean sendSms(String phoneNumber, String smsText, RequestContext context) {
+  public boolean sendSms(String phoneNumber, String smsText, Map<String,Object> context) {
     return sendMsg(phoneNumber, smsText, null);
   }
 
   @Override
-  public boolean sendSms(String phoneNumber, String countryCode, String smsText, RequestContext context) {
+  public boolean sendSms(String phoneNumber, String countryCode, String smsText, Map<String,Object> context) {
     return sendMsg(phoneNumber, smsText, countryCode);
   }
 
@@ -234,7 +233,7 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
   }
 
   @Override
-  public boolean bulkSms(List<String> phoneNumber, String smsText, RequestContext context) {
+  public boolean bulkSms(List<String> phoneNumber, String smsText, Map<String,Object> context) {
     List<String> phoneNumberList = null;
     logger.debug("Msg91SmsProvider@Sending " + smsText + "  to mobileNumber ");
     logger.debug(
@@ -297,7 +296,7 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
 
         HttpEntity entity = new ByteArrayEntity(providerDetailsString.getBytes("UTF-8"));
         httpPost.setEntity(entity);
-
+        logger.info(entity.toString());
         CloseableHttpResponse response = httpClient.execute(httpPost);
         StatusLine sl = response.getStatusLine();
         response.close();
@@ -316,7 +315,7 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
       }
 
     } catch (IOException e) {
-      logger.error("Exception occurred while sending sms",e);
+      logger.error("Exception occurred while sending sms", e);
       return false;
     } catch (Exception e) {
       logger.error("Msg91SmsProvider : send : error in converting providerDetails to String", e);
@@ -347,14 +346,15 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
   }
 
   @Override
-  public boolean sendOtp(OTPRequest request, RequestContext context) {
+  public boolean sendOtp(OTPRequest request, Map<String,Object> context) {
     if (!isOtpRequestValid(request)) {
       logger.info("Send opt request is not valid.");
       return false;
     }
-    boolean otpResponse = false;
+    boolean otpResponse = true;
     try {
       String data = createOtpReqData(request);
+      logger.info(data);
       HttpResponse<String> response =
               Unirest.get(OTP_BASE_URL + "sendotp.php?authkey=" + authKey + data).asString();
       if (response != null) {
@@ -372,18 +372,18 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
                           + " "
                           + response.getBody());
         }
-      }
+     }
 
     } catch (UnirestException e) {
       logger.error(
               "Msg91SmsProviderImpl:sendOtp  exception occured during otp send :" + e.getMessage(), e);
-      e.printStackTrace();
+     e.printStackTrace();
     }
     return otpResponse;
   }
 
   @Override
-  public boolean resendOtp(OTPRequest request, RequestContext context) {
+  public boolean resendOtp(OTPRequest request, Map<String,Object> context) {
     if (!isPhoneNumberValid(request.getPhone())) {
       logger.info("resend otp request is not valid ");
       return false;
@@ -431,7 +431,7 @@ public class Msg91SmsProviderImpl implements ISmsProvider {
   }
 
   @Override
-  public boolean verifyOtp(OTPRequest request, RequestContext context) {
+  public boolean verifyOtp(OTPRequest request, Map<String,Object> context) {
     if (!isOtpRequestValid(request)) {
       logger.info("Verify Opt request is not valid.");
       return false;

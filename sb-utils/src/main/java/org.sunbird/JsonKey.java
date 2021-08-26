@@ -16,7 +16,7 @@ public interface JsonKey {
   String MANDATORY_PARAMETER_MISSING = "MANDATORY_PARAMETER_MISSING";
   String INVALID_VALUE = "INVALID_VALUE";
   String VERIFY_OTP = "verifyOtp";
-
+  String TEMPLATE_ID = "templateId";
   String APP_ID = "appId";
   String DEVICE_ID = "did";
   String X_Session_ID = "x-session-id";
@@ -30,4 +30,54 @@ public interface JsonKey {
   String REQUEST_ID = "requestid";
   String MESSAGE = "message";
   String PARAMS = "params";
+  String READ_FEED = "readFeed";
+  String UPDATE_FEED = "updateFeed";
+  String CREATE_NOTIFICATION = "createNotification";
+  String DOT_SEPARATOR = ".";
+  String SHA_256_WITH_RSA = "SHA256withRSA";
+  String UNAUTHORIZED = "Unauthorized";
+
+  String PARENT_ID = "parentId";
+  String SUB = "sub";
+  String SUNBIRD_SSO_URL = "sunbird_sso_url";
+  String SUNBIRD_SSO_REALM = "sunbird_sso_realm";
+  String ACCESS_TOKEN_PUBLICKEY_BASEPATH = "accesstoken.publickey.basepath";
+  String RESPONSE = "response";
+  String ID = "id";
+  String CREATED_BY = "createdBy";
+  String ADDITIONAL_INFO = "additionalInfo";
+  String DATA = "data";
+  String VER = "ver";
+  String TEMPLATE = "template";
+  String USER_ID = "userId";
+  String CATEGORY = "category";
+  String ACTION = "action";
+  String TEMPLATE_SCHEMA = "template_schema";
+  String API_VERSION = "v1";
+  String DEBUG_ENABLED = "debug-enabled";
+  String SUNBIRD_NOTIFICATIONS = "sunbird_notifications";
+  String SUNBIRD_CASSANDRA_IP = "sunbird_cassandra_host";
+  String MANAGED_FOR = "managedFor";
+  String STATUS = "status";
+  String UPDATED_BY = "updatedBy";
+  String UPDATED_ON = "updatedOn";
+  String SUBJECT = "subject";
+  String SENDER = "sender";
+  String CONFIG = "config";
+  String OTP = "otp";
+  String TOPIC = "topic";
+  String RAW_DATA = "rawData";
+  String REQUEST_SOURCE = "source";
+  String TELEMETRY_EVENT_TYPE = "telemetryEventType";
+
+  String ERROR = "ERROR";
+  String AUDIT = "ERROR";
+
+  String CONTEXT = "context";
+  String ERR = "err";
+  String ERR_TYPE = "errType";
+  String STACKTRACE = "stacktrace";
+  String SYSTEM = "system";
+  String VERSION = "version";
+    String PRIORITY = "priority";
 }

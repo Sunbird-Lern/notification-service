@@ -6,7 +6,9 @@ import javax.inject.Singleton;
 
 import org.sunbird.Application;
 
+import org.sunbird.common.exception.BaseException;
 import org.sunbird.request.LoggerUtil;
+import org.sunbird.util.DBUtil;
 import play.api.Environment;
 import play.api.inject.ApplicationLifecycle;
 
@@ -26,12 +28,18 @@ public class ApplicationStart {
 	   * @param environment Environment
 	   */
 	  @Inject
-	  public ApplicationStart(ApplicationLifecycle lifecycle, Environment environment) {
+	  public ApplicationStart(ApplicationLifecycle lifecycle, Environment environment) throws BaseException {
 		  Application.getInstance().init();
+		  checkCassandraConnections();
 	    // Shut-down hook
 	    lifecycle.addStopHook(
 	        () -> {
 	          return CompletableFuture.completedFuture(null);
 	        });
 	  }
+
+
+	private static void checkCassandraConnections() throws BaseException {
+		DBUtil.checkCassandraDbConnections();
+	}
 }

@@ -2,10 +2,19 @@
 package controllers.notification;
 
 import controllers.BaseController;
+
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+
+import controllers.JsonKey;
+import controllers.ResponseHandler;
+import org.sunbird.common.exception.BaseException;
+import org.sunbird.common.request.Request;
 import org.sunbird.request.LoggerUtil;
+import play.mvc.Http;
 import play.mvc.Result;
-import utils.JsonKey;
+import utils.RequestMapper;
+import validators.RequestValidator;
 
 /**
  * This controller will be responsible for different kind of notification handling.
@@ -25,9 +34,17 @@ public class NotificationController extends BaseController {
    */
   public CompletionStage<Result> sendNotification() {
     logger.info("method call started for sendNotification ");
-    CompletionStage<Result> response = handleRequest(request(), null, NOTIFICATION);
-    logger.info("Method call end for sendNotification");
-    return response;
+    Request request = new Request();
+    try {
+      request = RequestMapper.createSBRequest(request());
+      CompletionStage<Result> response = handleRequest(request, null, NOTIFICATION, request());
+      logger.info("Method call end for sendNotification");
+      return response;
+    }catch (Exception ex){
+      return CompletableFuture.completedFuture(
+              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, request() ));
+    }
+
   }
 
   /**
@@ -39,9 +56,17 @@ public class NotificationController extends BaseController {
   public CompletionStage<Result> sendSyncNotification() {
     logger.info("method call started for sendNotification ");
     request().getHeaders().addHeader(NOTIFICATION_DELIVERY_MODE, "sync");
-    CompletionStage<Result> response = handleRequest(request(), null, NOTIFICATION);
-    logger.info("Method call end for sendNotification");
-    return response;
+    Request request = new Request();
+    try {
+      request = RequestMapper.createSBRequest(request());
+      CompletionStage<Result> response = handleRequest(request, null, NOTIFICATION, request());
+      logger.info("Method call end for sendNotification");
+      return response;
+    }catch (Exception ex){
+      return CompletableFuture.completedFuture(
+              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, request()));
+    }
+
   }
 
   /**
@@ -51,8 +76,103 @@ public class NotificationController extends BaseController {
    */
   public CompletionStage<Result> verifyOTP() {
     logger.info("method call started for verifyOTP ");
-    CompletionStage<Result> response = handleRequest(request(), null, JsonKey.VERIFY_OTP);
-    logger.info("Method call end for verifyOTP");
-    return response;
+    Request request = new Request();
+    try {
+      request = RequestMapper.createSBRequest(request());
+      CompletionStage<Result> response = handleRequest(request, null, JsonKey.VERIFY_OTP, request());
+      logger.info("Method call end for verifyOTP");
+      return response;
+    }catch (Exception ex){
+      return CompletableFuture.completedFuture(ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, request()));
+    }
+
   }
+
+
+  /**
+   * This method will accept request for sending new v2 notification. notification can be sent on
+   * email, sms, Feed or push on device
+   *
+   * @return a CompletableFuture of success response
+   */
+  public CompletionStage<Result> sendV2Notification() {
+    logger.info("method call started for sendNotification ");
+    Request request = new Request();
+    try {
+      request = RequestMapper.createSBRequest(request());
+      CompletionStage<Result> response = handleRequest(request, new RequestValidator(), JsonKey.CREATE_NOTIFICATION, request());
+      logger.info("Method call end for v2 sendNotification");
+      return response;
+    }catch (Exception ex){
+      return CompletableFuture.completedFuture(
+              ResponseHandler.handleFailureResponse(request,ex, httpExecutionContext, request()));
+    }
+
+  }
+
+  /**
+   * This method will accept reading the notification.
+   *
+   *
+   * @return a CompletableFuture of success response
+   */
+  public CompletionStage<Result> readFeedNotification(String userId, Http.Request req) {
+    logger.info("method call started for read Notification Feed ");
+    Request request = new Request();
+    try {
+      request =RequestMapper.createSBRequest(req);
+      request.getRequest().put(JsonKey.USER_ID, userId);
+      CompletionStage<Result> response = handleRequest(request, null, JsonKey.READ_FEED, request());
+      logger.info("Method call end for read Notification Feed");
+      return response;
+    }catch (BaseException ex){
+      return CompletableFuture.completedFuture(
+              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, req));
+    }
+
+  }
+
+  /**
+   * This method will accept update the notification.
+   *
+   *
+   * @return a CompletableFuture of success response
+   */
+  public CompletionStage<Result> updateNotificationFeed() {
+    logger.info("method call started for read Notification Feed ");
+    Request request = new Request();
+    try {
+      request = RequestMapper.createSBRequest(request());
+      CompletionStage<Result> response = handleRequest(request, null, JsonKey.UPDATE_FEED, request());
+      logger.info("Method call end for read Notification Feed");
+      return response;
+    }catch (Exception ex){
+      return CompletableFuture.completedFuture(
+              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, request()));
+    }
+
+  }
+
+  /**
+   * This method will accept request for sending new v2 notification. notification can be sent on
+   * email, sms, Feed or push on device
+   *
+   * @return a CompletableFuture of success response
+   */
+  public CompletionStage<Result> sendSyncV2Notification() {
+    logger.info("method call started for sendNotification ");
+    Request request = new Request();
+    try {
+      request = RequestMapper.createSBRequest(request());
+      request().getHeaders().addHeader(NOTIFICATION_DELIVERY_MODE, "sync");
+      CompletionStage<Result> response = handleRequest(request, new RequestValidator(), JsonKey.CREATE_NOTIFICATION, request());
+      logger.info("Method call end for v2 sendNotification");
+      return response;
+    }catch (Exception ex){
+      return CompletableFuture.completedFuture(
+              ResponseHandler.handleFailureResponse(request,ex, httpExecutionContext, request()));
+    }
+
+  }
+
 }
