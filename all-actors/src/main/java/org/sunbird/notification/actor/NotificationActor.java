@@ -83,7 +83,7 @@ public class NotificationActor extends BaseActor {
       throw new ActorServiceException.InvalidRequestData(
           IUserResponseMessage.INVALID_REQUESTED_DATA,
           MessageFormat.format(
-              IResponseMessage.INVALID_REQUESTED_DATA, NotificationConstant.VERIFY_OTP),
+              IResponseMessage.Message.INVALID_REQUESTED_DATA, NotificationConstant.VERIFY_OTP),
           ResponseCode.CLIENT_ERROR.getCode());
     }
     NotificationRouter routes = new NotificationRouter();

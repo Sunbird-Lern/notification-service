@@ -50,7 +50,7 @@ public class NotificationRequestMapper {
       throw new BaseException(
           "INVALID_REQUESTED_DATA",
           MessageFormat.format(
-              IResponseMessage.INVALID_REQUESTED_DATA,
+              IResponseMessage.Message.INVALID_REQUESTED_DATA,
               ", provide a valid request data, " + e.getMessage()),
           ResponseCode.CLIENT_ERROR.getCode());
     }

@@ -60,7 +60,7 @@ public class PhoneNotificationHandler implements INotificationHandler{
 
     private Response handleMessage(boolean isDryRun, boolean isSync, Map<String, Object> reqContext, Response response, Map<String, Object> responseMap, NotificationRequest notification) {
         if (isSync) {
-            response = syDispatcher.syncDispatch(notification, isDryRun, reqContext);
+            response = syDispatcher.syncDispatch(notification,  reqContext);
         } else {
             response = Util.writeDataToKafka(notification, response, isDryRun, responseMap, isSync, reqContext);
         }
@@ -102,7 +102,7 @@ public class PhoneNotificationHandler implements INotificationHandler{
             throw new ActorServiceException.InvalidRequestData(
                     IUserResponseMessage.USER_NOT_FOUND,
                     MessageFormat.format(
-                            IResponseMessage.INVALID_REQUESTED_DATA, NotificationConstant.OTP_PHONE_ERROR),
+                            IResponseMessage.Message.INVALID_REQUESTED_DATA, NotificationConstant.OTP_PHONE_ERROR),
                     ResponseCode.CLIENT_ERROR.getCode());
         }
         OTPRequest request =

@@ -101,7 +101,7 @@ public class NotificationRouter {
             notification.getTemplate().setData(data);
           }
           if (isSync) {
-            response = syDispatcher.syncDispatch(notification, isDryRun, context);
+            response = syDispatcher.syncDispatch(notification,  context);
           } else {
             response = writeDataToKafka(notification, response, isDryRun, responseMap, isSync, context);
           }
@@ -138,7 +138,7 @@ public class NotificationRouter {
         throw new ActorServiceException.InvalidRequestData(
             IUserResponseMessage.USER_NOT_FOUND,
             MessageFormat.format(
-                IResponseMessage.INVALID_REQUESTED_DATA, NotificationConstant.OTP_PHONE_ERROR),
+                IResponseMessage.Message.INVALID_REQUESTED_DATA, NotificationConstant.OTP_PHONE_ERROR),
             ResponseCode.CLIENT_ERROR.getCode());
       }
       OTPRequest request =
@@ -151,7 +151,7 @@ public class NotificationRouter {
         notification.getTemplate().setData(message);
       }
       if (isSync) {
-        response = syDispatcher.syncDispatch(notification, isDryRun, context);
+        response = syDispatcher.syncDispatch(notification,  context);
 
       } else {
         response = writeDataToKafka(notification, response, isDryRun, responseMap, isSync, context);
@@ -185,7 +185,7 @@ public class NotificationRouter {
       throw new ActorServiceException.InvalidRequestData(
           IUserResponseMessage.TEMPLATE_NOT_FOUND,
           MessageFormat.format(
-              IResponseMessage.INVALID_REQUESTED_DATA,
+              IResponseMessage.Message.INVALID_REQUESTED_DATA,
               NotificationConstant.EMAIL_TEMPLATE_NOT_FOUND),
           ResponseCode.CLIENT_ERROR.getCode());
     } finally {
