@@ -44,7 +44,7 @@ public class EmailNotificationHandler implements INotificationHandler{
             notificationRequest.getAction().setTemplate(dataTemplate);
             NotificationRequest notification = createNotificationObj(notificationRequest);
             if (isSync) {
-                response = syDispatcher.syncDispatch(notification,isDryRun, reqContext);
+                response = syDispatcher.syncDispatch(notification, reqContext);
             } else {
                 response = Util.writeDataToKafka(notification, response, isDryRun, responseMap, isSync, reqContext);
             }
