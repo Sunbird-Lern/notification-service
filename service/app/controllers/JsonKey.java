@@ -65,4 +65,5 @@ public interface JsonKey {
   String PRIVATE = "private";
   String START_TIME = "startTime";
   String HASH_TAG_ID = "hashTagId";
+  String VERSION = "version";
 }

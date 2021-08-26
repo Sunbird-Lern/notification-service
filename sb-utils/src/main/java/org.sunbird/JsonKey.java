@@ -77,5 +77,7 @@ public interface JsonKey {
   String ERR = "err";
   String ERR_TYPE = "errType";
   String STACKTRACE = "stacktrace";
-  Object SYSTEM = "system";
+  String SYSTEM = "system";
+  String VERSION = "version";
+    String PRIORITY = "priority";
 }
