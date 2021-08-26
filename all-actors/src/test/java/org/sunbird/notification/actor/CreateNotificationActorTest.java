@@ -72,7 +72,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
     }
 
     @Test
-    public void testCreateFeedNotificationSuccess(){
+    public void testCreateNotificationSuccess(){
 
         TestKit probe = new TestKit(system);
         ActorRef subject = system.actorOf(props);
@@ -196,6 +196,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
     }
 */
 
+/*
 
     private Request getV2NotificationEmailRequest() {
         Request reqObj = new Request();
@@ -230,6 +231,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         reqObj.setRequest(reqMap);
         return reqObj;
     }
+*/
 
     private Request getV2NotificationPhoneRequest() {
         Request reqObj = new Request();
