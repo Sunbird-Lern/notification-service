@@ -8,7 +8,6 @@ import org.sunbird.JsonKey;
 import org.sunbird.NotificationValidator;
 import org.sunbird.actor.core.ActorConfig;
 import org.sunbird.common.exception.BaseException;
-import org.sunbird.common.message.ResponseCode;
 import org.sunbird.common.request.Request;
 import org.sunbird.notification.handler.INotificationHandler;
 import org.sunbird.notification.handler.NotificationHandlerFactory;
@@ -17,7 +16,6 @@ import org.sunbird.request.LoggerUtil;
 import org.sunbird.common.response.Response;
 import org.sunbird.telemetry.TelemetryEnvKey;
 import org.sunbird.telemetry.util.TelemetryUtil;
-import org.sunbird.utils.ExceptionHandler;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -56,16 +54,12 @@ public class CreateNotificationActor extends BaseActor {
             }
             logger.info(request.getContext(), "response got from notification service " + response);
             sender().tell(response, getSelf());
-        }catch (Exception ex){
-            logger.debug(request.getContext(),MessageFormat.format("CreateNotificationActor: Request: {0}",request.getRequest()));
-            try {
-                ExceptionHandler.handleExceptions(request, ex);
-            }catch (BaseException e){
-                logger.error(request.getContext(),
-                        MessageFormat.format("CreateGroupActor:Error Msg: {0} ",e.getMessage()),
-                        e);
-                throw e;
-            }
+        }catch (BaseException ex){
+            logger.error(MessageFormat.format(":Error Msg: {0} ",ex.getMessage()),
+                    ex);
+        } catch (Exception ex){
+            logger.error(MessageFormat.format("CreateNotificationActor:Error Msg: {0} ",ex.getMessage()),
+                    ex);
         }
        logTelemetry(request);
     }
@@ -75,7 +69,6 @@ public class CreateNotificationActor extends BaseActor {
                 actorMessage.getContext().get(org.sunbird.JsonKey.REQUEST_SOURCE) != null
                         ? (String) actorMessage.getContext().get(org.sunbird.JsonKey.REQUEST_SOURCE)
                         : "";
-        String uId= UUID.randomUUID().toString();
         List<Map<String, Object>> correlatedObject = new ArrayList<>();
         if (StringUtils.isNotBlank(source)) {
             TelemetryUtil.generateCorrelatedObject(

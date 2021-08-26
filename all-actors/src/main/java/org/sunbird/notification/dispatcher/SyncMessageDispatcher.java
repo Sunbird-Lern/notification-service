@@ -22,16 +22,16 @@ public class SyncMessageDispatcher {
   private IEmailService emailservice;
   private ISmsProvider smsProvider;
 
-  public Response syncDispatch(NotificationRequest notification, boolean isDryRun, Map<String,Object> context) {
+  public Response syncDispatch(NotificationRequest notification, Map<String,Object> context) {
     if (notification.getMode().equalsIgnoreCase(DeliveryMode.phone.name())
         && notification.getDeliveryType().equalsIgnoreCase(DeliveryType.message.name())) {
-      return syncMessageDispatch(notification, isDryRun, context);
+      return syncMessageDispatch(notification, context);
     }
 
-    return syncEmailDispatch(notification, isDryRun, context);
+    return syncEmailDispatch(notification, context);
   }
 
-  private Response syncEmailDispatch(NotificationRequest notificationRequest, boolean isDryRun, Map<String,Object> context) {
+  private Response syncEmailDispatch(NotificationRequest notificationRequest, Map<String,Object> context) {
     EmailRequest request =
         new EmailRequest(
             notificationRequest.getConfig().getSubject(),
@@ -47,7 +47,7 @@ public class SyncMessageDispatcher {
     return response;
   }
 
-  private Response syncMessageDispatch(NotificationRequest notificationRequest,boolean isDryRun, Map<String,Object> context) {
+  private Response syncMessageDispatch(NotificationRequest notificationRequest, Map<String,Object> context) {
     Response response = new Response();
     boolean smsResponse =
         getSmsInstance()

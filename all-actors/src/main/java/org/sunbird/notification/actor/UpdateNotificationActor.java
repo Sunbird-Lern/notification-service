@@ -27,7 +27,7 @@ import java.util.*;
 public class UpdateNotificationActor extends BaseActor {
     @Override
     public void onReceive(Request request) throws Throwable {
-        Response response = new Response();
+
         RequestHandler requestHandler = new RequestHandler();
         String requestedBy = requestHandler.getRequestedBy(request);
         String userId = (String) request.getRequest().get(JsonKey.USER_ID);
@@ -46,7 +46,7 @@ public class UpdateNotificationActor extends BaseActor {
                     MessageFormat.format(IResponseMessage.Message.MANDATORY_PARAMETER_MISSING,JsonKey.IDS), ResponseCode.CLIENT_ERROR.getCode());
         }
         NotificationService notificationService = NotificationServiceImpl.getInstance();
-        response = notificationService.updateNotificationFeed(feedsUpdateList,request.getContext());
+        Response response = notificationService.updateNotificationFeed(feedsUpdateList,request.getContext());
         sender().tell(response, getSelf());
 
     }

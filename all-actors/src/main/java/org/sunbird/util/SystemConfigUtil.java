@@ -43,8 +43,7 @@ public class SystemConfigUtil {
             Response response = userService.getOrganisationDetails(custodianOrgId);
             logger.info(
                     "DataCacheHandler:cacheSystemConfig: Cache system setting fields" + response.getResult()+LoggerEnum.INFO.name());
-            if (null != response
-                    && null != response.getResult()
+            if (null != response.getResult()
                     && null != response.getResult().get(JsonKey.RESPONSE)) {
                 custodianOrgDetails = (Map<String, Object>) response.getResult().get(JsonKey.RESPONSE);
             }

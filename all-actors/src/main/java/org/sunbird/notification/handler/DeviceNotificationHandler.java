@@ -25,8 +25,6 @@ import java.util.Map;
 
 public class DeviceNotificationHandler implements INotificationHandler{
     private static LoggerUtil logger = new LoggerUtil(DeviceNotificationHandler.class);
-    private NotificationService notificationService = NotificationServiceImpl.getInstance();
-    private SyncMessageDispatcher syDispatcher = new SyncMessageDispatcher();
     ObjectMapper mapper = new ObjectMapper();
 
     @Override

@@ -31,41 +31,45 @@ public class NotificationDaoImpl implements NotificationDao{
     @Override
     public Response getTemplate(String templateId, Map<String,Object> reqContext) throws BaseException {
 
-        Response responseObj =
-                cassandraOperation.getRecordsByProperty(KEY_SPACE_NAME,NOTIFICATION_TEMPLATE,JsonKey.TEMPLATE_ID,templateId,reqContext);
-        return responseObj;
+
+        return cassandraOperation.getRecordsByProperty(KEY_SPACE_NAME,NOTIFICATION_TEMPLATE,JsonKey.TEMPLATE_ID,templateId,reqContext);
+
     }
 
     @Override
     public Response getTemplateId(String actionType, Map<String,Object> reqContext) throws BaseException {
 
-        Response responseObj =
-                cassandraOperation.getRecordsByProperty(KEY_SPACE_NAME,NOTIFICATION_ACTION_TEMPLATE,JsonKey.ACTION,actionType,reqContext);
-        return responseObj;
+        return cassandraOperation.getRecordsByProperty(KEY_SPACE_NAME,NOTIFICATION_ACTION_TEMPLATE,JsonKey.ACTION,actionType,reqContext);
     }
 
     @Override
     public Response createNotificationFeed(List<NotificationFeed> feeds, Map<String,Object> reqContext) throws BaseException {
         List<Map<String, Object>> feedList =
                 mapper.convertValue(feeds, new TypeReference<List<Map<String, Object>>>() {});
-        Response response =
-                cassandraOperation.batchInsert(KEY_SPACE_NAME, NOTIFICATION_FEED, feedList, reqContext);
-        return response;
+        return cassandraOperation.batchInsert(KEY_SPACE_NAME, NOTIFICATION_FEED, feedList, reqContext);
+
     }
 
     @Override
     public Response readNotificationFeed(String userId, Map<String,Object> reqContext) throws BaseException {
         Map<String, Object> reqMap = new WeakHashMap<>(2);
         reqMap.put(JsonKey.USER_ID, userId);
-        Response response = cassandraOperation.getRecordById(KEY_SPACE_NAME,NOTIFICATION_FEED,reqMap,reqContext);
-        return response;
+        return cassandraOperation.getRecordById(KEY_SPACE_NAME,NOTIFICATION_FEED,reqMap,reqContext);
+    }
+
+    @Override
+    public Response readV1NotificationFeed(String userId, Map<String,Object> reqContext) throws BaseException {
+        Map<String, Object> reqMap = new WeakHashMap<>(2);
+        reqMap.put(JsonKey.USER_ID, userId);
+        reqMap.put(JsonKey.VERSION,"v1");
+        return cassandraOperation.getRecordById(KEY_SPACE_NAME,NOTIFICATION_FEED,reqMap,reqContext);
+
     }
 
     @Override
     public Response updateNotificationFeed( List<Map<String,Object>> feeds, Map<String,Object> reqContext) throws BaseException {
-        Response response =
-                cassandraOperation.batchUpdateById(KEY_SPACE_NAME, NOTIFICATION_FEED, feeds,reqContext);
-        return response;
+        return  cassandraOperation.batchUpdateById(KEY_SPACE_NAME, NOTIFICATION_FEED, feeds,reqContext);
+
     }
 
     @Override
@@ -78,7 +82,6 @@ public class NotificationDaoImpl implements NotificationDao{
             map.put(JsonKey.CATEGORY,feed.getCategory());
             properties.add(map);
         }
-        Response response = cassandraOperation.batchDelete(KEY_SPACE_NAME,NOTIFICATION_FEED, properties, context);
-        return response;
+       return cassandraOperation.batchDelete(KEY_SPACE_NAME,NOTIFICATION_FEED, properties, context);
     }
 }
