@@ -108,7 +108,7 @@
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-netty-server_2.11</artifactId>
+            <artifactId>play-netty-server_2.12</artifactId>
             <version>2.7.2</version>
             <scope>runtime</scope>
             <exclusions>
