@@ -8,9 +8,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>all-actors</artifactId>
-    <properties>
-        <scala.binary.version>2.12</scala.binary.version>
-    </properties>
     <dependencies>
     <dependency>
         <groupId>org.apache.kafka</groupId>
@@ -65,7 +62,7 @@
     </dependency>
     <dependency>
         <groupId>com.typesafe.akka</groupId>
-        <artifactId>akka-testkit_${scala.binary.version}</artifactId>
+        <artifactId>akka-testkit_${scala.major.version}</artifactId>
         <version>2.5.22</version>
         <scope>test</scope>
     </dependency>
