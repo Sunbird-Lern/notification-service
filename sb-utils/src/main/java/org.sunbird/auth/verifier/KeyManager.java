@@ -27,6 +27,7 @@ public class KeyManager {
 
   public static void init() {
     String basePath = propertiesCache.getProperty(JsonKey.ACCESS_TOKEN_PUBLICKEY_BASEPATH);
+    logger.info("KeyManager:basePath"+basePath);
     try (Stream<Path> walk = Files.walk(Paths.get(basePath))) {
       logger.info("KeyManager:init: Start");
       List<String> result =
