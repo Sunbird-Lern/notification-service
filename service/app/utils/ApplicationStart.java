@@ -6,6 +6,7 @@ import javax.inject.Singleton;
 
 import org.sunbird.Application;
 
+import org.sunbird.auth.verifier.KeyManager;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.request.LoggerUtil;
 import org.sunbird.util.DBUtil;
@@ -36,6 +37,7 @@ public class ApplicationStart {
 	        () -> {
 	          return CompletableFuture.completedFuture(null);
 	        });
+		  KeyManager.init();
 	  }
 
 
