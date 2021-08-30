@@ -3,6 +3,7 @@ package utils;
 import java.util.concurrent.CompletableFuture;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.net.ssl.KeyManager;
 
 import org.sunbird.Application;
 
@@ -36,6 +37,7 @@ public class ApplicationStart {
 	        () -> {
 	          return CompletableFuture.completedFuture(null);
 	        });
+		  KeyManager.init();
 	  }
 
 
