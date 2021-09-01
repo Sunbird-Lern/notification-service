@@ -106,10 +106,10 @@
   <logger name="defaultLoggerAppender" level="INFO" />
 
   <logger name="queryLogger" level="DEBUG">
-    <appender-ref ref="defaultLoggerAppender" />
+    <appender-ref ref="queryLoggerAppender" />
   </logger>
 
-  <root level="INFO">
+  <root level="DEBUG">
     <appender-ref ref="ASYNCSTDOUT" />
   </root>
 
