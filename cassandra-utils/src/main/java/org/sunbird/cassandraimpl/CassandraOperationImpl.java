@@ -631,7 +631,7 @@ public abstract class CassandraOperationImpl implements CassandraOperation {
           e.getMessage(),
           IResponseMessage.SERVER_ERROR,ResponseCode.SERVER_ERROR.getCode());
     }finally {
-      logQueryElapseTime("batchUpdateById", startTime,batchStatement.toString(),reqContext);
+      logQueryElapseTime("batchUpdateById", startTime,batchStatement.getStatements().toString(),reqContext);
     }
     return response;
   }
