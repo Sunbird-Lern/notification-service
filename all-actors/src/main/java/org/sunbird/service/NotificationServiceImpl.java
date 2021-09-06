@@ -165,7 +165,7 @@ public class NotificationServiceImpl implements NotificationService {
         return notifications;
     }
 
-    @Override
+   /* @Override
     public List<Map<String, Object>> readV1NotificationFeed(String userId, Map<String,Object> reqContext) throws BaseException, IOException {
 
         Response response = notificationDao.readV1NotificationFeed(userId,reqContext);
@@ -182,7 +182,7 @@ public class NotificationServiceImpl implements NotificationService {
             }
         }
         return notifications;
-    }
+    }*/
 
     @Override
     public Response updateNotificationFeed( List<Map<String,Object>>  feeds, Map<String,Object> reqContext) throws BaseException {
