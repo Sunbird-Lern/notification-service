@@ -145,6 +145,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<Map<String, Object>> readNotificationFeed(String userId, Map<String,Object> reqContext) throws BaseException, IOException {
+
         Response response = notificationDao.readNotificationFeed(userId,reqContext);
         List<Map<String, Object>> notifications = new ArrayList<>();
         if (null != response && MapUtils.isNotEmpty(response.getResult())) {
@@ -152,8 +153,11 @@ public class NotificationServiceImpl implements NotificationService {
             if(CollectionUtils.isNotEmpty(notifications)){
                 for (Map<String,Object> notification: notifications) {
                     String actionStr = (String) notification.get(JsonKey.ACTION);
-                    ObjectMapper mapper = new ObjectMapper();
-                    ActionData actionData = mapper.readValue(actionStr,ActionData.class);
+                    ActionData actionData= null;
+                    if(actionStr != null){
+                        ObjectMapper mapper = new ObjectMapper();
+                        actionData = mapper.readValue(actionStr,ActionData.class);
+                    }
                     notification.put(JsonKey.ACTION,actionData);
                 }
             }
@@ -162,7 +166,26 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Response updateNotificationFeed(  List<Map<String,Object>>  feeds, Map<String,Object> reqContext) throws BaseException {
+    public List<Map<String, Object>> readV1NotificationFeed(String userId, Map<String,Object> reqContext) throws BaseException, IOException {
+
+        Response response = notificationDao.readV1NotificationFeed(userId,reqContext);
+        List<Map<String, Object>> notifications = new ArrayList<>();
+        if (null != response && MapUtils.isNotEmpty(response.getResult())) {
+            notifications = (List<Map<String, Object>>) response.getResult().get(JsonKey.RESPONSE);
+            if(CollectionUtils.isNotEmpty(notifications)){
+                for (Map<String,Object> notification: notifications) {
+                    String actionStr = (String) notification.get(JsonKey.ACTION);
+                    ObjectMapper mapper = new ObjectMapper();
+                    ActionData actionData = mapper.readValue(actionStr,ActionData.class);
+                    notification.put(JsonKey.DATA,actionData);
+                }
+            }
+        }
+        return notifications;
+    }
+
+    @Override
+    public Response updateNotificationFeed( List<Map<String,Object>>  feeds, Map<String,Object> reqContext) throws BaseException {
         return notificationDao.updateNotificationFeed(feeds, reqContext);
     }
 
