@@ -39,7 +39,7 @@ public class FeedNotificationHandler implements INotificationHandler{
              dataTemplate.put(JsonKey.DATA,
                        notificationService.transformTemplate((String)template.get(JsonKey.DATA),(Map<String, Object>) template.get(JsonKey.PARAMS)));
              notificationRequest.getAction().put(JsonKey.TEMPLATE,dataTemplate);
-             String notificationCategory = PropertiesCache.getConfigValue(JsonKey.NOTIFICATION_CATEGORY_CONFIG);
+             String notificationCategory = PropertiesCache.getInstance().getProperty(JsonKey.NOTIFICATION_CATEGORY_CONFIG);
              if(notificationCategory.contains((String)notificationRequest.getAction().get(JsonKey.CATEGORY))){
                  //Write data into v1 format
                  Map<String,Object> notification = transformV2toV1Notification(notificationRequest);
