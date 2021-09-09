@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
 import org.sunbird.JsonKey;
 import org.sunbird.common.exception.ActorServiceException;
 import org.sunbird.common.exception.BaseException;
@@ -22,6 +23,7 @@ import org.sunbird.service.NotificationService;
 import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.Util;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +36,7 @@ public class PhoneNotificationHandler implements INotificationHandler{
     ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public Response sendNotification(NotificationV2Request notificationRequest, boolean isDryRun, boolean isSync, Map<String,Object> reqContext) throws BaseException {
+    public Response sendNotification(NotificationV2Request notificationRequest, boolean isDryRun, boolean isSync, Map<String,Object> reqContext) throws BaseException, IOException {
         logger.info("PhoneNotificationHandler: making call to sendNotifications method");
         Response response = new Response();
         if(null != notificationRequest && CollectionUtils.isNotEmpty(notificationRequest.getIds())){
@@ -46,8 +48,8 @@ public class PhoneNotificationHandler implements INotificationHandler{
             dataTemplate.put(JsonKey.DATA,
                     notificationService.transformTemplate((String) template.get(JsonKey.DATA), (Map<String, Object>) template.get(JsonKey.PARAMS)));
             dataTemplate.put(JsonKey.PARAMS,template.get(JsonKey.PARAMS));
-            notificationRequest.getAction().setTemplate(dataTemplate);
-            NotificationRequest notification = createNotificationObj(notificationRequest);
+            notificationRequest.getAction().put(JsonKey.TEMPLATE,dataTemplate);
+            NotificationRequest notification = createNotificationObj(notificationRequest, (Map<String, Object>) template.get(JsonKey.CONFIG));
             if (notification.getDeliveryType().equals(NotificationRouter.DeliveryType.otp.name())) {
                 responseMap = handleOTP(notification, reqContext);
                 response.putAll(responseMap);
@@ -67,27 +69,24 @@ public class PhoneNotificationHandler implements INotificationHandler{
         return response;
     }
 
-    private NotificationRequest createNotificationObj(NotificationV2Request notificationRequest) {
+    private NotificationRequest createNotificationObj(NotificationV2Request notificationRequest,Map<String,Object> templateConfig) throws IOException {
         NotificationRequest notification = new NotificationRequest();
         notification.setIds(notificationRequest.getIds());
         notification.setMode(NotificationRouter.DeliveryMode.phone.name());
         Config config = new Config();
-        Map<String,Object> otp = (Map<String, Object>) notificationRequest.getAction().getAdditionalInfo().get(JsonKey.OTP);
-        if (MapUtils.isNotEmpty(otp)){
+        String otpStr = (String)templateConfig.get(JsonKey.OTP);
+        if (StringUtils.isNotEmpty(otpStr)){
             notification.setDeliveryType(NotificationRouter.DeliveryType.otp.name());
-            config.setOtp(mapper.convertValue(otp,OTP.class));
+            config.setOtp(mapper.readValue(otpStr,OTP.class));
         }else{
             notification.setDeliveryType(NotificationRouter.DeliveryType.message.name());
         }
-        config.setSubject(notificationRequest.getAction().getAdditionalInfo().get(JsonKey.SUBJECT) !=null ?
-                (String)notificationRequest.getAction().getAdditionalInfo().get(JsonKey.SUBJECT): null);
-        config.setSender(notificationRequest.getAction().getAdditionalInfo().get(JsonKey.SENDER) !=null ?
-                (String)notificationRequest.getAction().getAdditionalInfo().get(JsonKey.SENDER): null);
+        config.setSubject((String) templateConfig.get(JsonKey.SUBJECT));
+        config.setSender((String) templateConfig.get(JsonKey.SENDER));
         notification.setConfig(config);
         Template template = new Template();
-        template.setData((String) notificationRequest.getAction().getTemplate().get(JsonKey.DATA));
-        template.setParams(mapper.convertValue((Map<String,Object>)notificationRequest.getAction()
-                .getTemplate().get(JsonKey.PARAMS), JsonNode.class));
+        template.setData((String) ((Map<String,Object>)notificationRequest.getAction().get(JsonKey.TEMPLATE)).get(JsonKey.DATA));
+        template.setParams(mapper.convertValue((Map<String,Object>)((Map<String,Object>)notificationRequest.getAction().get(JsonKey.TEMPLATE)).get(JsonKey.PARAMS), JsonNode.class));
         notification.setTemplate(template);
         return notification;
     }

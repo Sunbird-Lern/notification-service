@@ -57,14 +57,6 @@ public class NotificationDaoImpl implements NotificationDao{
         return cassandraOperation.getRecordById(KEY_SPACE_NAME,NOTIFICATION_FEED,reqMap,reqContext);
     }
 
-    @Override
-    public Response readV1NotificationFeed(String userId, Map<String,Object> reqContext) throws BaseException {
-        Map<String, Object> reqMap = new WeakHashMap<>(2);
-        reqMap.put(JsonKey.USER_ID, userId);
-        reqMap.put(JsonKey.VERSION,"v1");
-        return cassandraOperation.getRecordById(KEY_SPACE_NAME,NOTIFICATION_FEED,reqMap,reqContext);
-
-    }
 
     @Override
     public Response updateNotificationFeed( List<Map<String,Object>> feeds, Map<String,Object> reqContext) throws BaseException {

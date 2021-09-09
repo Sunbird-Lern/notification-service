@@ -31,6 +31,7 @@ public interface JsonKey {
   String MESSAGE = "message";
   String PARAMS = "params";
   String READ_FEED = "readFeed";
+  String READ_V1_FEED = "readV1Feed";
   String UPDATE_FEED = "updateFeed";
   String CREATE_NOTIFICATION = "createNotification";
   String DOT_SEPARATOR = ".";
@@ -79,5 +80,11 @@ public interface JsonKey {
   String STACKTRACE = "stacktrace";
   String SYSTEM = "system";
   String VERSION = "version";
-    String PRIORITY = "priority";
+  String PRIORITY = "priority";
+  String V1 = "v1";
+  String ACTION_DATA = "actionData";
+  String TITLE = "title";
+  String DESCRIPTION = "description";
+  String ACTION_TYPE = "actionType";
+  String NOTIFICATION_CATEGORY_CONFIG = "notification_category_config";
 }

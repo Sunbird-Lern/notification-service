@@ -38,6 +38,7 @@ public interface JsonKey {
   String RESPONSE_CODE = "responseCode";
   String FAILED = "FAILED";
   String READ_FEED = "readFeed";
+  String READ_V1_FEED ="readV1Feed";
   String UPDATE_FEED = "updateFeed";
   String CREATE_NOTIFICATION = "createNotification";
   String X_REQUEST_ID = "X-Request-ID";

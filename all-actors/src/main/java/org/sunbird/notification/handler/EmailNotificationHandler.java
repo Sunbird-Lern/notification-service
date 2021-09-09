@@ -41,8 +41,8 @@ public class EmailNotificationHandler implements INotificationHandler{
             dataTemplate.put(JsonKey.DATA,
                     notificationService.transformTemplate((String)template.get(JsonKey.DATA),(Map<String, Object>) template.get(JsonKey.PARAMS)));
             dataTemplate.put(JsonKey.PARAMS,template.get(JsonKey.PARAMS));
-            notificationRequest.getAction().setTemplate(dataTemplate);
-            NotificationRequest notification = createNotificationObj(notificationRequest);
+            notificationRequest.getAction().put(JsonKey.TEMPLATE,dataTemplate);
+            NotificationRequest notification = createNotificationObj(notificationRequest, (Map<String, Object>) template.get(JsonKey.CONFIG));
             if (isSync) {
                 response = syDispatcher.syncDispatch(notification, reqContext);
             } else {
@@ -52,21 +52,18 @@ public class EmailNotificationHandler implements INotificationHandler{
         return response;
     }
 
-    private NotificationRequest createNotificationObj(NotificationV2Request notificationRequest) {
+    private NotificationRequest createNotificationObj(NotificationV2Request notificationRequest, Map<String,Object> templateConfig) {
 
         NotificationRequest notification = new NotificationRequest();
         notification.setIds(notificationRequest.getIds());
         notification.setMode(DeliveryMode.email.name());
         Config config = new Config();
-        config.setSubject(notificationRequest.getAction().getAdditionalInfo().get(JsonKey.SUBJECT) !=null ?
-                (String)notificationRequest.getAction().getAdditionalInfo().get(JsonKey.SUBJECT): null);
-        config.setSender(notificationRequest.getAction().getAdditionalInfo().get(JsonKey.SENDER) !=null ?
-                (String)notificationRequest.getAction().getAdditionalInfo().get(JsonKey.SENDER): null);
+        config.setSubject((String) templateConfig.get(JsonKey.SUBJECT));
+        config.setSender((String) templateConfig.get(JsonKey.SENDER));
         notification.setConfig(config);
         Template template = new Template();
-        template.setData((String) notificationRequest.getAction().getTemplate().get(JsonKey.DATA));
-        JsonNode jsonNode = mapper.convertValue((Map<String,Object>)notificationRequest.getAction()
-                        .getTemplate().get(JsonKey.PARAMS),JsonNode.class);
+        template.setData((String) ((Map<String,Object>)notificationRequest.getAction().get(JsonKey.TEMPLATE)).get(JsonKey.DATA));
+        JsonNode jsonNode = mapper.convertValue((Map<String,Object>)((Map<String,Object>)notificationRequest.getAction().get(JsonKey.TEMPLATE)).get(JsonKey.PARAMS),JsonNode.class);
         template.setParams(jsonNode);
         notification.setTemplate(template);
         notification.setDeliveryType(NotificationRouter.DeliveryType.message.name());

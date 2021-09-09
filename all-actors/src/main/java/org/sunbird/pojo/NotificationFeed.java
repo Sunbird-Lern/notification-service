@@ -17,6 +17,7 @@ public class NotificationFeed {
     private String updatedBy;
     private Timestamp createdOn;
     private Timestamp updatedOn;
+    private String version;
 
     public String getId() {
         return id;
@@ -104,5 +105,13 @@ public class NotificationFeed {
 
     public void setUpdatedOn(Timestamp updatedOn) {
         this.updatedOn = updatedOn;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

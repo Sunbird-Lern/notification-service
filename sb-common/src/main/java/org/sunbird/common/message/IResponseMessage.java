@@ -9,7 +9,7 @@ public interface IResponseMessage extends IUserResponseMessage, IOrgResponseMess
 
   String INVALID_OPERATION_NAME = "INVALID_OPERATION_NAME";
   String INTERNAL_ERROR = "INTERNAL_ERROR";
-  String SERVER_ERROR = "INTERNAL_ERROR";
+  String SERVER_ERROR = "SERVER_ERROR";
   String INVALID_VALUE = "{0} VALUE IS INVALID, {1}";
   String MAX_NOTIFICATION_SIZE = "Max supported id in single playload is {0}";
   String SERVICE_UNAVAILABLE = "SERVICE UNAVAILABLE";
@@ -20,6 +20,8 @@ public interface IResponseMessage extends IUserResponseMessage, IOrgResponseMess
     String TEMPLATE_NOT_FOUND = "TEMPLATE_NOT_FOUND";
     String INVALID_REQUESTED_DATA = "INVALID_REQUESTED_DATA";
     String UNAUTHORIZED = "UNAUTHORIZED";
+    String SERVER_ERROR = "INTERNAL_ERROR";
+
   }
 
   interface Message {
@@ -28,5 +30,7 @@ public interface IResponseMessage extends IUserResponseMessage, IOrgResponseMess
     String TEMPLATE_NOT_FOUND = "Template is not pre configured for {0} type";
     String UNAUTHORIZED = "you are an unauthorized user";
     String INVALID_REQUESTED_DATA = "Invalid request data is passed";
+    String INTERNAL_ERROR = "INTERNAL_ERROR";
+
   }
 }

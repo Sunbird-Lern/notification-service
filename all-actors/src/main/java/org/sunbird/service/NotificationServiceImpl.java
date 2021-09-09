@@ -13,6 +13,7 @@ import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.sunbird.JsonKey;
 import org.sunbird.common.exception.BaseException;
+import org.sunbird.common.util.Notification;
 import org.sunbird.dao.NotificationDao;
 import org.sunbird.dao.NotificationDaoImpl;
 import org.sunbird.common.message.IResponseMessage;
@@ -112,8 +113,8 @@ public class NotificationServiceImpl implements NotificationService {
             feed.setId(UUID.randomUUID().toString());
             feed.setPriority(request.getPriority());
             feed.setStatus("unread");
-            feed.setCategory(request.getAction().getCategory());
-            feed.setCreatedBy(request.getAction().getCreatedBy().get(JsonKey.ID));
+            feed.setCategory((String) request.getAction().get(JsonKey.CATEGORY));
+            feed.setCreatedBy((String) ((Map<String,Object>)request.getAction().get(JsonKey.CREATED_BY)).get(JsonKey.ID));
             feed.setCreatedOn(new Timestamp(Calendar.getInstance().getTime().getTime()));
             feed.setUserId(id);
             feed.setAction(getAction(request.getAction()));
@@ -123,19 +124,32 @@ public class NotificationServiceImpl implements NotificationService {
         return response;
     }
 
-    private String getAction(ActionData action) throws BaseException {
+    @Override
+    public Response createV1NotificationFeed(Map<String,Object> notificationV1Req, Map<String,Object> reqContext) throws BaseException, JsonProcessingException {
+        List<NotificationFeed> feedList = new ArrayList<>();
+        List<String> ids = (List<String>)notificationV1Req.get(JsonKey.USER_ID);
+        for (String id: ids) {
+            NotificationFeed feed = new NotificationFeed();
+            feed.setId(UUID.randomUUID().toString());
+            feed.setPriority((Integer) notificationV1Req.get(JsonKey.PRIORITY));
+            feed.setStatus("unread");
+            feed.setCategory((String) notificationV1Req.get(JsonKey.CATEGORY));
+            feed.setCreatedBy((String) notificationV1Req.get(JsonKey.CREATED_BY));
+            feed.setCreatedOn(new Timestamp(Calendar.getInstance().getTime().getTime()));
+            feed.setUserId(id);
+            feed.setAction(new ObjectMapper().writeValueAsString((Map<String,Object>)notificationV1Req.get(JsonKey.DATA)));
+            feed.setVersion("v1");
+            feedList.add(feed);
+        }
+
+        Response response = notificationDao.createNotificationFeed(feedList,reqContext);
+        return response;
+    }
+
+
+    private String getAction(Map<String,Object> action) throws BaseException {
         try {
-            Map<String, Object> actionMap = new HashMap<>();
-            actionMap.put(JsonKey.CREATED_BY, action.getCreatedBy());
-            actionMap.put(JsonKey.ADDITIONAL_INFO, action.getAdditionalInfo());
-            actionMap.put(JsonKey.TYPE, action.getType());
-            Map<String, Object> template = new HashMap<>();
-            Map<String,Object> notificationTemplate= action.getTemplate();
-            template.put(JsonKey.DATA, notificationTemplate.get(JsonKey.DATA));
-            template.put(JsonKey.TYPE, notificationTemplate.get(JsonKey.TYPE));
-            template.put(JsonKey.VER, notificationTemplate.get(JsonKey.VER));
-            actionMap.put(JsonKey.TEMPLATE, template);
-            return mapper.writeValueAsString(actionMap);
+            return mapper.writeValueAsString(action);
         }catch (JsonProcessingException ex){
             logger.error("Error while action processing",ex);
             throw new BaseException(IResponseMessage.INTERNAL_ERROR,ex.getMessage(), ResponseCode.SERVER_ERROR.getCode());
@@ -151,38 +165,52 @@ public class NotificationServiceImpl implements NotificationService {
         if (null != response && MapUtils.isNotEmpty(response.getResult())) {
             notifications = (List<Map<String, Object>>) response.getResult().get(JsonKey.RESPONSE);
             if(CollectionUtils.isNotEmpty(notifications)){
-                for (Map<String,Object> notification: notifications) {
-                    String actionStr = (String) notification.get(JsonKey.ACTION);
-                    ActionData actionData= null;
-                    if(actionStr != null){
-                        ObjectMapper mapper = new ObjectMapper();
-                        actionData = mapper.readValue(actionStr,ActionData.class);
+                Iterator<Map<String,Object>> notifyItr = notifications.iterator();
+                while (notifyItr.hasNext()) {
+                    Map<String,Object> notification = notifyItr.next();
+                    if(JsonKey.V1.equals(notification.get(JsonKey.VERSION))){
+                        notifyItr.remove();
+                    }else{
+                        String actionStr = (String) notification.get(JsonKey.ACTION);
+                        Map<String,Object> actionData= null;
+                        if(actionStr != null){
+                            ObjectMapper mapper = new ObjectMapper();
+                            actionData = mapper.readValue(actionStr,Map.class);
+                        }
+                        notification.put(JsonKey.ACTION,actionData);
                     }
-                    notification.put(JsonKey.ACTION,actionData);
+
                 }
             }
         }
         return notifications;
     }
 
-   /* @Override
+    @Override
     public List<Map<String, Object>> readV1NotificationFeed(String userId, Map<String,Object> reqContext) throws BaseException, IOException {
 
-        Response response = notificationDao.readV1NotificationFeed(userId,reqContext);
+        Response response = notificationDao.readNotificationFeed(userId,reqContext);
         List<Map<String, Object>> notifications = new ArrayList<>();
         if (null != response && MapUtils.isNotEmpty(response.getResult())) {
             notifications = (List<Map<String, Object>>) response.getResult().get(JsonKey.RESPONSE);
             if(CollectionUtils.isNotEmpty(notifications)){
-                for (Map<String,Object> notification: notifications) {
-                    String actionStr = (String) notification.get(JsonKey.ACTION);
-                    ObjectMapper mapper = new ObjectMapper();
-                    ActionData actionData = mapper.readValue(actionStr,ActionData.class);
-                    notification.put(JsonKey.DATA,actionData);
+                Iterator<Map<String,Object>> notifyItr = notifications.iterator();
+                while (notifyItr.hasNext()) {
+                    Map<String,Object> notification = notifyItr.next();
+                    if(!JsonKey.V1.equals(notification.get(JsonKey.VERSION))){
+                       notifyItr.remove();
+                    }else {
+                        String actionStr = (String) notification.get(JsonKey.ACTION);
+                        ObjectMapper mapper = new ObjectMapper();
+                        Map actionData = mapper.readValue(actionStr, Map.class);
+                        notification.put(JsonKey.DATA, actionData);
+                        notification.remove(JsonKey.ACTION);
+                    }
                 }
             }
         }
         return notifications;
-    }*/
+    }
 
     @Override
     public Response updateNotificationFeed( List<Map<String,Object>>  feeds, Map<String,Object> reqContext) throws BaseException {

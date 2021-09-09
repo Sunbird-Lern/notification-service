@@ -11,6 +11,7 @@ import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.ResponseCode;
 import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
+import org.sunbird.request.LoggerUtil;
 import org.sunbird.service.NotificationService;
 import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.RequestHandler;
@@ -25,29 +26,44 @@ import java.util.*;
         dispatcher= "notification-dispatcher"
 )
 public class UpdateNotificationActor extends BaseActor {
+
+    private static LoggerUtil logger = new LoggerUtil(ReadNotificationFeedActor.class);
+
     @Override
     public void onReceive(Request request) throws Throwable {
 
         RequestHandler requestHandler = new RequestHandler();
         String requestedBy = requestHandler.getRequestedBy(request);
         String userId = (String) request.getRequest().get(JsonKey.USER_ID);
-        if(StringUtils.isEmpty(userId)){
-            throw new BaseException(IResponseMessage.Key.MANDATORY_PARAMETER_MISSING,
-                    MessageFormat.format(IResponseMessage.Message.MANDATORY_PARAMETER_MISSING,JsonKey.USER_ID), ResponseCode.CLIENT_ERROR.getCode());
-        }
-        if(!userId.equals(requestedBy)){
-            //throw Authorization Exception
-            throw new AuthorizationException.NotAuthorized(ResponseCode.unAuthorized);
-        }
+        try {
+            if (StringUtils.isEmpty(userId)) {
+                throw new BaseException(IResponseMessage.Key.MANDATORY_PARAMETER_MISSING,
+                        MessageFormat.format(IResponseMessage.Message.MANDATORY_PARAMETER_MISSING, JsonKey.USER_ID), ResponseCode.CLIENT_ERROR.getCode());
+            }
+            if (!userId.equals(requestedBy)) {
+                //throw Authorization Exception
+                throw new AuthorizationException.NotAuthorized(ResponseCode.unAuthorized);
+            }
 
-        List<Map<String,Object>>  feedsUpdateList = createUpdateStatusReq(request.getRequest(),requestedBy);
-        if(!CollectionUtils.isNotEmpty(feedsUpdateList)){
-             throw new BaseException(IResponseMessage.Key.MANDATORY_PARAMETER_MISSING,
-                    MessageFormat.format(IResponseMessage.Message.MANDATORY_PARAMETER_MISSING,JsonKey.IDS), ResponseCode.CLIENT_ERROR.getCode());
+            List<Map<String, Object>> feedsUpdateList = createUpdateStatusReq(request.getRequest(), requestedBy);
+            if (!CollectionUtils.isNotEmpty(feedsUpdateList)) {
+                throw new BaseException(IResponseMessage.Key.MANDATORY_PARAMETER_MISSING,
+                        MessageFormat.format(IResponseMessage.Message.MANDATORY_PARAMETER_MISSING, JsonKey.IDS), ResponseCode.CLIENT_ERROR.getCode());
+            }
+            NotificationService notificationService = NotificationServiceImpl.getInstance();
+            Response response = notificationService.updateNotificationFeed(feedsUpdateList, request.getContext());
+            sender().tell(response, getSelf());
+
+        }   catch (BaseException ex){
+            logger.error(MessageFormat.format(":Error Msg: {0} ",ex.getMessage()),
+                    ex);
+            throw ex;
         }
-        NotificationService notificationService = NotificationServiceImpl.getInstance();
-        Response response = notificationService.updateNotificationFeed(feedsUpdateList,request.getContext());
-        sender().tell(response, getSelf());
+            catch (Exception ex){
+            logger.error(MessageFormat.format("UpdateNotificationActor:Error Msg: {0} ",ex.getMessage()),
+                    ex);
+             throw new BaseException(IResponseMessage.Key.SERVER_ERROR,IResponseMessage.Message.INTERNAL_ERROR, ResponseCode.serverError.getResponseCode());
+        }
 
     }
 
