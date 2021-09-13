@@ -8,6 +8,7 @@ import java.util.concurrent.CompletionStage;
 
 import controllers.JsonKey;
 import controllers.ResponseHandler;
+import org.sunbird.NotificationValidator;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.request.Request;
 import org.sunbird.request.LoggerUtil;
@@ -251,7 +252,7 @@ public class NotificationController extends BaseController {
     Request request = new Request();
     try {
       request = RequestMapper.createSBRequest(request());
-      request.getRequest().put(JsonKey.VERSION,"v1");
+      NotificationValidator.validateDeleteRequest(request);
       CompletionStage<Result> response = handleRequest(request, null, JsonKey.DELETE_V1_FEED, request());
       logger.info("Method call end for v2 sendNotification");
       return response;
@@ -272,6 +273,7 @@ public class NotificationController extends BaseController {
     Request request = new Request();
     try {
       request = RequestMapper.createSBRequest(request());
+      NotificationValidator.validateDeleteRequest(request);
       CompletionStage<Result> response = handleRequest(request, null, JsonKey.DELETE_FEED, request());
       logger.info("Method call end for v2 sendNotification");
       return response;

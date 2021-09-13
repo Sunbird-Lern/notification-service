@@ -13,6 +13,8 @@ public interface IResponseMessage extends IUserResponseMessage, IOrgResponseMess
   String INVALID_VALUE = "{0} VALUE IS INVALID, {1}";
   String MAX_NOTIFICATION_SIZE = "Max supported id in single playload is {0}";
   String SERVICE_UNAVAILABLE = "SERVICE UNAVAILABLE";
+  String INVALID_PARAMETER_VALUE = "INVALID_PARAMETER_VALUE";
+  String DATA_TYPE_ERROR = "DATA_TYPE_ERROR";
 
   interface Key{
 
@@ -21,7 +23,7 @@ public interface IResponseMessage extends IUserResponseMessage, IOrgResponseMess
     String INVALID_REQUESTED_DATA = "INVALID_REQUESTED_DATA";
     String UNAUTHORIZED = "UNAUTHORIZED";
     String SERVER_ERROR = "INTERNAL_ERROR";
-
+    String INVALID_PARAMETER_VALUE = "INVALID_PARAMETER_VALUE";
   }
 
   interface Message {
