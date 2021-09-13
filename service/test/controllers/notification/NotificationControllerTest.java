@@ -49,6 +49,12 @@ public class NotificationControllerTest extends BaseControllerTest {
   }
 
   @Test
+  public void readV1FeedNotification() {
+    Result result = performTest("/private/v1/notification/feed/read/12345", "GET",null);
+    assertTrue(getResponseStatus(result) == Response.Status.OK.getStatusCode());
+  }
+
+  @Test
   public void updateFeedNotification() {
     Map<String,Object> req = new HashMap<>();
     req.put(JsonKey.IDS,Arrays.asList("12323423232"));
@@ -66,7 +72,7 @@ public class NotificationControllerTest extends BaseControllerTest {
     req.put(JsonKey.STATUS,"read");
     Map<String,Object> reqObj = new HashMap<>();
     reqObj.put(JsonKey.REQUEST,req);
-    Result result = performTest("/v1/notification/feed/update", "PATCH",reqObj);
+    Result result = performTest("/private/v1/notification/feed/update", "PATCH",reqObj);
     assertTrue(getResponseStatus(result) == Response.Status.OK.getStatusCode());
   }
 

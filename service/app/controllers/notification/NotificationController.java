@@ -49,28 +49,6 @@ public class NotificationController extends BaseController {
   }
 
   /**
-   * This method will accept request for sending sync notification. notification can be sent on
-   * email, sms or push on device
-   *
-   * @return a CompletableFuture of success response
-   */
-  public CompletionStage<Result> sendSyncNotification() {
-    logger.info("method call started for sendNotification ");
-    request().getHeaders().addHeader(NOTIFICATION_DELIVERY_MODE, "sync");
-    Request request = new Request();
-    try {
-      request = RequestMapper.createSBRequest(request());
-      CompletionStage<Result> response = handleRequest(request, null, NOTIFICATION, request());
-      logger.info("Method call end for sendNotification");
-      return response;
-    }catch (Exception ex){
-      return CompletableFuture.completedFuture(
-              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, request()));
-    }
-
-  }
-
-  /**
    * This method will be used to verify otp.
    *
    * @return
