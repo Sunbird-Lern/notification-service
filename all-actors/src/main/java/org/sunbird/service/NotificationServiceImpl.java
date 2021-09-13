@@ -146,6 +146,23 @@ public class NotificationServiceImpl implements NotificationService {
         return response;
     }
 
+    @Override
+    public Response deleteNotificationFeed(List<String> ids, String userId, String category, Map<String, Object> reqContext) throws BaseException, JsonProcessingException {
+        List<NotificationFeed> feeds = new ArrayList<>();
+        for (String feedId:ids) {
+            NotificationFeed feed = new NotificationFeed();
+            feed.setId(feedId);
+            feed.setUserId(userId);
+            feed.setCategory(category);
+            feeds.add(feed);
+        }
+        if(CollectionUtils.isNotEmpty(feeds)) {
+            return notificationDao.deleteUserFeed(feeds, reqContext);
+        }else{
+            throw new BaseException(IResponseMessage.INTERNAL_ERROR,IResponseMessage.Message.INTERNAL_ERROR, ResponseCode.SERVER_ERROR.getCode());
+        }
+    }
+
 
     private String getAction(Map<String,Object> action) throws BaseException {
         try {

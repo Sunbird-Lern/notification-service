@@ -110,6 +110,7 @@ public class FeedNotificationHandler implements INotificationHandler{
         for (Map.Entry<String,Object> itr: additionalInfo.entrySet()) {
             actionDataMap.put(itr.getKey(),itr.getValue());
         }
+        actionDataMap.put(JsonKey.ACTION_TYPE,notificationV2Request.getAction().get(JsonKey.TYPE));
         dataMap.put(JsonKey.ACTION_DATA,actionDataMap);
         notification.put(JsonKey.DATA,dataMap);
         return notification;

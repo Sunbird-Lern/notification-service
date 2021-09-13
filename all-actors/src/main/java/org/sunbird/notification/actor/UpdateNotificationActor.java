@@ -21,20 +21,41 @@ import java.text.MessageFormat;
 import java.util.*;
 
 @ActorConfig(
-        tasks = {JsonKey.UPDATE_FEED},
+        tasks = {JsonKey.UPDATE_FEED, JsonKey.UPDATE_V1_FEED},
         asyncTasks = {},
         dispatcher= "notification-dispatcher"
 )
 public class UpdateNotificationActor extends BaseActor {
 
-    private static LoggerUtil logger = new LoggerUtil(ReadNotificationFeedActor.class);
+    private static LoggerUtil logger = new LoggerUtil(ReadNotificationActor.class);
 
     @Override
     public void onReceive(Request request) throws Throwable {
+        String operation = request.getOperation();
+        switch (operation) {
+            case "updateFeed":
+                updateV2Feed(request);
+                break;
+            case "updateV1Feed":
+                updateV1Feed(request);
+            default:
+                onReceiveUnsupportedMessage("ReadGroupActor");
+        }
+    }
+    private void updateV1Feed(Request request){
+        String requestedBy = (String) request.getRequest().get(JsonKey.USER_ID);
+        updateFeed(request,requestedBy);
+    }
 
+    private void updateV2Feed(Request request){
         RequestHandler requestHandler = new RequestHandler();
         String requestedBy = requestHandler.getRequestedBy(request);
+        updateFeed(request,requestedBy);
+    }
+
+    private void updateFeed(Request request, String requestedBy){
         String userId = (String) request.getRequest().get(JsonKey.USER_ID);
+        request.getRequest().put(JsonKey.STATUS,"read");
         try {
             if (StringUtils.isEmpty(userId)) {
                 throw new BaseException(IResponseMessage.Key.MANDATORY_PARAMETER_MISSING,

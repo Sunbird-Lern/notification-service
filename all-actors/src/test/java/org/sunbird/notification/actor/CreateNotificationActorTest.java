@@ -190,7 +190,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         action.put(JsonKey.CREATED_BY,createdBy);
         action.put(JsonKey.ADDITIONAL_INFO,new HashMap<>());
         action.put(JsonKey.TYPE,"add-member");
-        action.put(JsonKey.CATEGORY,"groups");
+        action.put(JsonKey.CATEGORY,"certificates");
         notification.put(JsonKey.ACTION,action);
         notification.put(JsonKey.IDS, Arrays.asList("1234"));
         notification.put(JsonKey.TYPE,"feed");

@@ -33,6 +33,9 @@ public interface JsonKey {
   String READ_FEED = "readFeed";
   String READ_V1_FEED = "readV1Feed";
   String UPDATE_FEED = "updateFeed";
+  String UPDATE_V1_FEED = "updateV1Feed";
+  String DELETE_FEED = "deleteFeed";
+  String DELETE_V1_FEED = "deleteV1Feed";
   String CREATE_NOTIFICATION = "createNotification";
   String DOT_SEPARATOR = ".";
   String SHA_256_WITH_RSA = "SHA256withRSA";

@@ -26,8 +26,8 @@ import java.util.*;
         asyncTasks = {},
         dispatcher= "notification-dispatcher"
 )
-public class ReadNotificationFeedActor extends BaseActor {
-    private static LoggerUtil logger = new LoggerUtil(ReadNotificationFeedActor.class);
+public class ReadNotificationActor extends BaseActor {
+    private static LoggerUtil logger = new LoggerUtil(ReadNotificationActor.class);
 
     @Override
     public void onReceive(Request request) throws Throwable {
@@ -76,7 +76,7 @@ public class ReadNotificationFeedActor extends BaseActor {
             }
 
             Response response = new Response();
-            response.put("userFeed",notifications);
+            response.put("feeds",notifications);
             sender().tell(response, getSelf());
        } catch (BaseException ex){
              logger.error(MessageFormat.format(":Error Msg: {0} ",ex.getMessage()),

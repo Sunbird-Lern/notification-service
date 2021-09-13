@@ -40,7 +40,11 @@ public interface JsonKey {
   String READ_FEED = "readFeed";
   String READ_V1_FEED ="readV1Feed";
   String UPDATE_FEED = "updateFeed";
+  String UPDATE_V1_FEED = "updateV1Feed";
   String CREATE_NOTIFICATION = "createNotification";
+  String DELETE_FEED = "deleteFeed";
+  String DELETE_V1_FEED = "deleteV1Feed";
+
   String X_REQUEST_ID = "X-Request-ID";
   String USER_ID = "userId";
   String MANAGED_FOR = "managedFor";

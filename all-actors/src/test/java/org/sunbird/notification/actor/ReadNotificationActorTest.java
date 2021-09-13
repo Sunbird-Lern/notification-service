@@ -3,8 +3,6 @@ package org.sunbird.notification.actor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.testkit.javadsl.TestKit;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +18,6 @@ import org.sunbird.cassandraimpl.CassandraOperationImpl;
 import org.sunbird.common.message.Localizer;
 import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
-import org.sunbird.notification.email.Email;
 import org.sunbird.util.SystemConfigUtil;
 import org.sunbird.utils.PropertiesCache;
 import org.sunbird.utils.ServiceFactory;
@@ -44,9 +41,9 @@ import static org.powermock.api.mockito.PowerMockito.when;
         PropertiesCache.class
 })
 @PowerMockIgnore({"javax.management.*", "jdk.internal.reflect.*"})
-public class ReadNotificationFeedActorTest extends BaseActorTest{
+public class ReadNotificationActorTest extends BaseActorTest{
 
-    public  final Props props = Props.create(ReadNotificationFeedActor.class);
+    public  final Props props = Props.create(ReadNotificationActor.class);
 
     public  PropertiesCache propertiesCache;
     @Before
