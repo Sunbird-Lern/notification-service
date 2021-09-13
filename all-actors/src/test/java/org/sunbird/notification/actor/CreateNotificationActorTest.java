@@ -102,7 +102,46 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
     }
 
-    private Request getV2NotificationPhoneRequest() {
+    @Test
+    public void testCreateV1NotificationSuccess(){
+
+        TestKit probe = new TestKit(system);
+        ActorRef subject = system.actorOf(props);
+        try {
+            CassandraOperation cassandraOperation;
+            PowerMockito.mockStatic(ServiceFactory.class);
+            cassandraOperation = mock(CassandraOperationImpl.class);
+            when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
+            when(cassandraOperation.getRecordsByProperty(
+                    Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
+                    Mockito.eq("action_template"),
+                    Mockito.eq(JsonKey.ACTION),
+                    Mockito.eq("add-member"),
+                    Mockito.any()))
+                    .thenReturn(getAddActionTemplate());
+            when(cassandraOperation.getRecordsByProperty(
+                    Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
+                    Mockito.eq("notification_template"),
+                    Mockito.anyString(),
+                    Mockito.anyString(),
+                    Mockito.any()))
+                    .thenReturn(getNotificationTemplate());
+            when(cassandraOperation.batchInsert(
+                    Mockito.anyString(), Mockito.anyString(), Mockito.anyList(),Mockito.any()))
+                    .thenReturn(getCassandraResponse());
+        }catch (BaseException be) {
+            Assert.assertTrue(false);
+        }
+
+        Request request = getV1NotificationRequest();
+        subject.tell(request, probe.getRef());
+        Response res = probe.expectMsgClass(Duration.ofSeconds(80), Response.class);
+        System.out.println(res.getResult());
+        Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
+
+    }
+
+    private Request getV1NotificationRequest() {
         Request reqObj = new Request();
         Map<String, Object> context = new HashMap<>();
         context.put(JsonKey.USER_ID, "user1");
@@ -110,28 +149,17 @@ public class CreateNotificationActorTest extends BaseActorTest{
         reqObj.setOperation("createNotification");
         Map<String, Object> reqMap = new HashMap<>();
         Map<String,Object> notification = new HashMap<>();
-        Map<String,Object> action = new HashMap<>();
-        Map<String,Object> template = new HashMap<>();
-        Map<String,Object> params = new HashMap<>();
-        params.put("param1","group");
-        template.put(JsonKey.PARAMS,params);
-        action.put(JsonKey.TEMPLATE,template);
-        Map<String,Object> createdBy = new HashMap<>();
-        createdBy.put(JsonKey.ID,"12354");
-        createdBy.put(JsonKey.TYPE,JsonKey.SYSTEM);
-        action.put(JsonKey.CREATED_BY,createdBy);
-        Map<String,Object> additionalInfo = new HashMap<>();
-        additionalInfo.put("sender","sender@subird.com");
-        additionalInfo.put("subject","Hello User");
-        action.put(JsonKey.ADDITIONAL_INFO,additionalInfo);
-        action.put(JsonKey.TYPE,"sms");
-        action.put(JsonKey.CATEGORY,"user-service");
-        notification.put(JsonKey.ACTION,action);
-        notification.put(JsonKey.IDS, Arrays.asList("98128121212"));
-        notification.put(JsonKey.TYPE,"phone");
+        Map<String,Object> data = new HashMap<>();
+        Map<String,Object> actionData = new HashMap<>();
+        actionData.put(JsonKey.IDENTIFIER,"1233443");
+        actionData.put(JsonKey.ACTOR_TYPE,"add-member");
+        actionData.put(JsonKey.CATEGORY,"certificates");
+        data.put(JsonKey.ACTION_DATA,actionData);
+        notification.put(JsonKey.USER_ID,"1234");
+        notification.put(JsonKey.DATA,data);
         notification.put("priority",1);
         reqMap.put(JsonKey.NOTIFICATIONS,Arrays.asList(notification));
-        reqObj.setManagerName("sync");
+        reqMap.put("version","v1");
         reqObj.setRequest(reqMap);
         return reqObj;
     }

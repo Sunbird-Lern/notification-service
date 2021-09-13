@@ -148,4 +148,6 @@ public interface JsonKey {
   String IDS = "ids";
   String SUNBIRD_NOTIFICATIONS = "sunbird_notifications";
   String CREATE_NOTIFICATION = "create";
+  String DATA = "data";
+  String ACTION_DATA = "actionData";
 }
