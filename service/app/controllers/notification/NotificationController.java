@@ -49,6 +49,28 @@ public class NotificationController extends BaseController {
   }
 
   /**
+   * This method will accept request for sending sync notification. notification can be sent on
+   * email, sms or push on device
+   *
+   * @return a CompletableFuture of success response
+   */
+  public CompletionStage<Result> sendSyncNotification() {
+    logger.info("method call started for sendNotification ");
+    request().getHeaders().addHeader(NOTIFICATION_DELIVERY_MODE, "sync");
+    Request request = new Request();
+    try {
+      request = RequestMapper.createSBRequest(request());
+      CompletionStage<Result> response = handleRequest(request, null, NOTIFICATION, request());
+      logger.info("Method call end for sendNotification");
+      return response;
+    }catch (Exception ex){
+      return CompletableFuture.completedFuture(
+              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, request()));
+    }
+
+  }
+
+  /**
    * This method will be used to verify otp.
    *
    * @return
@@ -152,29 +174,7 @@ public class NotificationController extends BaseController {
     }
 
   }
-
-  /**
-   * This method will accept request for sending new v2 notification. notification can be sent on
-   * email, sms, Feed or push on device
-   *
-   * @return a CompletableFuture of success response
-   */
-  public CompletionStage<Result> sendSyncV2Notification() {
-    logger.info("method call started for sendNotification ");
-    Request request = new Request();
-    try {
-      request = RequestMapper.createSBRequest(request());
-      request().getHeaders().addHeader(NOTIFICATION_DELIVERY_MODE, "sync");
-      CompletionStage<Result> response = handleRequest(request, new RequestValidator(), JsonKey.CREATE_NOTIFICATION, request());
-      logger.info("Method call end for v2 sendNotification");
-      return response;
-    }catch (Exception ex){
-      return CompletableFuture.completedFuture(
-              ResponseHandler.handleFailureResponse(request,ex, httpExecutionContext, request()));
-    }
-
-  }
-
+  
 
   /**
    * This method will accept reading the notification and return v1 format feeds to support old mobile apps.
