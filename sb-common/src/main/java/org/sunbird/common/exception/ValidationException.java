@@ -16,30 +16,21 @@ public class ValidationException {
         public InvalidRequestData() {
             super(
                     IResponseMessage.INVALID_REQUESTED_DATA,
-                    Localizer.getInstance().getMessage(IResponseMessage.INVALID_REQUESTED_DATA, null),
+                   MessageFormat.format(IResponseMessage.INVALID_REQUESTED_DATA, null),
                     400);
         }
     }
 
     public static class MandatoryParamMissing extends BaseException {
         public MandatoryParamMissing(String param, String parentKey, ResponseCode responseCode) {
-            super(
-                    responseCode.getErrorCode(),
-                    MessageFormat.format(
-                            ValidationException.getLocalizedMessage(
-                                    responseCode.getErrorMessage(), null),
-                            parentKey,
-                            param),
-                    400);
+            super(responseCode.getErrorCode(),
+                    MessageFormat.format(responseCode.getErrorMessage(), param), 400);
         }
         public MandatoryParamMissing(String param, String parentKey) {
             super(
                     IResponseMessage.Key.MANDATORY_PARAMETER_MISSING,
                     MessageFormat.format(
-                            ValidationException.getLocalizedMessage(
-                                    IResponseMessage.Message.MANDATORY_PARAMETER_MISSING, null),
-                            parentKey,
-                            param),
+                            IResponseMessage.Message.MANDATORY_PARAMETER_MISSING, param),
                     400);
         }
     }
@@ -49,9 +40,7 @@ public class ValidationException {
             super(
                     IResponseMessage.INVALID_REQUESTED_DATA,
                     MessageFormat.format(
-                            ValidationException.getLocalizedMessage(IResponseMessage.DATA_TYPE_ERROR, null),
-                            param,
-                            type),
+                           IResponseMessage.DATA_TYPE_ERROR, param),
                     400);
         }
     }

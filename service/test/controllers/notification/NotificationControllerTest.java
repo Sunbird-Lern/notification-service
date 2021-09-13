@@ -100,6 +100,18 @@ public class NotificationControllerTest extends BaseControllerTest {
     assertTrue(getResponseStatus(result) == Response.Status.OK.getStatusCode());
   }
 
+  @Test
+  public void deleteFeedNotificationFailed() {
+    Map<String,Object> req = new HashMap<>();
+    req.put(JsonKey.IDS,Arrays.asList("12323423232"));
+    req.put(JsonKey.CATEGORY,"groups");
+    Map<String,Object> reqObj = new HashMap<>();
+    reqObj.put(JsonKey.REQUEST,req);
+    Result result = performTest("/private/v1/notification/delete", "POST",reqObj);
+    assertFalse(getResponseStatus(result) == Response.Status.OK.getStatusCode());
+
+  }
+
 
   private Map<String, Object> getV2NotificationRequest() {
     Map<String,Object> request = new HashMap<>();

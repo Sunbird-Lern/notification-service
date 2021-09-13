@@ -133,12 +133,9 @@ public class NotificationValidator {
     return targetClass.isAssignableFrom(objClass);
   }
 
-  public static void validateParamsWithType(Map<String, Object> reqMap,
-                                            List<String> paramList,
-                                            Class<?> type,
+  public static void validateParamsWithType(Map<String, Object> reqMap, List<String> paramList, Class<?> type,
                                             String parentKey,
-                                            Map<String,Object> reqContext)
-          throws BaseException {
+                                            Map<String,Object> reqContext) throws BaseException {
     for (String param : paramList) {
       if(reqMap.containsKey(param)) {
         if (!(isInstanceOf(reqMap.get(param).getClass(), type))) {

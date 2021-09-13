@@ -4,7 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.sunbird.common.util.JsonKey;
 public enum ResponseCode {
   unAuthorized(IResponseMessage.Key.UNAUTHORIZED, IResponseMessage.Message.UNAUTHORIZED, JsonKey.FAILED),
-
+  mandatoryParameterMissing(
+          IResponseMessage.Key.MANDATORY_PARAMETER_MISSING, IResponseMessage.Message.MANDATORY_PARAMETER_MISSING,JsonKey.FAILED),
   invalidRequestData(
       IResponseMessage.INVALID_REQUESTED_DATA, IResponseMessage.Message.INVALID_REQUESTED_DATA,JsonKey.FAILED),
   serverError(IResponseMessage.SERVER_ERROR, IResponseMessage.SERVER_ERROR,JsonKey.FAILED),
