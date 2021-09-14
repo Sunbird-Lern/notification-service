@@ -1,13 +1,14 @@
 package org.sunbird.pojo;
 
 import java.util.List;
+import java.util.Map;
 
 public class NotificationV2Request {
 
     private List<String> ids;
     private int priority;
     private String type;
-    private ActionData action;
+    private Map<String,Object> action;
 
     public List<String> getIds() {
         return ids;
@@ -33,11 +34,11 @@ public class NotificationV2Request {
         this.type = type;
     }
 
-    public ActionData getAction() {
+    public Map<String,Object> getAction() {
         return action;
     }
 
-    public void setAction(ActionData action) {
+    public void setAction(Map<String,Object> action) {
         this.action = action;
     }
 }

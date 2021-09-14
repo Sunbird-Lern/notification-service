@@ -21,5 +21,4 @@ public interface NotificationDao {
 
     Response deleteUserFeed(List<NotificationFeed> feeds,Map<String,Object> context) throws BaseException;
 
-    Response readV1NotificationFeed(String userId, Map<String,Object> reqContext) throws BaseException;
 }

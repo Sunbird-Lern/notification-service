@@ -18,7 +18,7 @@ import java.util.Map;
 public class Util {
 
     public static Map<String, Object> getTemplate(NotificationV2Request notificationRequest, NotificationService notificationService, Map<String, Object> reqContext) throws BaseException {
-        Map<String,Object> template = notificationRequest.getAction().getTemplate();
+        Map<String,Object> template = (Map<String, Object>) notificationRequest.getAction().get(JsonKey.TEMPLATE);
         Map<String,Object> paramObj = (Map<String, Object>) template.get(JsonKey.PARAMS);
         if(MapUtils.isEmpty(paramObj)){
             throw new BaseException(IResponseMessage.Key.MANDATORY_PARAMETER_MISSING,
@@ -28,14 +28,14 @@ public class Util {
             throw new BaseException(IResponseMessage.Key.MANDATORY_PARAMETER_MISSING,
                     MessageFormat.format(IResponseMessage.Message.MANDATORY_PARAMETER_MISSING, JsonKey.TYPE), ResponseCode.CLIENT_ERROR.getCode());
         }else if(null == template.get(JsonKey.DATA)){
-            template = notificationService.getTemplate(notificationRequest.getAction().getType(), reqContext);
+            template = notificationService.getTemplate((String) notificationRequest.getAction().get(JsonKey.TYPE), reqContext);
         }
         if(null != template.get(JsonKey.TEMPLATE_SCHEMA)){
             notificationService.validateTemplate(paramObj, (String) template.get(JsonKey.TEMPLATE_SCHEMA));
         }
         if(MapUtils.isEmpty(template)){
             throw new BaseException(IResponseMessage.Key.TEMPLATE_NOT_FOUND,
-                    MessageFormat.format(IResponseMessage.Message.TEMPLATE_NOT_FOUND, notificationRequest.getAction().getType()), ResponseCode.CLIENT_ERROR.getCode());
+                    MessageFormat.format(IResponseMessage.Message.TEMPLATE_NOT_FOUND, notificationRequest.getAction().get(JsonKey.TYPE)), ResponseCode.CLIENT_ERROR.getCode());
         }
         template.put(JsonKey.PARAMS,paramObj);
         return template;

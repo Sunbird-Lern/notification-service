@@ -22,7 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
                 "cassandratablecolumn.properties",
                 "cassandra.config.properties",
                 "telemetry.config.properties",
-                "external.config.properties"
+                "external.config.properties",
+                "notification.config.properties"
         };
 
         private final Properties configProp = new Properties();

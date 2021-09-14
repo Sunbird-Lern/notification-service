@@ -10,14 +10,13 @@ import org.sunbird.utils.CassandraConnectionMngrFactory;
 
 public class DBUtil {
     public static final Map<String, DbInfo> dbInfoMap = new HashMap<>();
-    public static final String KEY_SPACE_NAME = JsonKey.SUNBIRD_GROUPS;
 
     private static void initializeDBProperty() {
         // setting db info (keyspace , table) into static map
         // this map will be used during cassandra data base interaction.
         // this map will have each DB name and it's corresponding keyspace and table
         // name.
-        dbInfoMap.put(JsonKey.USER_DB, getDbInfoObject(KEY_SPACE_NAME, "sunbird_notifications"));
+        //dbInfoMap.put(JsonKey.USER_DB, getDbInfoObject(KEY_SPACE_NAME, "sunbird_notification"));
     }
 
     /**

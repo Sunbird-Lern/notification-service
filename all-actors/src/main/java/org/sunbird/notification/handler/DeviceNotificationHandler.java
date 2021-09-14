@@ -44,12 +44,12 @@ public class DeviceNotificationHandler implements INotificationHandler{
         notification.setIds(notificationRequest.getIds());
         notification.setMode(NotificationRouter.DeliveryMode.device.name());
         Config config = new Config();
-        String topic = notificationRequest.getAction().getAdditionalInfo().get(JsonKey.TOPIC) !=null ?
-                (String)notificationRequest.getAction().getAdditionalInfo().get(JsonKey.TOPIC): null;
+        String topic = ((Map<String,Object>)notificationRequest.getAction().get(JsonKey.ADDITIONAL_INFO)).get(JsonKey.TOPIC) !=null ?
+                (String) ((Map<String,Object>)notificationRequest.getAction().get(JsonKey.ADDITIONAL_INFO)).get(JsonKey.TOPIC) : null;
         config.setTopic(topic);
         notification.setConfig(config);
         notification.setDeliveryType(NotificationRouter.DeliveryType.message.name());
-        Map<String,Object> rawData = (Map<String, Object>) notificationRequest.getAction().getAdditionalInfo().get(JsonKey.RAW_DATA);
+        Map<String,Object> rawData = (Map<String, Object>) ((Map<String, Object>)notificationRequest.getAction().get(JsonKey.ADDITIONAL_INFO)).get(JsonKey.RAW_DATA);
         if(MapUtils.isEmpty(rawData)){
             throw new BaseException(IResponseMessage.Key.MANDATORY_PARAMETER_MISSING, MessageFormat.format(IResponseMessage.Message.MANDATORY_PARAMETER_MISSING,JsonKey.RAW_DATA), ResponseCode.CLIENT_ERROR.getCode());
         }
