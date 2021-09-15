@@ -22,8 +22,8 @@ GET  /private/v1/notification/feed/read/:userId   @controllers.notification.Noti
 
 POST /private/v2/notification/send                @controllers.notification.NotificationController.sendV1Notification()
 
-POST /v1/notification/delete                     @controllers.notification.NotificationController.deleteNotification()
+POST /v1/notification/feed/delete                     @controllers.notification.NotificationController.deleteNotification()
 
-POST /private/v1/notification/delete             @controllers.notification.NotificationController.deleteV1Notification()
+POST /private/v1/notification/feed/delete             @controllers.notification.NotificationController.deleteV1Notification()
 
 PATCH /private/v1/notification/feed/update         @controllers.notification.NotificationController.updateV1NotificationFeed()

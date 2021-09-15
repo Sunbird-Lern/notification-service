@@ -89,6 +89,6 @@ public interface JsonKey {
   String TITLE = "title";
   String DESCRIPTION = "description";
   String ACTION_TYPE = "actionType";
-  String NOTIFICATION_CATEGORY_CONFIG = "notification_category_config";
+  String NOTIFICATION_CATEGORY_TYPE_CONFIG = "notification_category_type_config";
   String REQUEST = "request";
 }
