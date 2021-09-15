@@ -84,7 +84,7 @@ public class NotificationControllerTest extends BaseControllerTest {
     req.put(JsonKey.CATEGORY,"groups");
     Map<String,Object> reqObj = new HashMap<>();
     reqObj.put(JsonKey.REQUEST,req);
-    Result result = performTest("/v1/notification/delete", "POST",reqObj);
+    Result result = performTest("/v1/notification/feed/delete", "POST",reqObj);
     assertTrue(getResponseStatus(result) == Response.Status.OK.getStatusCode());
   }
 

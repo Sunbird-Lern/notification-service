@@ -60,7 +60,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         PowerMockito.mockStatic(PropertiesCache.class);
         propertiesCache = Mockito.mock(PropertiesCache.class);
         Mockito.when(PropertiesCache.getInstance()).thenReturn(propertiesCache);
-        when(propertiesCache.getProperty("notification_category_config")).thenReturn("certificates,test");
+        when(propertiesCache.getProperty("notification_category_type_config")).thenReturn("certificateUpload,test");
     }
 
     @Test
@@ -116,7 +116,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
                     Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
                     Mockito.eq("action_template"),
                     Mockito.eq(JsonKey.ACTION),
-                    Mockito.eq("add-member"),
+                    Mockito.eq("certificateUpload"),
                     Mockito.any()))
                     .thenReturn(getAddActionTemplate());
             when(cassandraOperation.getRecordsByProperty(
@@ -152,7 +152,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Map<String,Object> data = new HashMap<>();
         Map<String,Object> actionData = new HashMap<>();
         actionData.put(JsonKey.IDENTIFIER,"1233443");
-        actionData.put(JsonKey.ACTOR_TYPE,"add-member");
+        actionData.put(JsonKey.ACTOR_TYPE,"certificateUpload");
         actionData.put(JsonKey.CATEGORY,"certificates");
         data.put(JsonKey.ACTION_DATA,actionData);
         notification.put(JsonKey.USER_ID,"1234");
