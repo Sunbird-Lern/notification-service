@@ -1,6 +1,7 @@
 package org.sunbird.notification.actor;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sunbird.BaseActor;
 import org.sunbird.JsonKey;
@@ -15,6 +16,8 @@ import org.sunbird.request.LoggerUtil;
 import org.sunbird.service.NotificationService;
 import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.RequestHandler;
+import org.sunbird.util.Util;
+import org.sunbird.utils.PropertiesCache;
 
 import java.sql.Timestamp;
 import java.text.MessageFormat;
@@ -55,7 +58,6 @@ public class UpdateNotificationActor extends BaseActor {
 
     private void updateFeed(Request request, String requestedBy){
         String userId = (String) request.getRequest().get(JsonKey.USER_ID);
-        request.getRequest().put(JsonKey.STATUS,"read");
         try {
             if (StringUtils.isEmpty(userId)) {
                 throw new BaseException(IResponseMessage.Key.MANDATORY_PARAMETER_MISSING,
@@ -72,6 +74,11 @@ public class UpdateNotificationActor extends BaseActor {
                         MessageFormat.format(IResponseMessage.Message.MANDATORY_PARAMETER_MISSING, JsonKey.IDS), ResponseCode.CLIENT_ERROR.getCode());
             }
             NotificationService notificationService = NotificationServiceImpl.getInstance();
+            boolean isSupportEnabled = Boolean.parseBoolean(PropertiesCache.getInstance().getProperty(JsonKey.VERSION_SUPPORT_CONFIG_ENABLE));
+            if(isSupportEnabled) {
+                List<Map<String, Object>> mappedFeedIdLists = notificationService.getFeedMap((List<String>) request.getRequest().get(JsonKey.IDS), request.getContext());
+                getOtherVersionUpdatedFeedList(mappedFeedIdLists, feedsUpdateList, requestedBy);
+            }
             Response response = notificationService.updateNotificationFeed(feedsUpdateList, request.getContext());
             sender().tell(response, getSelf());
 
@@ -88,6 +95,27 @@ public class UpdateNotificationActor extends BaseActor {
 
     }
 
+    /**
+     * Update the other version feed to support backward compatibility
+     * @param mappedFeedIdLists
+     * @param feedsUpdateList
+     */
+    public static void getOtherVersionUpdatedFeedList(List<Map<String, Object>> mappedFeedIdLists, List<Map<String, Object>> feedsUpdateList, String requestedBy) {
+        for (Map<String, Object> itr: mappedFeedIdLists){
+            Map<String,Object> notificationFeed = feedsUpdateList.stream().filter(x->x.get(JsonKey.ID).equals(itr.get(JsonKey.ID))).findAny().orElse(null);
+            if(MapUtils.isNotEmpty(notificationFeed)){
+                Map<String,Object> feedTobeUpdated = new HashMap<>();
+                feedTobeUpdated.put(JsonKey.ID,itr.get(JsonKey.FEED_ID));
+                feedTobeUpdated.put(JsonKey.USER_ID,notificationFeed.get(JsonKey.USER_ID));
+                feedTobeUpdated.put(JsonKey.STATUS,notificationFeed.get(JsonKey.STATUS));
+                feedTobeUpdated.put(JsonKey.UPDATED_BY,requestedBy);
+                feedTobeUpdated.put(JsonKey.UPDATED_ON,new Timestamp(Calendar.getInstance().getTime().getTime()));
+                feedsUpdateList.add(feedTobeUpdated);
+            }
+        }
+
+    }
+
     private  List<Map<String,Object>>  createUpdateStatusReq(Map<String, Object> request, String requestedBy) {
 
         List<Map<String,Object>> updateReqList = new ArrayList<>();
@@ -98,7 +126,7 @@ public class UpdateNotificationActor extends BaseActor {
             notificationFeed.put(JsonKey.USER_ID,(String) request.get(JsonKey.USER_ID));
             notificationFeed.put(JsonKey.UPDATED_BY,requestedBy);
             notificationFeed.put(JsonKey.UPDATED_ON,new Timestamp(Calendar.getInstance().getTime().getTime()));
-            notificationFeed.put(JsonKey.STATUS,(String) request.get(JsonKey.STATUS));
+            notificationFeed.put(JsonKey.STATUS,"read");
             updateReqList.add(notificationFeed);
         }
         return updateReqList;

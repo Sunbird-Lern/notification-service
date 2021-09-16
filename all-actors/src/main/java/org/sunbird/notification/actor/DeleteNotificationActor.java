@@ -2,6 +2,7 @@ package org.sunbird.notification.actor;
 
 import akka.actor.AbstractActor;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sunbird.BaseActor;
 import org.sunbird.JsonKey;
@@ -16,8 +17,11 @@ import org.sunbird.request.LoggerUtil;
 import org.sunbird.service.NotificationService;
 import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.RequestHandler;
+import org.sunbird.util.Util;
+import org.sunbird.utils.PropertiesCache;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +60,7 @@ public class DeleteNotificationActor extends BaseActor {
 
     private void deleteFeed(Request request, String requestedBy){
         String userId = (String) request.getRequest().get(JsonKey.USER_ID);
+        List<String> feedIds = (List<String>)request.getRequest().get(JsonKey.IDS);
         try {
             if (StringUtils.isEmpty(userId)) {
                 throw new BaseException(IResponseMessage.Key.MANDATORY_PARAMETER_MISSING,
@@ -67,8 +72,15 @@ public class DeleteNotificationActor extends BaseActor {
             }
 
             NotificationService notificationService = NotificationServiceImpl.getInstance();
-            Response response = notificationService.deleteNotificationFeed((List<String>)request.getRequest().get(JsonKey.IDS),
-                    (String)request.getRequest().get(JsonKey.USER_ID),(String)request.getRequest().get(JsonKey.CATEGORY), request.getContext());
+            boolean isSupportEnabled = Boolean.parseBoolean(PropertiesCache.getInstance().getProperty(JsonKey.VERSION_SUPPORT_CONFIG_ENABLE));
+            if(isSupportEnabled) {
+                List<Map<String, Object>> mappedFeedIdLists = notificationService.getFeedMap((List<String>) request.getRequest().get(JsonKey.IDS), request.getContext());
+                getOtherVersionUpdatedFeedList(mappedFeedIdLists,feedIds);
+            }
+            Response response = notificationService.deleteNotificationFeed(feedIds, request.getContext());
+            if(isSupportEnabled){
+                notificationService.deleteNotificationFeedMap(feedIds,request.getContext());
+            }
             sender().tell(response, getSelf());
 
         }   catch (BaseException ex){
@@ -82,5 +94,11 @@ public class DeleteNotificationActor extends BaseActor {
             throw new BaseException(IResponseMessage.Key.SERVER_ERROR,IResponseMessage.Message.INTERNAL_ERROR, ResponseCode.serverError.getResponseCode());
         }
 
+    }
+
+    private void getOtherVersionUpdatedFeedList(List<Map<String, Object>> mappedFeedIdLists, List<String> feedIds) {
+        for (Map<String, Object> itr: mappedFeedIdLists){
+            feedIds.add((String) itr.get(JsonKey.FEED_ID));
+        }
     }
 }

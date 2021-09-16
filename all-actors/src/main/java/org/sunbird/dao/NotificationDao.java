@@ -21,4 +21,9 @@ public interface NotificationDao {
 
     Response deleteUserFeed(List<NotificationFeed> feeds,Map<String,Object> context) throws BaseException;
 
+    Response mapV1V2Feed(List<Map<String, Object>> mappedList, Map<String, Object> reqContext);
+
+    Response getFeedMap(List<String> feedIds, Map<String, Object> reqContext);
+
+    Response deleteUserFeedMap(List<String> feedIds, Map<String, Object> context);
 }

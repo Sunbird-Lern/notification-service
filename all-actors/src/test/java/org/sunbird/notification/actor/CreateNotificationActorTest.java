@@ -60,7 +60,10 @@ public class CreateNotificationActorTest extends BaseActorTest{
         PowerMockito.mockStatic(PropertiesCache.class);
         propertiesCache = Mockito.mock(PropertiesCache.class);
         Mockito.when(PropertiesCache.getInstance()).thenReturn(propertiesCache);
-        when(propertiesCache.getProperty("notification_category_type_config")).thenReturn("certificateUpload,test");
+        when(propertiesCache.getProperty(org.sunbird.JsonKey.NOTIFICATION_CATEGORY_TYPE_CONFIG)).thenReturn("certificateUpload,add-member");
+        when(propertiesCache.getProperty(org.sunbird.JsonKey.VERSION_SUPPORT_CONFIG_ENABLE)).thenReturn("true");
+        when(propertiesCache.getProperty(org.sunbird.JsonKey.FEED_LIMIT)).thenReturn("1");
+
     }
 
     @Test
@@ -77,7 +80,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
                     Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
                     Mockito.eq("action_template"),
                     Mockito.eq(JsonKey.ACTION),
-                    Mockito.eq("add-member"),
+                    Mockito.anyString(),
                     Mockito.any()))
                     .thenReturn(getAddActionTemplate());
             when(cassandraOperation.getRecordsByProperty(
@@ -89,6 +92,26 @@ public class CreateNotificationActorTest extends BaseActorTest{
                     .thenReturn(getNotificationTemplate());
             when(cassandraOperation.batchInsert(
                     Mockito.anyString(), Mockito.anyString(), Mockito.anyList(),Mockito.any()))
+                    .thenReturn(getCassandraResponse());
+            when(cassandraOperation.getRecordById(
+                    Mockito.anyString(),
+                    Mockito.anyString(),
+                    Mockito.anyMap(),
+                    Mockito.anyMap()))
+                    .thenReturn(getNotificationFeedResponse());
+
+            when(cassandraOperation.getRecordsByProperty(
+                    Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
+                    Mockito.eq("feed_map"),
+                    Mockito.anyString(),
+                    Mockito.anyList(),
+                    Mockito.any()))
+                    .thenReturn(getFeedMapList());
+            when(cassandraOperation.batchDelete(
+                    Mockito.anyString(),
+                    Mockito.anyString(),
+                    Mockito.anyList(),
+                    Mockito.anyMap()))
                     .thenReturn(getCassandraResponse());
         }catch (BaseException be) {
             Assert.assertTrue(false);
@@ -116,7 +139,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
                     Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
                     Mockito.eq("action_template"),
                     Mockito.eq(JsonKey.ACTION),
-                    Mockito.eq("certificateUpload"),
+                    Mockito.anyString(),
                     Mockito.any()))
                     .thenReturn(getAddActionTemplate());
             when(cassandraOperation.getRecordsByProperty(
@@ -129,6 +152,27 @@ public class CreateNotificationActorTest extends BaseActorTest{
             when(cassandraOperation.batchInsert(
                     Mockito.anyString(), Mockito.anyString(), Mockito.anyList(),Mockito.any()))
                     .thenReturn(getCassandraResponse());
+            when(cassandraOperation.getRecordById(
+                    Mockito.anyString(),
+                    Mockito.anyString(),
+                    Mockito.anyMap(),
+                    Mockito.anyMap()))
+                    .thenReturn(getNotificationFeedResponse());
+
+            when(cassandraOperation.getRecordsByProperty(
+                    Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
+                    Mockito.eq("feed_map"),
+                    Mockito.anyString(),
+                    Mockito.anyList(),
+                    Mockito.any()))
+                    .thenReturn(getFeedMapList());
+            when(cassandraOperation.batchDelete(
+                    Mockito.anyString(),
+                    Mockito.anyString(),
+                    Mockito.anyList(),
+                    Mockito.anyMap()))
+                    .thenReturn(getCassandraResponse());
+
         }catch (BaseException be) {
             Assert.assertTrue(false);
         }
@@ -152,7 +196,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Map<String,Object> data = new HashMap<>();
         Map<String,Object> actionData = new HashMap<>();
         actionData.put(JsonKey.IDENTIFIER,"1233443");
-        actionData.put(JsonKey.ACTOR_TYPE,"certificateUpload");
+        actionData.put(JsonKey.ACTION_TYPE,"add-member");
         actionData.put(JsonKey.CATEGORY,"certificates");
         data.put(JsonKey.ACTION_DATA,actionData);
         notification.put(JsonKey.USER_ID,"1234");
@@ -182,6 +226,9 @@ public class CreateNotificationActorTest extends BaseActorTest{
         response.putAll(result);
         return response;
     }
+
+
+
 
     private Response getAddActionTemplate() {
         List<Map<String,Object>> templateIdDetails = new ArrayList<>();

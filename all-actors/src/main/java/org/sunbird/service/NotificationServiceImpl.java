@@ -11,6 +11,7 @@ import org.apache.velocity.app.VelocityEngine;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
+import org.mockito.internal.matchers.Not;
 import org.sunbird.JsonKey;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.util.Notification;
@@ -20,6 +21,7 @@ import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.ResponseCode;
 import org.sunbird.pojo.ActionData;
 import org.sunbird.pojo.NotificationFeed;
+import org.sunbird.pojo.NotificationType;
 import org.sunbird.pojo.NotificationV2Request;
 import org.sunbird.request.LoggerUtil;
 import org.sunbird.common.response.Response;
@@ -104,56 +106,23 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Response createNotificationFeed(NotificationV2Request request, Map<String,Object> reqContext) throws BaseException {
-        List<String> ids = request.getIds();
-        List<NotificationFeed> feedList = new ArrayList<>();
-
-        for (String id: ids) {
-            NotificationFeed feed = new NotificationFeed();
-            feed.setId(UUID.randomUUID().toString());
-            feed.setPriority(request.getPriority());
-            feed.setStatus("unread");
-            feed.setCategory((String) request.getAction().get(JsonKey.CATEGORY));
-            feed.setCreatedBy((String) ((Map<String,Object>)request.getAction().get(JsonKey.CREATED_BY)).get(JsonKey.ID));
-            feed.setCreatedOn(new Timestamp(Calendar.getInstance().getTime().getTime()));
-            feed.setUserId(id);
-            feed.setAction(getAction(request.getAction()));
-            feedList.add(feed);
-        }
+    public Response createNotificationFeed(List<NotificationFeed> feedList, Map<String,Object> reqContext) throws BaseException {
         Response response = notificationDao.createNotificationFeed(feedList,reqContext);
         return response;
     }
 
     @Override
-    public Response createV1NotificationFeed(Map<String,Object> notificationV1Req, Map<String,Object> reqContext) throws BaseException, JsonProcessingException {
-        List<NotificationFeed> feedList = new ArrayList<>();
-        List<String> ids = (List<String>)notificationV1Req.get(JsonKey.USER_ID);
-        for (String id: ids) {
-            NotificationFeed feed = new NotificationFeed();
-            feed.setId(UUID.randomUUID().toString());
-            feed.setPriority((Integer) notificationV1Req.get(JsonKey.PRIORITY));
-            feed.setStatus("unread");
-            feed.setCategory((String) notificationV1Req.get(JsonKey.CATEGORY));
-            feed.setCreatedBy((String) notificationV1Req.get(JsonKey.CREATED_BY));
-            feed.setCreatedOn(new Timestamp(Calendar.getInstance().getTime().getTime()));
-            feed.setUserId(id);
-            feed.setAction(new ObjectMapper().writeValueAsString((Map<String,Object>)notificationV1Req.get(JsonKey.DATA)));
-            feed.setVersion("v1");
-            feedList.add(feed);
-        }
-
+    public Response createV1NotificationFeed(List<NotificationFeed> feedList, Map<String,Object> reqContext) throws BaseException, JsonProcessingException {
         Response response = notificationDao.createNotificationFeed(feedList,reqContext);
         return response;
     }
 
     @Override
-    public Response deleteNotificationFeed(List<String> ids, String userId, String category, Map<String, Object> reqContext) throws BaseException, JsonProcessingException {
+    public Response deleteNotificationFeed(List<String> ids, Map<String, Object> reqContext) throws BaseException, JsonProcessingException {
         List<NotificationFeed> feeds = new ArrayList<>();
         for (String feedId:ids) {
             NotificationFeed feed = new NotificationFeed();
             feed.setId(feedId);
-            feed.setUserId(userId);
-            feed.setCategory(category);
             feeds.add(feed);
         }
         if(CollectionUtils.isNotEmpty(feeds)) {
@@ -163,16 +132,42 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    @Override
+    public Response mapV1V2Feed(List<NotificationFeed> newFeedList, List<NotificationFeed> oldFeedList, Map<String, Object> reqContext) {
 
-    private String getAction(Map<String,Object> action) throws BaseException {
-        try {
-            return mapper.writeValueAsString(action);
-        }catch (JsonProcessingException ex){
-            logger.error("Error while action processing",ex);
-            throw new BaseException(IResponseMessage.INTERNAL_ERROR,ex.getMessage(), ResponseCode.SERVER_ERROR.getCode());
-
+        List<Map<String,Object>> mappedList = new ArrayList<>();
+        for (NotificationFeed feed:newFeedList) {
+             NotificationFeed oldFeed = oldFeedList.stream().filter(x->x.getUserId().equals(feed.getUserId())).findAny().orElse(null);
+             if(null != oldFeed){
+                 Map<String,Object> newFeedMap = new HashMap<>();
+                 newFeedMap.put(JsonKey.ID,feed.getId());
+                 newFeedMap.put(JsonKey.FEED_ID,oldFeed.getId());
+                 mappedList.add(newFeedMap);
+                 Map<String,Object> oldFeedMap = new HashMap<>();
+                 oldFeedMap.put(JsonKey.ID,oldFeed.getId());
+                 oldFeedMap.put(JsonKey.FEED_ID,feed.getId());
+                 mappedList.add(oldFeedMap);
+             }
         }
+        return notificationDao.mapV1V2Feed(mappedList,reqContext);
+
     }
+
+    @Override
+    public List<Map<String, Object>> getFeedMap(List<String> feedIds,  Map<String,Object> reqContext) {
+        Response response = notificationDao.getFeedMap(feedIds, reqContext);
+        List<Map<String, Object>> feedMapLists = new ArrayList<>();
+        if(null != response){
+           feedMapLists = (List<Map<String, Object>>) response.getResult().get(JsonKey.RESPONSE);
+        }
+        return feedMapLists;
+    }
+
+    @Override
+    public Response deleteNotificationFeedMap(List<String> feedIds, Map<String, Object> context) {
+        return notificationDao.deleteUserFeedMap(feedIds,context);
+    }
+
 
     @Override
     public List<Map<String, Object>> readNotificationFeed(String userId, Map<String,Object> reqContext) throws BaseException, IOException {
@@ -231,6 +226,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public Response updateNotificationFeed( List<Map<String,Object>>  feeds, Map<String,Object> reqContext) throws BaseException {
+        //Get mapping feed in other version format
         return notificationDao.updateNotificationFeed(feeds, reqContext);
     }
 
@@ -241,4 +237,6 @@ public class NotificationServiceImpl implements NotificationService {
         }
         return context;
     }
-}
+
+
+    }

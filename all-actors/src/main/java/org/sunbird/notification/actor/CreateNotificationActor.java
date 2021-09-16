@@ -52,7 +52,6 @@ public class CreateNotificationActor extends BaseActor {
             }
             if(JsonKey.V1.equals(version)){
                 response = new FeedNotificationHandler().sendV1Notification(notifications.get(0),request.getContext());
-
             }else {
                 List<NotificationV2Request> notificationRequestList = notifications.stream().map(x -> mapper.convertValue(x, NotificationV2Request.class))
                         .collect(Collectors.toList());

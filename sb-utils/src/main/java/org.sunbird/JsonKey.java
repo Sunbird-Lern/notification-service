@@ -91,4 +91,7 @@ public interface JsonKey {
   String ACTION_TYPE = "actionType";
   String NOTIFICATION_CATEGORY_TYPE_CONFIG = "notification_category_type_config";
   String REQUEST = "request";
+  String FEED_ID = "feedId";
+  String VERSION_SUPPORT_CONFIG_ENABLE = "version_support_config_enable";
+  String FEED_LIMIT = "feed_limit";
 }
