@@ -16,6 +16,8 @@ public class NotificationDaoImpl implements NotificationDao{
     private static final String NOTIFICATION_ACTION_TEMPLATE = "action_template";
     private static final String NOTIFICATION_TEMPLATE = "notification_template";
     private static final String KEY_SPACE_NAME = "sunbird_notifications";
+    private static final String FEED_MAP = "feed_map";
+
     private CassandraOperation cassandraOperation = ServiceFactory.getInstance();
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -73,5 +75,27 @@ public class NotificationDaoImpl implements NotificationDao{
             properties.add(map);
         }
        return cassandraOperation.batchDelete(KEY_SPACE_NAME,NOTIFICATION_FEED, properties, context);
+    }
+
+    @Override
+    public Response mapV1V2Feed(List<Map<String, Object>> mappedList, Map<String, Object> reqContext) {
+        return cassandraOperation.batchInsert(KEY_SPACE_NAME, FEED_MAP, mappedList, reqContext);
+
+    }
+
+    @Override
+    public Response getFeedMap(List<String> feedIds, Map<String, Object> reqContext) {
+        return cassandraOperation.getRecordsByPrimaryKeys(KEY_SPACE_NAME,FEED_MAP,feedIds,JsonKey.ID,reqContext);
+    }
+
+    @Override
+    public Response deleteUserFeedMap(List<String> feedIds, Map<String, Object> context) {
+        List<Map<String,Object>> properties = new ArrayList<>();
+        for (String feedId : feedIds) {
+            Map<String,Object> map = new HashMap<>();
+            map.put(JsonKey.ID,feedId);
+            properties.add(map);
+        }
+        return cassandraOperation.batchDelete(KEY_SPACE_NAME,FEED_MAP, properties, context);
     }
 }

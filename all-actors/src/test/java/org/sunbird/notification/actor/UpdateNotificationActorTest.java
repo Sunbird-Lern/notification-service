@@ -55,6 +55,8 @@ public class UpdateNotificationActorTest extends BaseActorTest{
         PowerMockito.mockStatic(PropertiesCache.class);
         propertiesCache = Mockito.mock(PropertiesCache.class);
         Mockito.when(PropertiesCache.getInstance()).thenReturn(propertiesCache);
+        when(propertiesCache.getProperty(org.sunbird.JsonKey.VERSION_SUPPORT_CONFIG_ENABLE)).thenReturn("true");
+
     }
 
     @Test

@@ -102,33 +102,7 @@ public class ReadNotificationActorTest extends BaseActorTest{
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
 
-    private Response getNotificationFeedResponse() {
-        Response response = new Response();
-        Map<String, Object> result = new HashMap<>();
-        List<Map<String,Object>> notificationFeeds = new ArrayList<>();
 
-        Map<String,Object> notificationV1Feed = new HashMap<>();
-        notificationV1Feed.put(JsonKey.USER_ID,"123456");
-        notificationV1Feed.put(JsonKey.ID,"13213213123131");
-        notificationV1Feed.put(JsonKey.PRIORITY,1);
-        notificationV1Feed.put(JsonKey.STATUS,"unread");
-        notificationV1Feed.put(JsonKey.CATEGORY,"Groups");
-        notificationV1Feed.put(JsonKey.ACTION,"{\"actionData\":{\"title\":\"test is game\",\"description\":\"This is desc\",\"contentUrl\":\"http://www.sunbird.org/test\"}}");
-        notificationV1Feed.put(JsonKey.VERSION,"v1");
-
-        Map<String,Object> notificationV2Feed = new HashMap<>();
-        notificationV1Feed.put(JsonKey.USER_ID,"123456");
-        notificationV1Feed.put(JsonKey.ID,"13213213123131");
-        notificationV1Feed.put(JsonKey.PRIORITY,1);
-        notificationV1Feed.put(JsonKey.STATUS,"unread");
-        notificationV1Feed.put(JsonKey.CATEGORY,"Groups");
-        notificationV1Feed.put(JsonKey.ACTION,"{\"type\":\"add-member\",\"category\":\"groups\",\"template\":{\"data\":\"{\\\"title\\\":\\\"youhavebeenadded\\\"}\",\"type\":\"JSON\"},\"createdBy\":{\"id\":\"12321323\"},\"additionalInfo\":{\"identifier\":\"1323213\"}}");
-        notificationFeeds.add(notificationV1Feed);
-        notificationFeeds.add(notificationV2Feed);
-        result.put(JsonKey.RESPONSE,notificationFeeds);
-        response.putAll(result);
-        return response;
-    }
 
     private Request getV1Request() {
         Request request = new Request();

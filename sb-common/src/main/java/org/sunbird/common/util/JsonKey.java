@@ -94,7 +94,7 @@ public interface JsonKey {
   String REQUEST_TYPE = "requestType";
   Object API_CALL = "API_CALL";
   String USER = "user";
-  String ACTOR_TYPE = "actorType";
+  String ACTION_TYPE = "actionType";
   String APP_ID = "appId";
   String DEVICE_ID = "did";
   String ACTOR_ID = "actorId";

@@ -43,6 +43,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class DeleteNotificationActorTest extends BaseActorTest{
 
     public  final Props props = Props.create(DeleteNotificationActor.class);
+    public  PropertiesCache propertiesCache;
 
     @Before
     public void setUp() throws Exception {
@@ -50,6 +51,10 @@ public class DeleteNotificationActorTest extends BaseActorTest{
         PowerMockito.mockStatic(Localizer.class);
         Mockito.when(Localizer.getInstance()).thenReturn(null);
         PowerMockito.mockStatic(SystemConfigUtil.class);
+        PowerMockito.mockStatic(PropertiesCache.class);
+        propertiesCache = Mockito.mock(PropertiesCache.class);
+        Mockito.when(PropertiesCache.getInstance()).thenReturn(propertiesCache);
+        when(propertiesCache.getProperty(org.sunbird.JsonKey.VERSION_SUPPORT_CONFIG_ENABLE)).thenReturn("true");
 
     }
 
@@ -77,7 +82,13 @@ public class DeleteNotificationActorTest extends BaseActorTest{
                 Mockito.anyList(),
                 Mockito.anyMap()))
                 .thenReturn(getCassandraResponse());
-
+        when(cassandraOperation.getRecordsByProperty(
+                Mockito.eq(org.sunbird.common.util.JsonKey.SUNBIRD_NOTIFICATIONS),
+                Mockito.eq("feed_map"),
+                Mockito.anyString(),
+                Mockito.anyList(),
+                Mockito.any()))
+                .thenReturn(getFeedMapList());
         subject.tell(request, probe.getRef());
         Response res = probe.expectMsgClass(Duration.ofSeconds(80), Response.class);
         System.out.println(res.getResult());

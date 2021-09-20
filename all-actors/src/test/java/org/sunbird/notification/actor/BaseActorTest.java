@@ -50,5 +50,44 @@ public abstract class BaseActorTest {
     }
 
 
+    protected Response getNotificationFeedResponse() {
+        Response response = new Response();
+        Map<String, Object> result = new HashMap<>();
+        List<Map<String,Object>> notificationFeeds = new ArrayList<>();
 
+        Map<String,Object> notificationV1Feed = new HashMap<>();
+        notificationV1Feed.put(org.sunbird.JsonKey.USER_ID,"123456");
+        notificationV1Feed.put(org.sunbird.JsonKey.ID,"13213213123131");
+        notificationV1Feed.put(org.sunbird.JsonKey.PRIORITY,1);
+        notificationV1Feed.put(org.sunbird.JsonKey.STATUS,"unread");
+        notificationV1Feed.put(org.sunbird.JsonKey.CATEGORY,"Groups");
+        notificationV1Feed.put(org.sunbird.JsonKey.ACTION,"{\"actionData\":{\"title\":\"test is game\",\"description\":\"This is desc\",\"contentUrl\":\"http://www.sunbird.org/test\"}}");
+        notificationV1Feed.put(org.sunbird.JsonKey.VERSION,"v1");
+
+        Map<String,Object> notificationV2Feed = new HashMap<>();
+        notificationV1Feed.put(org.sunbird.JsonKey.USER_ID,"123456");
+        notificationV1Feed.put(org.sunbird.JsonKey.ID,"13213213123131");
+        notificationV1Feed.put(org.sunbird.JsonKey.PRIORITY,1);
+        notificationV1Feed.put(org.sunbird.JsonKey.STATUS,"unread");
+        notificationV1Feed.put(org.sunbird.JsonKey.CATEGORY,"Groups");
+        notificationV1Feed.put(org.sunbird.JsonKey.ACTION,"{\"type\":\"add-member\",\"category\":\"groups\",\"template\":{\"data\":\"{\\\"title\\\":\\\"youhavebeenadded\\\"}\",\"type\":\"JSON\"},\"createdBy\":{\"id\":\"12321323\"},\"additionalInfo\":{\"identifier\":\"1323213\"}}");
+        notificationFeeds.add(notificationV1Feed);
+        notificationFeeds.add(notificationV2Feed);
+        result.put(org.sunbird.JsonKey.RESPONSE,notificationFeeds);
+        response.putAll(result);
+        return response;
+    }
+
+    protected Response getFeedMapList() {
+        Response response = new Response();
+        Map<String, Object> result = new HashMap<>();
+        List<Map<String,Object>> feedMapList = new ArrayList<>();
+        Map<String,Object> feedMap = new HashMap<>();
+        feedMap.put(JsonKey.ID,"123141143");
+        feedMap.put(org.sunbird.JsonKey.FEED_ID,"12323123");
+        feedMapList.add(feedMap);
+        result.put(JsonKey.RESPONSE,feedMapList);
+        response.putAll(result);
+        return response;
+    }
 }

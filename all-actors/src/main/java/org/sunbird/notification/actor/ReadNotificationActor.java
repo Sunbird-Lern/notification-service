@@ -74,7 +74,11 @@ public class ReadNotificationActor extends BaseActor {
             }else{
                 notifications = notificationService.readNotificationFeed(userId, request.getContext());
             }
-
+            Collections.sort(notifications, new Comparator<Map<String, Object>>() {
+                public int compare(final Map<String, Object> o1, final Map<String, Object> o2) {
+                    return ((Date)o2.get("createdOn")).compareTo((Date)o1.get("createdOn"));
+                }
+            });
             Response response = new Response();
             response.put("feeds",notifications);
             sender().tell(response, getSelf());
