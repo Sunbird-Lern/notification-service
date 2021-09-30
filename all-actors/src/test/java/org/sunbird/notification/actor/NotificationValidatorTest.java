@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.sunbird.JsonKey;
 import org.sunbird.NotificationValidator;
-
+import  org.sunbird.common.request.Request;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -101,6 +101,24 @@ public class NotificationValidatorTest {
         try{
             NotificationValidator.validateMandatoryParamsWithType(req, Arrays.asList("id"), List.class,
                     true,   "request",new HashMap<>());
+            Assert.assertFalse(true);
+
+        }catch (Exception ex){
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void validateDeleteRequest(){
+        Map<String,Object> req = new HashMap<>();
+
+        req.put("id",Arrays.asList("12121"));
+        req.put("userId","21321321");
+        req.put("category","groups");
+        Request request = new Request();
+        request.put(JsonKey.REQUEST,req);
+        try{
+            NotificationValidator.validateDeleteRequest(request);
             Assert.assertFalse(true);
 
         }catch (Exception ex){
