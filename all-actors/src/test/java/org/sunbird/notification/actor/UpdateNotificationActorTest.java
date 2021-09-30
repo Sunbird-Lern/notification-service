@@ -114,7 +114,13 @@ public class UpdateNotificationActorTest extends BaseActorTest{
                 Mockito.anyList(),
                 Mockito.anyMap()))
                 .thenReturn(getCassandraResponse());
-
+        when(cassandraOperation.getRecordsByPrimaryKeys(
+                Mockito.anyString(),
+                Mockito.eq("feed_map"),
+                Mockito.anyList(),
+                Mockito.anyString(),
+                Mockito.anyMap()))
+                .thenReturn(getFeedMapList());
         subject.tell(request, probe.getRef());
         Response res = probe.expectMsgClass(Duration.ofSeconds(80), Response.class);
         System.out.println(res.getResult());

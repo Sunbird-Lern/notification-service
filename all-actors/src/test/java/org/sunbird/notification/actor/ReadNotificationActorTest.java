@@ -15,6 +15,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.sunbird.JsonKey;
 import org.sunbird.cassandra.CassandraOperation;
 import org.sunbird.cassandraimpl.CassandraOperationImpl;
+import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.message.Localizer;
 import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
@@ -102,18 +103,47 @@ public class ReadNotificationActorTest extends BaseActorTest{
         Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
     }
 
+    @Test
+    public void readV1FeedTestFailed(){
+        Request request = getV1MissingUserRequest();
+        TestKit probe = new TestKit(system);
+        ActorRef subject = system.actorOf(props);
+        CassandraOperation cassandraOperation;
+        PowerMockito.mockStatic(ServiceFactory.class);
+        cassandraOperation = mock(CassandraOperationImpl.class);
+        when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
+        when(cassandraOperation.getRecordById(
+                Mockito.anyString(),
+                Mockito.anyString(),
+                Mockito.anyMap(),
+                Mockito.anyMap()))
+                .thenReturn(getNotificationFeedResponse());
+
+        subject.tell(request, probe.getRef());
+        BaseException ex = probe.expectMsgClass(Duration.ofSeconds(80), BaseException.class);
+        Assert.assertEquals("Mandatory parameter userId is missing",ex.getMessage());
+
+    }
 
 
     private Request getV1Request() {
         Request request = new Request();
         Map<String,Object> reqObj = new HashMap<>();
-        reqObj.put(JsonKey.USER_ID,"123456");
+        reqObj.put(JsonKey.USER_ID,"12334");
         reqObj.put(JsonKey.VERSION,"v1");
         request.setOperation("readV1Feed");
         request.setRequest(reqObj);
         return request;
     }
-
+    private Request getV1MissingUserRequest() {
+        Request request = new Request();
+        Map<String,Object> reqObj = new HashMap<>();
+        reqObj.put(JsonKey.USER_ID,"");
+        reqObj.put(JsonKey.VERSION,"v1");
+        request.setOperation("readV1Feed");
+        request.setRequest(reqObj);
+        return request;
+    }
     private Request getV2Request() {
         Request request = new Request();
         Map<String,Object> reqObj = new HashMap<>();
