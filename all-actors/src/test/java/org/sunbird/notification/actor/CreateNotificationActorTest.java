@@ -185,6 +185,151 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
     }
 
+    @Test
+    public void testCreateV2NotificationParamMissing(){
+
+        TestKit probe = new TestKit(system);
+        ActorRef subject = system.actorOf(props);
+        try {
+            CassandraOperation cassandraOperation;
+            PowerMockito.mockStatic(ServiceFactory.class);
+            cassandraOperation = mock(CassandraOperationImpl.class);
+            when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
+            when(cassandraOperation.getRecordsByProperty(
+                    Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
+                    Mockito.eq("action_template"),
+                    Mockito.eq(JsonKey.ACTION),
+                    Mockito.anyString(),
+                    Mockito.any()))
+                    .thenReturn(getAddActionTemplate());
+            when(cassandraOperation.getRecordsByProperty(
+                    Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
+                    Mockito.eq("notification_template"),
+                    Mockito.anyString(),
+                    Mockito.anyString(),
+                    Mockito.any()))
+                    .thenReturn(getNotificationTemplate());
+            when(cassandraOperation.batchInsert(
+                    Mockito.anyString(), Mockito.anyString(), Mockito.anyList(),Mockito.any()))
+                    .thenReturn(getCassandraResponse());
+            when(cassandraOperation.getRecordById(
+                    Mockito.anyString(),
+                    Mockito.anyString(),
+                    Mockito.anyMap(),
+                    Mockito.anyMap()))
+                    .thenReturn(getNotificationFeedResponse());
+
+            when(cassandraOperation.getRecordsByProperty(
+                    Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
+                    Mockito.eq("feed_map"),
+                    Mockito.anyString(),
+                    Mockito.anyList(),
+                    Mockito.any()))
+                    .thenReturn(getFeedMapList());
+            when(cassandraOperation.batchDelete(
+                    Mockito.anyString(),
+                    Mockito.anyString(),
+                    Mockito.anyList(),
+                    Mockito.anyMap()))
+                    .thenReturn(getCassandraResponse());
+
+        }catch (BaseException be) {
+            Assert.assertTrue(false);
+        }
+
+        Request request = getV2NotificationRequestWithParamMissing();
+        subject.tell(request, probe.getRef());
+        BaseException ex = probe.expectMsgClass(Duration.ofSeconds(80), BaseException.class);
+        Assert.assertTrue(ex.getResponseCode()==400);
+
+    }
+
+   
+    @Test
+    public void testCreateV2NotificationTemplateTypeMissing(){
+
+        TestKit probe = new TestKit(system);
+        ActorRef subject = system.actorOf(props);
+        try {
+            CassandraOperation cassandraOperation;
+            PowerMockito.mockStatic(ServiceFactory.class);
+            cassandraOperation = mock(CassandraOperationImpl.class);
+            when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
+            when(cassandraOperation.getRecordsByProperty(
+                    Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
+                    Mockito.eq("action_template"),
+                    Mockito.eq(JsonKey.ACTION),
+                    Mockito.anyString(),
+                    Mockito.any()))
+                    .thenReturn(getAddActionTemplate());
+            when(cassandraOperation.getRecordsByProperty(
+                    Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
+                    Mockito.eq("notification_template"),
+                    Mockito.anyString(),
+                    Mockito.anyString(),
+                    Mockito.any()))
+                    .thenReturn(getNotificationTemplate());
+            when(cassandraOperation.batchInsert(
+                    Mockito.anyString(), Mockito.anyString(), Mockito.anyList(),Mockito.any()))
+                    .thenReturn(getCassandraResponse());
+            when(cassandraOperation.getRecordById(
+                    Mockito.anyString(),
+                    Mockito.anyString(),
+                    Mockito.anyMap(),
+                    Mockito.anyMap()))
+                    .thenReturn(getNotificationFeedResponse());
+
+            when(cassandraOperation.getRecordsByProperty(
+                    Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
+                    Mockito.eq("feed_map"),
+                    Mockito.anyString(),
+                    Mockito.anyList(),
+                    Mockito.any()))
+                    .thenReturn(getFeedMapList());
+            when(cassandraOperation.batchDelete(
+                    Mockito.anyString(),
+                    Mockito.anyString(),
+                    Mockito.anyList(),
+                    Mockito.anyMap()))
+                    .thenReturn(getCassandraResponse());
+
+        }catch (BaseException be) {
+            Assert.assertTrue(false);
+        }
+
+        Request request = getV2NotificationTypeMissingRequest();
+        subject.tell(request, probe.getRef());
+        BaseException ex = probe.expectMsgClass(Duration.ofSeconds(80), BaseException.class);
+        Assert.assertTrue(ex.getResponseCode()==400);
+
+    }
+    private Request getV2NotificationRequestWithParamMissing() {
+        Request reqObj = new Request();
+        Map<String, Object> context = new HashMap<>();
+        context.put(JsonKey.USER_ID, "user1");
+        reqObj.setContext(context);
+        reqObj.setOperation("createNotification");
+        Map<String, Object> reqMap = new HashMap<>();
+        Map<String,Object> notification = new HashMap<>();
+        Map<String,Object> action = new HashMap<>();
+        Map<String,Object> template = new HashMap<>();
+        action.put(JsonKey.TEMPLATE,template);
+        Map<String,Object> createdBy = new HashMap<>();
+        createdBy.put(JsonKey.ID,"12354");
+        createdBy.put(JsonKey.TYPE,JsonKey.USER);
+        action.put(JsonKey.CREATED_BY,createdBy);
+        action.put(JsonKey.ADDITIONAL_INFO,new HashMap<>());
+        action.put(JsonKey.TYPE,"add-member");
+        action.put(JsonKey.CATEGORY,"certificates");
+        notification.put(JsonKey.ACTION,action);
+        notification.put(JsonKey.IDS, Arrays.asList("1234"));
+        notification.put(JsonKey.TYPE,"feed");
+        notification.put("priority",1);
+        reqMap.put(JsonKey.NOTIFICATIONS,Arrays.asList(notification));
+        reqObj.setRequest(reqMap);
+        return reqObj;
+    }
+
     private Request getV1NotificationRequest() {
         Request reqObj = new Request();
         Map<String, Object> context = new HashMap<>();
@@ -258,6 +403,37 @@ public class CreateNotificationActorTest extends BaseActorTest{
         Map<String,Object> params = new HashMap<>();
         params.put("param1","group");
         template.put(JsonKey.PARAMS,params);
+        action.put(JsonKey.TEMPLATE,template);
+        Map<String,Object> createdBy = new HashMap<>();
+        createdBy.put(JsonKey.ID,"12354");
+        createdBy.put(JsonKey.TYPE,JsonKey.USER);
+        action.put(JsonKey.CREATED_BY,createdBy);
+        action.put(JsonKey.ADDITIONAL_INFO,new HashMap<>());
+        action.put(JsonKey.TYPE,"add-member");
+        action.put(JsonKey.CATEGORY,"certificates");
+        notification.put(JsonKey.ACTION,action);
+        notification.put(JsonKey.IDS, Arrays.asList("1234"));
+        notification.put(JsonKey.TYPE,"feed");
+        notification.put("priority",1);
+        reqMap.put(JsonKey.NOTIFICATIONS,Arrays.asList(notification));
+        reqObj.setRequest(reqMap);
+        return reqObj;
+    }
+
+    private Request getV2NotificationTypeMissingRequest() {
+        Request reqObj = new Request();
+        Map<String, Object> context = new HashMap<>();
+        context.put(JsonKey.USER_ID, "user1");
+        reqObj.setContext(context);
+        reqObj.setOperation("createNotification");
+        Map<String, Object> reqMap = new HashMap<>();
+        Map<String,Object> notification = new HashMap<>();
+        Map<String,Object> action = new HashMap<>();
+        Map<String,Object> template = new HashMap<>();
+        Map<String,Object> params = new HashMap<>();
+        params.put("param1","group");
+        template.put(JsonKey.PARAMS,params);
+        template.put(JsonKey.DATA,"{\"title\":\"This is title\"}");
         action.put(JsonKey.TEMPLATE,template);
         Map<String,Object> createdBy = new HashMap<>();
         createdBy.put(JsonKey.ID,"12354");
