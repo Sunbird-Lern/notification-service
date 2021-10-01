@@ -7,7 +7,8 @@ import org.sunbird.notification.beans.EmailRequest;
 import org.sunbird.notification.email.Email;
 import org.sunbird.notification.email.service.IEmailService;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.request.RequestContext;
+
+import java.util.Map;
 
 /** @author manzarul */
 public class SmtpEMailServiceImpl implements IEmailService {
@@ -23,7 +24,7 @@ public class SmtpEMailServiceImpl implements IEmailService {
   }
 
   @Override
-  public boolean sendEmail(EmailRequest emailReq, RequestContext context) {
+  public boolean sendEmail(EmailRequest emailReq, Map<String,Object> context) {
     if (emailReq == null) {
       logger.info(context, "Email request is null or empty:");
       return false;

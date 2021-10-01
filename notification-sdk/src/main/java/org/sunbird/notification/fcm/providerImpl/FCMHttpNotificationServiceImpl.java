@@ -1,6 +1,5 @@
 /** */
 package org.sunbird.notification.fcm.providerImpl;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -15,7 +14,6 @@ import org.sunbird.notification.fcm.provider.IFCMNotificationService;
 import org.sunbird.notification.utils.FCMResponse;
 import org.sunbird.notification.utils.NotificationConstant;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.request.RequestContext;
 
 /**
  * This notification service will make http call to send device notification.
@@ -42,7 +40,7 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
 
   @Override
   public FCMResponse sendSingleDeviceNotification(
-    String deviceId, Map<String, String> data, boolean isDryRun, RequestContext context) {
+    String deviceId, Map<String, String> data, boolean isDryRun, Map<String,Object> context) {
     List<String> deviceIds = new ArrayList<String>();
     deviceIds.add(deviceId);
     return sendDeviceNotification(deviceIds, data, FCM_URL, isDryRun, context);
@@ -50,13 +48,13 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
 
   @Override
   public FCMResponse sendMultiDeviceNotification(
-      List<String> deviceIds, Map<String, String> data, boolean isDryRun, RequestContext context) {
+      List<String> deviceIds, Map<String, String> data, boolean isDryRun, Map<String,Object> context) {
     return sendDeviceNotification(deviceIds, data, FCM_URL, isDryRun, context);
   }
 
   @Override
   public FCMResponse sendTopicNotification(
-      String topic, Map<String, String> data, boolean isDryRun, RequestContext context) {
+      String topic, Map<String, String> data, boolean isDryRun, Map<String,Object> context) {
     return sendTopicNotification(topic, data, FCM_URL, isDryRun, context);
   }
 
@@ -74,7 +72,7 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
    * @return String as Json.{"message_id": 7253391319867149192}
    */
   private static FCMResponse sendTopicNotification(
-      String topic, Map<String, String> data, String url, boolean isDryRun, RequestContext context) {
+      String topic, Map<String, String> data, String url, boolean isDryRun, Map<String,Object> context) {
     if (StringUtils.isBlank(FCM_ACCOUNT_KEY) || StringUtils.isBlank(url)) {
       logger.info(context, "FCM account key or URL is not provided===" + FCM_URL);
       return null;
@@ -86,6 +84,7 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
       object.put(NotificationConstant.DATA, object1);
       object.put(NotificationConstant.DRY_RUN, isDryRun);
       object.put(NotificationConstant.TO, TOPIC_SUFFIX + topic);
+      logger.info(object.toString());
       HttpResponse<JsonNode> httpResponse =
           Unirest.post(FCM_URL).headers(headerMap).body(object.toString()).asJson();
       String responsebody = httpResponse.getBody().toString();
@@ -106,7 +105,7 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
    * @return String as Json.{"message_id": 7253391319867149192}
    */
   private static FCMResponse sendDeviceNotification(
-      List<String> deviceIds, Map<String, String> data, String url, boolean isDryRun, RequestContext context) {
+      List<String> deviceIds, Map<String, String> data, String url, boolean isDryRun, Map<String,Object> context) {
     if (StringUtils.isBlank(FCM_ACCOUNT_KEY) || StringUtils.isBlank(url)) {
       logger.info(context, "FCM account key or URL is not provided===" + FCM_URL);
       return null;
@@ -118,6 +117,8 @@ public class FCMHttpNotificationServiceImpl implements IFCMNotificationService {
       object.put(NotificationConstant.DATA, object1);
       object.put(NotificationConstant.DRY_RUN, isDryRun);
       object.put(NotificationConstant.REGISTRATION_IDS, deviceIds);
+      logger.info(object.toString());
+
       HttpResponse<JsonNode> httpResponse =
           Unirest.post(FCM_URL).headers(headerMap).body(object).asJson();
       String response = httpResponse.getBody().toString();

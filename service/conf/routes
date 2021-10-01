@@ -11,3 +11,19 @@ POST /v1/notification/otp/verify           @controllers.notification.Notificatio
 
 # Logs Management APIs
 # POST    /v1.3/system/log/update           @controllers.logsmanager.LogController.setLogLevel()
+
+POST /v2/notification/send                 @controllers.notification.NotificationController.sendV2Notification()
+
+GET  /v1/notification/feed/read/:userId    @controllers.notification.NotificationController.readFeedNotification(userId: String, request: play.mvc.Http.Request)
+
+PATCH /v1/notification/feed/update         @controllers.notification.NotificationController.updateNotificationFeed()
+
+GET  /private/v1/notification/feed/read/:userId   @controllers.notification.NotificationController.readV1FeedNotification(userId: String, request: play.mvc.Http.Request)
+
+POST /private/v2/notification/send                @controllers.notification.NotificationController.sendV1Notification()
+
+POST /v1/notification/feed/delete                     @controllers.notification.NotificationController.deleteNotification()
+
+POST /private/v1/notification/feed/delete             @controllers.notification.NotificationController.deleteV1Notification()
+
+PATCH /private/v1/notification/feed/update         @controllers.notification.NotificationController.updateV1NotificationFeed()

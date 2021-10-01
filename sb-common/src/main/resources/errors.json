@@ -1,0 +1,230 @@
+
+
+{
+	"service":"GS",
+	"apis":[
+
+	         {
+	         "url":"/v1/group/create",
+	         "operation":"CRT",
+	         "description":"Group Create"
+	         "error":{
+
+	             "UNAUTHORIZED":{
+	                 "errorNo":"01",
+                     "errorMsg":"Failed to create group, unauthorised user. Contact your system administrator.",
+                     "errStatus":"failed",
+                     "errorCode":401
+	             },
+	             "MISSING_MANDATORY_PARAMS":{
+	                 "errorNo":"02",
+                     "errorMsg":"Failed to create group, fields are missing in the request. Enter the required values and resend the request.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             },
+	             "SERVER_ERROR":{
+	                 "errorNo":"03",
+                     "errorMsg":"Failed to create group, due to database error or there are too many concurrent calls to the server. Try again later.",
+                     "errStatus":"failed",
+                     "errorCode":500
+	             },
+	             "EXCEEDED_GROUP_MAX_LIMIT":{	             
+	                 "errorNo":"04",
+                     "errorMsg":"Failed to create group, exceeded number of permissible groups.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             },
+	             "EXCEEDED_MEMBER_MAX_LIMIT":{
+	                 "errorNo":"05",
+                     "errorMsg":"Failed to add member, group, exceeded number of permissible members.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             },
+	             "EXCEEDED_ACTIVITY_MAX_LIMIT":{
+	                 "errorNo":"06",
+                     "errorMsg":"Failed to add activity in a group, exceeded the number of permissible activity in the group.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             }
+	           }
+	         },
+	          {
+	         "url":"/v1/group/update",
+	         "operation":"UDT",
+	         "description":"Group Update"
+	         "error":{
+
+	             "UNAUTHORIZED":{
+	                 "errorNo":"01",
+                     "errorMsg":"Failed to update group, unauthorised user. Contact your system administrator.",
+                     "errStatus":"failed",
+                     "errorCode":401
+	             },
+	             "MISSING_MANDATORY_PARAMS":{
+	                 "errorNo":"02",
+                     "errorMsg":"Failed to update group, mandatory fields are missing in the request. Enter the required values and resend the request.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             },
+	             "SERVER_ERROR":{
+	                 "errorNo":"03",
+                     "errorMsg":"Failed to update group, due to database error or there are too many concurrent calls to the server. Try again later.",
+                     "errStatus":"failed",
+                     "errorCode":500
+	             },
+	             "EXCEEDED_MEMBER_MAX_LIMIT":{
+	                 "errorNo":"05",
+                     "errorMsg":"Failed to update the group,  exceeded permissible members count.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             },
+	             "EXCEEDED_ACTIVITY_MAX_LIMIT":{
+	                 "errorNo":"06",
+                     "errorMsg":"Failed to update group activity, exceeded permissible activities in a group.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             },
+	             "GROUP_NOT_FOUND":{
+	                 "errorNo":"07",
+                     "errorMsg":"Failed to update, group does not exist. Contact your system administrator.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             },
+	             "GROUP_NOT_ACTIVE":{
+	                 "errorNo":"08",
+                     "errorMsg":"Failed to update, group inactive. Resend required values in request.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             },
+	              "UNAUTHORIZED_OPERATION":{
+	                 "errorNo":"09",
+                     "errorMsg":"Failed to update group, administrator rights required. Contact your system administrator.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             }
+	           }
+	         },
+	          {
+	         "url":"/v1/group/read/.*",
+	         "operation":"RED",
+	         "description":"Group Read"
+	         "error":{
+
+	             "UNAUTHORIZED":{
+	                 "errorNo":"01",
+                     "errorMsg":"Failed to read group details, unauthorised user. Contact your system administrator.",
+                     "errStatus":"failed",
+                     "errorCode":401
+	             },
+	             "MISSING_MANDATORY_PARAMS":{
+	                 "errorNo":"02",
+                     "errorMsg":"Failed to read group details, mandatory fields are missing in the request. Enter the required values and resend the request.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             },
+	             "SERVER_ERROR":{
+	                 "errorNo":"03",
+                     "errorMsg":"Failed to read group details due to database error or there are too many concurrent calls to the server. Try again later.",
+                     "errStatus":"failed",
+                     "errorCode":500
+	             },
+	             "GROUP_NOT_FOUND":{
+	                 "errorNo":"07",
+                     "errorMsg":"Failed to read details, group not found. Contact your system administrator.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             }
+	           }
+	         },
+	          {
+	         "url":"/v1/group/list",
+	         "operation":"LST",
+	         "description":"User Group Search"
+	         "error":{
+
+	             "UNAUTHORIZED":{
+	                 "errorNo":"01",
+                     "errorMsg":"Failed to fetch group list, unauthorised user. Contact your system administrator.",
+                     "errStatus":"failed",
+                     "errorCode":401
+	             },
+	             "MISSING_MANDATORY_PARAMS":{
+	                 "errorNo":"02",
+                     "errorMsg":"Failed to fetch group list, mandatory fields are missing in the request. Enter the required values and resend the request.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             },
+	             "SERVER_ERROR":{
+	                 "errorNo":"03",
+                     "errorMsg":"Failed to fetch group list, due to database error or there are too many concurrent calls to the server. Try again later.",
+                     "errStatus":"failed",
+                     "errorCode":500
+	             }
+	           }
+	         },
+	          {
+	         "url":"/v1/group/delete",
+	         "operation":"DLT",
+	         "description":"Group Delete"
+	         "error":{
+
+	             "UNAUTHORIZED":{
+	                 "errorNo":"01",
+                     "errorMsg":"Failed to delete group, unauthorised user. Contact your system administrator.",
+                     "errStatus":"failed",
+                     "errorCode":401
+	             },
+	             "MISSING_MANDATORY_PARAMS":{
+	                 "errorNo":"02",
+                     "errorMsg":"Failed to delete group, mandatory fields are missing in the request. Enter the required values and resend the request.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             },
+	             "SERVER_ERROR":{
+	                 "errorNo":"03",
+                     "errorMsg":"Failed to delete group, due to database error or there are too many concurrent calls to the server. Try again later.",
+                     "errStatus":"failed",
+                     "errorCode":500
+	             },
+	             "GROUP_NOT_FOUND":{
+	                 "errorNo":"07",
+                     "errorMsg":"Failed to delete, group not found. Contact your system administrator.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             },
+	              "UNAUTHORIZED_OPERATION":{
+	                 "errorNo":"10",
+                     "errorMsg":"Failed to delete, group  creators can delete the group. Contact your system administrator.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	           }
+	         },
+	          {
+	         "url":"/v1/group/membership/update",
+	         "operation":"MBRSHP_UDT",
+	         "description":"Group Members Update"
+	         "error":{
+
+	             "UNAUTHORIZED":{
+	                 "errorNo":"01",
+                     "errorMsg":"Failed to update group member details, unauthorised user. Contact your system administrator.",
+                     "errStatus":"failed",
+                     "errorCode":401
+	             },
+	             "MISSING_MANDATORY_PARAMS":{
+	                 "errorNo":"02",
+                     "errorMsg":"Failed to update group member details, mandatory fields are missing in the request. Enter the required values and resend the request.",
+                     "errStatus":"failed",
+                     "errorCode":400
+	             },
+	             "SERVER_ERROR":{
+	                 "errorNo":"03",
+                     "errorMsg":"Failed to create group, due to database error or there are too many concurrent calls to the server. Try again later.",
+                     "errStatus":"failed",
+                     "errorCode":500
+	             }
+	           }
+	         }
+	]
+}
+

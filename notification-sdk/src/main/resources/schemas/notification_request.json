@@ -1,0 +1,144 @@
+{
+  "$schema": "http://json-schema.org/schema#",
+  "type": "object",
+  "required":["notifications"],
+  "properties":{
+    "notifications":{
+      "type":"array",
+      "items":{
+        "$ref":"#/definitions /notification"
+      }
+    }
+  },
+  "definitions": {
+   "notification": {
+     "type": "object",
+     "required": [
+       "priority",
+       "type",
+       "action"
+     ],
+     "properties": {
+       "ids": {
+         "$id": "#root/ids",
+         "title": "ids",
+         "type": "array",
+         "default": [],
+         "items": {
+           "$id": "#root/ids/items",
+           "title": "Items",
+           "type": "string"
+         }
+       },
+       "priority": {
+         "$id": "#root/priority",
+         "title": "Priority",
+         "type": "integer"
+       },
+       "type": {
+         "$id": "#root/type",
+         "title": "Type",
+         "type": "string",
+         "enum": [
+           "email",
+           "phone",
+           "device",
+           "feed"
+         ]
+       },
+       "action": {
+         "$id": "#root/action",
+         "title": "Action",
+         "type": "object",
+         "required": [
+           "type",
+           "category",
+           "createdBy"
+         ],
+         "properties": {
+           "type": {
+             "$id": "#root/action/type",
+             "title": "Type",
+             "type": "string"
+           },
+           "category": {
+             "$id": "#root/action/category",
+             "title": "Category",
+             "type": "string"
+           },
+           "template": {
+             "$id": "#root/action/template",
+             "title": "Template",
+             "type": "object",
+             "required": [
+               "params"
+             ],
+             "properties": {
+               "id": {
+                 "$id": "#root/action/template/id",
+                 "title": "Id",
+                 "type": "string"
+               },
+               "type": {
+                 "$id": "#root/action/template/type",
+                 "title": "Type",
+                 "type": "string"
+               },
+               "data": {
+                 "$id": "#root/action/template/data",
+                 "title": "Data",
+                 "type": "string"
+               },
+               "ver": {
+                 "$id": "#root/action/template/ver",
+                 "title": "Ver",
+                 "type": "string"
+               },
+               "params": {
+                 "$id": "#root/action/params",
+                 "title": "params",
+                 "type": "object",
+                 "properties": {
+                 }
+               }
+             }
+           },
+           "createdBy": {
+             "$id": "#root/action/createdBy",
+             "title": "Createdby",
+             "type": "object",
+             "required": [
+               "id",
+               "type"
+             ],
+             "properties": {
+               "id": {
+                 "$id": "#root/action/createdBy/id",
+                 "title": "Id",
+                 "type": "string"
+               },
+               "name": {
+                 "$id": "#root/action/createdBy/name",
+                 "title": "Name",
+                 "type": "string"
+               },
+               "type": {
+                 "$id": "#root/action/createdBy/type",
+                 "title": "Type",
+                 "type": "string"
+               }
+             }
+           },
+           "additionalInfo": {
+             "$id": "#root/action/additionalInfo",
+             "title": "Additionalinfo",
+             "type": "object",
+             "properties": {
+             }
+           }
+         }
+       }
+     }
+   }
+  }
+}

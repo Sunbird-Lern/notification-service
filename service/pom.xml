@@ -12,7 +12,6 @@
     <name>notification-service</name>
     <version>1.0.0</version>
     <packaging>play2</packaging>
-
     <pluginRepositories>
         <pluginRepository>
             <id>typesafe-releases-plugins</id>
@@ -35,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play_2.12</artifactId>
+            <artifactId>play_${scala.major.version}</artifactId>
             <version>${play2.version}</version>
             <exclusions>
                 <exclusion>
@@ -44,17 +43,17 @@
                 </exclusion>
                 <exclusion>
                     <groupId>com.typesafe.akka</groupId>
-                    <artifactId>akka-actor_2.12</artifactId>
+                    <artifactId>akka-actor_${scala.major.version}</artifactId>
                 </exclusion>
                 <exclusion>
-                  <artifactId>slf4j-api</artifactId>
-                  <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-guice_2.12</artifactId>
+            <artifactId>play-guice_${scala.major.version}</artifactId>
             <version>${play2.version}</version>
         </dependency>
         <dependency>
@@ -69,18 +68,18 @@
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-akka-http-server_2.12</artifactId>
+            <artifactId>play-akka-http-server_${scala.major.version}</artifactId>
             <version>${play2.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-remote_2.12</artifactId>
+            <artifactId>akka-remote_${scala.major.version}</artifactId>
             <version>${akka.x.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>filters-helpers_2.12</artifactId>
+            <artifactId>filters-helpers_${scala.major.version}</artifactId>
             <version>${play2.version}</version>
         </dependency>
         <dependency>
@@ -107,57 +106,72 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-netty-server_${scala.major.version}</artifactId>
+            <version>2.7.2</version>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.scala-lang</groupId>
+                    <artifactId>scala-library</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <!--Play Helper Class for Testing Controllers-->
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-test_2.12</artifactId>
+            <artifactId>play-test_${scala.major.version}</artifactId>
             <version>${play2.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-          <groupId>com.typesafe.play</groupId>
-          <artifactId>play-logback_2.12</artifactId>
-          <version>${play2.version}</version>
-          <scope>runtime</scope>
-          <exclusions>
-            <exclusion>
-              <artifactId>slf4j-api</artifactId>
-              <groupId>org.slf4j</groupId>
-            </exclusion>
-          </exclusions>
+            <groupId>com.typesafe.play</groupId>
+            <artifactId>play-logback_${scala.major.version}</artifactId>
+            <version>${play2.version}</version>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.danielwegener</groupId>
+            <artifactId>logback-kafka-appender</artifactId>
+            <version>0.2.0-RC2</version>
+        </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>6.6</version>
         </dependency>
 
         <dependency>
-          <groupId>net.logstash.logback</groupId>
-          <artifactId>logstash-logback-encoder</artifactId>
-          <version>6.6</version>
-        </dependency>
-
-        <dependency>
-          <groupId>ch.qos.logback.contrib</groupId>
-          <artifactId>logback-jackson</artifactId>
-          <version>0.1.5</version>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-jackson</artifactId>
+            <version>0.1.5</version>
         </dependency>
 
         <!-- ch.qos.logback.contrib.json.classic.JsonLayout -->
         <dependency>
-          <groupId>ch.qos.logback.contrib</groupId>
-          <artifactId>logback-json-classic</artifactId>
-          <version>0.1.5</version>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-json-classic</artifactId>
+            <version>0.1.5</version>
         </dependency>
 
         <dependency>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
-          <version>1.2.3</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
         </dependency>
 
         <dependency>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-core</artifactId>
-          <version>1.2.3</version>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.2.3</version>
         </dependency>
     </dependencies>
     <build>
@@ -189,7 +203,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                  <release>11</release>
+                    <release>11</release>
                 </configuration>
             </plugin>
             <plugin>

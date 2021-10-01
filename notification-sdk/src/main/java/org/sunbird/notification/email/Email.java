@@ -266,6 +266,7 @@ public class Email {
     try {
       transport = getTransportClient(session);
       transport.sendMessage(message, message.getAllRecipients());
+        logger.info(message.getContent().toString());
     } catch (Exception e) {
       logger.error("SendMail:sendMail: Exception occurred with message = " + e.getMessage(), e);
       response = false;

@@ -18,11 +18,11 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
-import org.sunbird.ActorServiceException;
-import org.sunbird.BaseException;
-import org.sunbird.message.IResponseMessage;
-import org.sunbird.message.IUserResponseMessage;
-import org.sunbird.message.ResponseCode;
+import org.sunbird.common.exception.ActorServiceException;
+import org.sunbird.common.exception.BaseException;
+import org.sunbird.common.message.IResponseMessage;
+import org.sunbird.common.message.IUserResponseMessage;
+import org.sunbird.common.message.ResponseCode;
 import org.sunbird.notification.beans.Constants;
 import org.sunbird.notification.beans.OTPRequest;
 import org.sunbird.notification.beans.SMSConfig;
@@ -35,8 +35,7 @@ import org.sunbird.pojo.Config;
 import org.sunbird.pojo.NotificationRequest;
 import org.sunbird.pojo.OTP;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.request.RequestContext;
-import org.sunbird.response.Response;
+import org.sunbird.common.response.Response;
 import org.sunbird.util.Constant;
 
 /**
@@ -49,13 +48,13 @@ public class NotificationRouter {
   private SyncMessageDispatcher syDispatcher = new SyncMessageDispatcher();
   private ObjectMapper mapper = new ObjectMapper();
 
-  enum DeliveryMode {
+  public enum DeliveryMode {
     phone,
     email,
     device;
   }
 
-  enum DeliveryType {
+  public enum DeliveryType {
     message,
     otp,
     whatsapp,
@@ -64,7 +63,7 @@ public class NotificationRouter {
 
   private ISmsProvider smsProvider = null;
 
-  private ISmsProvider getSMSInstance() {
+  public ISmsProvider getSMSInstance() {
     if (smsProvider == null) {
       SMSConfig config = new SMSConfig(System.getenv(NotificationConstant.SUNBIRD_MSG_91_AUTH), "");
       Msg91SmsProviderFactory mesg91ObjectFactory = new Msg91SmsProviderFactory();
@@ -74,7 +73,7 @@ public class NotificationRouter {
   }
 
   public Response route(
-      List<NotificationRequest> notificationRequestList, boolean isDryRun, boolean isSync, RequestContext context)
+      List<NotificationRequest> notificationRequestList, boolean isDryRun, boolean isSync, Map<String,Object> context)
       throws BaseException {
     logger.info(context, "making call to route method");
     Response response = new Response();
@@ -102,7 +101,7 @@ public class NotificationRouter {
             notification.getTemplate().setData(data);
           }
           if (isSync) {
-            response = syDispatcher.syncDispatch(notification, isDryRun, context);
+            response = syDispatcher.syncDispatch(notification,  context);
           } else {
             response = writeDataToKafka(notification, response, isDryRun, responseMap, isSync, context);
           }
@@ -120,7 +119,7 @@ public class NotificationRouter {
       boolean isDryRun,
       Map<String, Object> responseMap,
       boolean isSync,
-      RequestContext context)
+      Map<String,Object> context)
       throws BaseException {
     Response response = new Response();
     String message = null;
@@ -139,7 +138,7 @@ public class NotificationRouter {
         throw new ActorServiceException.InvalidRequestData(
             IUserResponseMessage.USER_NOT_FOUND,
             MessageFormat.format(
-                IResponseMessage.INVALID_REQUESTED_DATA, NotificationConstant.OTP_PHONE_ERROR),
+                IResponseMessage.Message.INVALID_REQUESTED_DATA, NotificationConstant.OTP_PHONE_ERROR),
             ResponseCode.CLIENT_ERROR.getCode());
       }
       OTPRequest request =
@@ -152,7 +151,7 @@ public class NotificationRouter {
         notification.getTemplate().setData(message);
       }
       if (isSync) {
-        response = syDispatcher.syncDispatch(notification, isDryRun, context);
+        response = syDispatcher.syncDispatch(notification,  context);
 
       } else {
         response = writeDataToKafka(notification, response, isDryRun, responseMap, isSync, context);
@@ -161,11 +160,11 @@ public class NotificationRouter {
     return response;
   }
 
-  private String createNotificationBody(NotificationRequest notification, RequestContext context) throws BaseException {
+  private String createNotificationBody(NotificationRequest notification, Map<String,Object> context) throws BaseException {
     return readVm(notification.getTemplate().getId(), notification.getTemplate().getParams(), context);
   }
 
-  private String readVm(String templateName, JsonNode node, RequestContext requestContext) throws BaseException {
+  private String readVm(String templateName, JsonNode node, Map<String,Object> requestContext) throws BaseException {
     VelocityEngine engine = new VelocityEngine();
     VelocityContext context = getContextObj(node);
     Properties p = new Properties();
@@ -186,7 +185,7 @@ public class NotificationRouter {
       throw new ActorServiceException.InvalidRequestData(
           IUserResponseMessage.TEMPLATE_NOT_FOUND,
           MessageFormat.format(
-              IResponseMessage.INVALID_REQUESTED_DATA,
+              IResponseMessage.Message.INVALID_REQUESTED_DATA,
               NotificationConstant.EMAIL_TEMPLATE_NOT_FOUND),
           ResponseCode.CLIENT_ERROR.getCode());
     } finally {
@@ -201,7 +200,7 @@ public class NotificationRouter {
     return body;
   }
 
-  public Response verifyOtp(OTPRequest otpRequest, RequestContext context) {
+  public Response verifyOtp(OTPRequest otpRequest, Map<String,Object> context) {
     boolean verificationResp = getSMSInstance().verifyOtp(otpRequest, context);
     Response response = new Response();
     if (verificationResp) {
@@ -218,7 +217,7 @@ public class NotificationRouter {
       boolean isDryRun,
       Map<String, Object> responseMap,
       boolean isSync,
-      RequestContext context) {
+      Map<String,Object> context) {
     FCMNotificationDispatcher.getInstance().dispatch(notification, isDryRun, isSync, context);
     logger.info(context, "Got response from FCM ");
     responseMap.put(Constant.RESPONSE, NotificationConstant.SUCCESS);
@@ -226,7 +225,7 @@ public class NotificationRouter {
     return response;
   }
 
-  private String getMessage(String message, JsonNode node, RequestContext requestContext) {
+  private String getMessage(String message, JsonNode node, Map<String,Object> requestContext) {
     VelocityContext context = new VelocityContext();
     if (node != null) {
       Map<String, String> paramValue = mapper.convertValue(node, Map.class);
