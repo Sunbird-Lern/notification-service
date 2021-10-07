@@ -44,19 +44,19 @@ public class ReadNotificationActor extends BaseActor {
     }
 
     private void readV1Feed(Request request){
-        logger.info("ReadNotificationActor: readV1Feed Started");
+        logger.info(request.getContext(),"ReadNotificationActor: readV1Feed Started");
         String requestedBy = (String) request.getRequest().get(JsonKey.USER_ID);
         readFeed(request,requestedBy);
-        logger.info("ReadNotificationActor: readV1Feed Ended");
+        logger.info(request.getContext(),"ReadNotificationActor: readV1Feed Ended");
 
     }
 
     private void readV2Feed(Request request){
-        logger.info("ReadNotificationActor: readV2Feed Started");
+        logger.info(request.getContext(),"ReadNotificationActor: readV2Feed Started");
         RequestHandler requestHandler = new RequestHandler();
         String requestedBy = requestHandler.getRequestedBy(request);
         readFeed(request,requestedBy);
-        logger.info("ReadNotificationActor: readV1Feed Started");
+        logger.info(request.getContext(),"ReadNotificationActor: readV1Feed Started");
 
     }
 
