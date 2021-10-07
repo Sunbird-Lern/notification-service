@@ -173,6 +173,7 @@ public class NotificationServiceImpl implements NotificationService {
     public List<Map<String, Object>> readNotificationFeed(String userId, Map<String,Object> reqContext) throws BaseException, IOException {
         logger.info(reqContext,"NotificationServiceImpl: readNotificationFeed: Started");
         Response response = notificationDao.readNotificationFeed(userId,reqContext);
+        logger.info(reqContext,response.getResult().toString());
         List<Map<String, Object>> notifications = new ArrayList<>();
         if (null != response && MapUtils.isNotEmpty(response.getResult())) {
             notifications = (List<Map<String, Object>>) response.getResult().get(JsonKey.RESPONSE);
