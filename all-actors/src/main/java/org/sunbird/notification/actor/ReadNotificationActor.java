@@ -90,12 +90,12 @@ public class ReadNotificationActor extends BaseActor {
             response.put("feeds",notifications);
             sender().tell(response, getSelf());
        } catch (BaseException ex){
-             logger.error(MessageFormat.format(":Error Msg: {0} ",ex.getMessage()),
+             logger.error(request.getContext(),MessageFormat.format(":Error Msg: {0} ",ex.getMessage()),
             ex);
              throw ex;
        }
         catch (Exception ex){
-             logger.error(MessageFormat.format("ReadNotificationFeedActor:Error Msg: {0} ",ex.getMessage()),
+             logger.error(request.getContext(),MessageFormat.format("ReadNotificationFeedActor:Error Msg: {0} ",ex.getMessage()),
          ex);
             throw new BaseException(IResponseMessage.Key.SERVER_ERROR,IResponseMessage.Message.INTERNAL_ERROR, ResponseCode.serverError.getResponseCode());
 
