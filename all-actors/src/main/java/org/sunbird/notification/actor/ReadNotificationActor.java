@@ -39,19 +39,25 @@ public class ReadNotificationActor extends BaseActor {
             case "readV1Feed":
                 readV1Feed(request);
             default:
-                onReceiveUnsupportedMessage("ReadGroupActor");
+                onReceiveUnsupportedMessage("ReadNotificationActor");
         }
     }
 
     private void readV1Feed(Request request){
+        logger.info(request.getContext(),"ReadNotificationActor: readV1Feed Started");
         String requestedBy = (String) request.getRequest().get(JsonKey.USER_ID);
         readFeed(request,requestedBy);
+        logger.info(request.getContext(),"ReadNotificationActor: readV1Feed Ended");
+
     }
 
     private void readV2Feed(Request request){
+        logger.info(request.getContext(),"ReadNotificationActor: readV2Feed Started");
         RequestHandler requestHandler = new RequestHandler();
         String requestedBy = requestHandler.getRequestedBy(request);
         readFeed(request,requestedBy);
+        logger.info(request.getContext(),"ReadNotificationActor: readV1Feed Started");
+
     }
 
     private void readFeed(Request request, String requestedBy)  {
@@ -77,19 +83,22 @@ public class ReadNotificationActor extends BaseActor {
             }
             Collections.sort(notifications, new Comparator<Map<String, Object>>() {
                 public int compare(final Map<String, Object> o1, final Map<String, Object> o2) {
-                    return ((Date)o2.get("createdOn")).compareTo((Date)o1.get("createdOn"));
+
+                    return ((Date)o2.get("createdOn") != null ?
+                             (Date)o2.get("createdOn") : new Date(0)).compareTo((Date)o1.get("createdOn")!= null ?
+                             (Date)o1.get("createdOn") : new Date(0));
                 }
             });
             Response response = new Response();
             response.put("feeds",notifications);
             sender().tell(response, getSelf());
        } catch (BaseException ex){
-             logger.error(MessageFormat.format(":Error Msg: {0} ",ex.getMessage()),
+             logger.error(request.getContext(),MessageFormat.format(":Error Msg: {0} ",ex.getMessage()),
             ex);
              throw ex;
        }
         catch (Exception ex){
-             logger.error(MessageFormat.format("ReadNotificationFeedActor:Error Msg: {0} ",ex.getMessage()),
+             logger.error(request.getContext(),MessageFormat.format("ReadNotificationFeedActor:Error Msg: {0} ",ex.getMessage()),
          ex);
             throw new BaseException(IResponseMessage.Key.SERVER_ERROR,IResponseMessage.Message.INTERNAL_ERROR, ResponseCode.serverError.getResponseCode());
 

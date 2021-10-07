@@ -171,7 +171,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<Map<String, Object>> readNotificationFeed(String userId, Map<String,Object> reqContext) throws BaseException, IOException {
-
+        logger.info(reqContext,"NotificationServiceImpl: readNotificationFeed: Started");
         Response response = notificationDao.readNotificationFeed(userId,reqContext);
         List<Map<String, Object>> notifications = new ArrayList<>();
         if (null != response && MapUtils.isNotEmpty(response.getResult())) {
@@ -195,6 +195,8 @@ public class NotificationServiceImpl implements NotificationService {
                 }
             }
         }
+        logger.info(reqContext,"NotificationServiceImpl: readNotificationFeed: ended");
+
         return notifications;
     }
 
