@@ -52,6 +52,7 @@ public class OnRequestHandler implements ActionCreator {
                 CompletionStage<Result> result;
                 Map userAuthentication = RequestInterceptor.verifyRequestData(request);
                 String message = (String) userAuthentication.get(JsonKey.USER_ID);
+                logger.info("API access by user:"+message);
                 if (userAuthentication.get(JsonKey.MANAGED_FOR) != null) {
                     request =
                             request.addAttr(
