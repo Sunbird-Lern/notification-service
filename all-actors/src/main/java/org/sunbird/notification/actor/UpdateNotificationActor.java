@@ -30,7 +30,7 @@ import java.util.*;
 )
 public class UpdateNotificationActor extends BaseActor {
 
-    private static LoggerUtil logger = new LoggerUtil(ReadNotificationActor.class);
+    private static LoggerUtil logger = new LoggerUtil(Map<String,Object>.class);
 
     @Override
     public void onReceive(Request request) throws Throwable {

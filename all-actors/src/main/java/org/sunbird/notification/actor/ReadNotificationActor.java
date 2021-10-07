@@ -39,19 +39,25 @@ public class ReadNotificationActor extends BaseActor {
             case "readV1Feed":
                 readV1Feed(request);
             default:
-                onReceiveUnsupportedMessage("ReadGroupActor");
+                onReceiveUnsupportedMessage("ReadNotificationActor");
         }
     }
 
     private void readV1Feed(Request request){
+        logger.info("ReadNotificationActor: readV1Feed Started");
         String requestedBy = (String) request.getRequest().get(JsonKey.USER_ID);
         readFeed(request,requestedBy);
+        logger.info("ReadNotificationActor: readV1Feed Ended");
+
     }
 
     private void readV2Feed(Request request){
+        logger.info("ReadNotificationActor: readV2Feed Started");
         RequestHandler requestHandler = new RequestHandler();
         String requestedBy = requestHandler.getRequestedBy(request);
         readFeed(request,requestedBy);
+        logger.info("ReadNotificationActor: readV1Feed Started");
+
     }
 
     private void readFeed(Request request, String requestedBy)  {
