@@ -42,18 +42,25 @@ public class UpdateNotificationActor extends BaseActor {
             case "updateV1Feed":
                 updateV1Feed(request);
             default:
-                onReceiveUnsupportedMessage("ReadGroupActor");
+                onReceiveUnsupportedMessage("UpdateNotificationActor");
         }
     }
     private void updateV1Feed(Request request){
+        logger.info(request.getContext(),"UpdateNotificationActor: updateV1Feed Started");
+
         String requestedBy = (String) request.getRequest().get(JsonKey.USER_ID);
         updateFeed(request,requestedBy);
+        logger.info(request.getContext(),"UpdateNotificationActor: updateV1Feed Ended");
+
     }
 
     private void updateV2Feed(Request request){
+        logger.info(request.getContext(),"UpdateNotificationActor: updateV2Feed Started");
         RequestHandler requestHandler = new RequestHandler();
         String requestedBy = requestHandler.getRequestedBy(request);
         updateFeed(request,requestedBy);
+        logger.info(request.getContext(),"UpdateNotificationActor: updateV2Feed Ended");
+
     }
 
     private void updateFeed(Request request, String requestedBy){
@@ -83,12 +90,12 @@ public class UpdateNotificationActor extends BaseActor {
             sender().tell(response, getSelf());
 
         }   catch (BaseException ex){
-            logger.error(MessageFormat.format(":Error Msg: {0} ",ex.getMessage()),
+            logger.error(request.getContext(),MessageFormat.format(":Error Msg: {0} ",ex.getMessage()),
                     ex);
             throw ex;
         }
             catch (Exception ex){
-            logger.error(MessageFormat.format("UpdateNotificationActor:Error Msg: {0} ",ex.getMessage()),
+            logger.error(request.getContext(),MessageFormat.format("UpdateNotificationActor:Error Msg: {0} ",ex.getMessage()),
                     ex);
              throw new BaseException(IResponseMessage.Key.SERVER_ERROR,IResponseMessage.Message.INTERNAL_ERROR, ResponseCode.serverError.getResponseCode());
         }

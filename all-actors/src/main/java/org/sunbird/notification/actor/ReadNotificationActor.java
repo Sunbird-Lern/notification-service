@@ -83,7 +83,10 @@ public class ReadNotificationActor extends BaseActor {
             }
             Collections.sort(notifications, new Comparator<Map<String, Object>>() {
                 public int compare(final Map<String, Object> o1, final Map<String, Object> o2) {
-                    return ((Date)o2.get("createdOn")).compareTo((Date)o1.get("createdOn"));
+
+                    return ((Date)o2.get("createdOn") != null ?
+                             (Date)o2.get("createdOn") : new Date(0)).compareTo((Date)o1.get("createdOn")!= null ?
+                             (Date)o1.get("createdOn") : new Date(0));
                 }
             });
             Response response = new Response();

@@ -43,19 +43,26 @@ public class DeleteNotificationActor extends BaseActor {
             case "deleteV1Feed":
                 deleteV1Feed(request);
             default:
-                onReceiveUnsupportedMessage("DeleteGroupActor");
+                onReceiveUnsupportedMessage("DeleteNotificationActor");
         }
     }
 
     private void deleteV2Feed(Request request) {
+        logger.info(request.getContext(),"DeleteNotificationActor: deleteV2Feed Started");
+
         RequestHandler requestHandler = new RequestHandler();
         String requestedBy = requestHandler.getRequestedBy(request);
         deleteFeed(request,requestedBy);
+        logger.info(request.getContext(),"DeleteNotificationActor: deleteV2Feed Ended");
+
     }
 
     private void deleteV1Feed(Request request) {
+        logger.info(request.getContext(),"DeleteNotificationActor: deleteV1Feed Started");
         String requestedBy = (String) request.getRequest().get(JsonKey.USER_ID);
         deleteFeed(request,requestedBy);
+        logger.info(request.getContext(),"DeleteNotificationActor: deleteV1Feed Ended");
+
     }
 
     private void deleteFeed(Request request, String requestedBy){
@@ -84,12 +91,12 @@ public class DeleteNotificationActor extends BaseActor {
             sender().tell(response, getSelf());
 
         }   catch (BaseException ex){
-            logger.error(MessageFormat.format(":Error Msg: {0} ",ex.getMessage()),
+            logger.error(request.getContext(),MessageFormat.format(":Error Msg: {0} ",ex.getMessage()),
                     ex);
             throw ex;
         }
         catch (Exception ex){
-            logger.error(MessageFormat.format("DeleteNotificationActor:Error Msg: {0} ",ex.getMessage()),
+            logger.error(request.getContext(),MessageFormat.format("DeleteNotificationActor:Error Msg: {0} ",ex.getMessage()),
                     ex);
             throw new BaseException(IResponseMessage.Key.SERVER_ERROR,IResponseMessage.Message.INTERNAL_ERROR, ResponseCode.serverError.getResponseCode());
         }
