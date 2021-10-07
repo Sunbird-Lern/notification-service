@@ -65,6 +65,7 @@ public class ReadNotificationActor extends BaseActor {
             }
             if(!userId.equals(requestedBy)){
                 //throw Authorization Exception
+                logger.error(request.getContext(),MessageFormat.format("Requested by :{0} for user id : {1}",requestedBy,userId));
                 throw new AuthorizationException.NotAuthorized(ResponseCode.unAuthorized);
             }
             NotificationService notificationService = NotificationServiceImpl.getInstance();
