@@ -84,7 +84,7 @@ public class DeleteNotificationActorTest extends BaseActorTest{
                 .thenReturn(getCassandraResponse());
         when(cassandraOperation.getRecordsByProperty(
                 Mockito.eq(org.sunbird.common.util.JsonKey.SUNBIRD_NOTIFICATIONS),
-                Mockito.eq("feed_map"),
+                Mockito.eq("feed_version_map"),
                 Mockito.anyString(),
                 Mockito.anyList(),
                 Mockito.any()))

@@ -102,7 +102,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
             when(cassandraOperation.getRecordsByProperty(
                     Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
-                    Mockito.eq("feed_map"),
+                    Mockito.eq("feed_version_map"),
                     Mockito.anyString(),
                     Mockito.anyList(),
                     Mockito.any()))
@@ -161,7 +161,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
             when(cassandraOperation.getRecordsByProperty(
                     Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
-                    Mockito.eq("feed_map"),
+                    Mockito.eq("feed_version_map"),
                     Mockito.anyString(),
                     Mockito.anyList(),
                     Mockito.any()))
@@ -221,7 +221,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
             when(cassandraOperation.getRecordsByProperty(
                     Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
-                    Mockito.eq("feed_map"),
+                    Mockito.eq("feed_version_map"),
                     Mockito.anyString(),
                     Mockito.anyList(),
                     Mockito.any()))
@@ -281,7 +281,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
 
             when(cassandraOperation.getRecordsByProperty(
                     Mockito.eq(JsonKey.SUNBIRD_NOTIFICATIONS),
-                    Mockito.eq("feed_map"),
+                    Mockito.eq("feed_version_map"),
                     Mockito.anyString(),
                     Mockito.anyList(),
                     Mockito.any()))
