@@ -11,7 +11,6 @@ import org.sunbird.JsonKey;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.ResponseCode;
-import org.sunbird.common.util.JsonKey;
 import org.sunbird.pojo.NotificationFeed;
 import org.sunbird.pojo.NotificationType;
 import org.sunbird.pojo.NotificationV2Request;
