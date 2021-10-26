@@ -179,11 +179,15 @@ public class FeedNotificationHandler implements INotificationHandler{
         Map<String,Object> actionDataMap = (Map<String, Object>) dataMap.get(JsonKey.ACTION_DATA);
         Map<String,Object> additionalInfo = new HashMap<>();
         Map<String,Object> templateData = new HashMap<>();
-        for (Map.Entry<String,Object> itr: actionDataMap.entrySet()) {
-            if(JsonKey.TITLE.equals(itr.getKey()) || JsonKey.DESCRIPTION.equals(itr.getKey())){
-                templateData.put(itr.getKey(),itr.getValue());
+        for (Map.Entry<String,Object> itr: dataMap.entrySet()) {
+            if(JsonKey.ACTION_DATA.equals(itr.getKey())) {
+                if (JsonKey.TITLE.equals(itr.getKey()) || JsonKey.DESCRIPTION.equals(itr.getKey())) {
+                    templateData.put(itr.getKey(), itr.getValue());
+                } else {
+                    additionalInfo.put(itr.getKey(), itr.getValue());
+                }
             }else{
-                additionalInfo.put(itr.getKey(),itr.getValue());
+                additionalInfo.put(itr.getKey(), itr.getValue());
             }
         }
         Map<String,Object> createdBy = new HashMap<>();
