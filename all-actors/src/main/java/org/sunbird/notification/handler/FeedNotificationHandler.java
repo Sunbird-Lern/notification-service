@@ -181,10 +181,12 @@ public class FeedNotificationHandler implements INotificationHandler{
         Map<String,Object> templateData = new HashMap<>();
         for (Map.Entry<String,Object> itr: dataMap.entrySet()) {
             if(JsonKey.ACTION_DATA.equals(itr.getKey())) {
-                if (JsonKey.TITLE.equals(itr.getKey()) || JsonKey.DESCRIPTION.equals(itr.getKey())) {
-                    templateData.put(itr.getKey(), itr.getValue());
-                } else {
-                    additionalInfo.put(itr.getKey(), itr.getValue());
+                for (Map.Entry<String,Object> itrKey: actionDataMap.entrySet()) {
+                    if (JsonKey.TITLE.equals(itrKey.getKey()) || JsonKey.DESCRIPTION.equals(itrKey.getKey())) {
+                        templateData.put(itrKey.getKey(), itrKey.getValue());
+                    } else {
+                        additionalInfo.put(itrKey.getKey(), itrKey.getValue());
+                    }
                 }
             }else{
                 additionalInfo.put(itr.getKey(), itr.getValue());
@@ -196,6 +198,7 @@ public class FeedNotificationHandler implements INotificationHandler{
         Map<String,Object> template = new HashMap<>();
         template.put(JsonKey.DATA,new ObjectMapper().writeValueAsString(templateData));
         template.put(JsonKey.TYPE,"JSON");
+        template.put(JsonKey.VER, PropertiesCache.getConfigValue("telemetry_pdata_ver"));
         actionMap.put(JsonKey.CREATED_BY,createdBy);
         actionMap.put(JsonKey.TEMPLATE,template);
         actionMap.put(JsonKey.ADDITIONAL_INFO,additionalInfo);
