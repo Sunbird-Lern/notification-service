@@ -7,10 +7,10 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.sunbird.BaseException;
+import org.sunbird.common.exception.BaseException;
 import org.sunbird.JsonKey;
 import org.sunbird.NotificationValidator;
-import org.sunbird.message.ResponseCode;
+import org.sunbird.common.message.ResponseCode;
 import org.sunbird.pojo.NotificationRequest;
 
 public class NotificationValidatorTest {

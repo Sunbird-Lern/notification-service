@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "type": "object",
+  "required":["notifications"],
+  "properties":{
+    "notifications":{
+      "type":"array",
+      "items":{
+        "$ref":"#/definitions/notification"
+      }
+    }
+  },
+  "definitions": {
+    "notification": {
+      "type": "object",
+      "required": [
+        "priority",
+        "type",
+        "action"
+      ],
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "priority": {
+          "type": "integer"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "email",
+            "phone",
+            "device",
+            "feed"
+          ]
+        },
+        "action": {
+          "type": "object",
+          "required": [
+            "type",
+            "category",
+            "createdBy"
+          ],
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string"
+            },
+            "template": {
+              "type": "object",
+              "required": [
+                "params"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "string"
+                },
+                "ver": {
+                  "type": "string"
+                },
+                "params": {
+                  "type": "object",
+                  "properties": {
+                  }
+                }
+              }
+            },
+            "createdBy": {
+              "type": "object",
+              "required": [
+                "id",
+                "type"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalInfo": {
+              "type": "object",
+              "properties": {
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

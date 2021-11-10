@@ -1,7 +1,8 @@
 package org.sunbird.notification.email.service;
 
 import org.sunbird.notification.beans.EmailRequest;
-import org.sunbird.request.RequestContext;
+
+import java.util.Map;
 
 public interface IEmailService {
 
@@ -9,5 +10,5 @@ public interface IEmailService {
    * @param emailReq EmailRequest
    * @return boolean
    */
-  public boolean sendEmail(EmailRequest emailReq, RequestContext context);
+  public boolean sendEmail(EmailRequest emailReq, Map<String,Object> context);
 }

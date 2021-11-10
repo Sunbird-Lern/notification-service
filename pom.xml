@@ -18,22 +18,26 @@
         <jackson.version>2.9.9</jackson.version>
         <akka.x.version>2.5.22</akka.x.version>
         <junit.version>4.12</junit.version>
-
         <scoverage.plugin.version>1.1.1</scoverage.plugin.version>
-
+        <commons-lang3.version>3.9</commons-lang3.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <play2.version>2.7.2</play2.version>
         <play2.plugin.version>1.0.0-rc5</play2.plugin.version>
-        <scala.version>2.12.8</scala.version>
+        <scala.version>2.11.12</scala.version>
+        <scala.major.version>2.11</scala.major.version>
         <powermock.version>2.0.2</powermock.version>
         <httpClient.version>4.5.1</httpClient.version>
+        <commons-collections4.version>4.1</commons-collections4.version>
+        <spotbugs.plugin.version>3.0.4</spotbugs.plugin.version>
+        <surefire.plugin.version>2.22.1</surefire.plugin.version>
+        <sbt-compiler.plugin.version>1.0.0</sbt-compiler.plugin.version>
     </properties>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.5.201505241946</version>
+                <version>0.8.4</version>
                 <configuration>
                     <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
                     <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
@@ -62,12 +66,15 @@
             </plugin>
         </plugins>
     </build>
-
     <modules>
         <module>sb-utils</module>
         <module>all-actors</module>
         <module>sb-actor</module>
         <module>notification-sdk</module>
         <module>service</module>
+        <module>cassandra-utils</module>
+        <module>sb-telemetry-utils</module>
+        <module>sb-common</module>
+        <module>reports</module>
     </modules>
 </project>
