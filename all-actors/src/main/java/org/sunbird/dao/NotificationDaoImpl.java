@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.sunbird.JsonKey;
 import org.sunbird.cassandra.CassandraOperation;
+import org.sunbird.common.Constants;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.utils.ServiceFactory;
 import org.sunbird.pojo.NotificationFeed;
@@ -62,7 +63,24 @@ public class NotificationDaoImpl implements NotificationDao{
 
     @Override
     public Response updateNotificationFeed( List<Map<String,Object>> feeds, Map<String,Object> reqContext) throws BaseException {
-        return  cassandraOperation.batchUpdateById(KEY_SPACE_NAME, NOTIFICATION_FEED, feeds,reqContext);
+        List<Map<String, Map<String, Object>>> properties = new ArrayList<>();
+        for(Map<String,Object> feedMap : feeds){
+            Map<String,Map<String,Object>> keysMap = new HashMap<>();
+            Map<String, Object> primaryKeyMap = new HashMap<>();
+            Map<String, Object> nonPrimaryKeyMap = new HashMap<>();
+
+            for(Map.Entry<String,Object> feedEntry: feedMap.entrySet()){
+                if(JsonKey.ID.equals(feedEntry.getKey()) || JsonKey.USER_ID.equals(feedEntry.getKey())){
+                    primaryKeyMap.put(feedEntry.getKey(),feedEntry.getValue());
+                }else{
+                    nonPrimaryKeyMap.put(feedEntry.getKey(),feedEntry.getValue());
+                }
+            }
+            keysMap.put(Constants.PRIMARY_KEY,primaryKeyMap);
+            keysMap.put(Constants.NON_PRIMARY_KEY,nonPrimaryKeyMap);
+            properties.add(keysMap);
+        }
+        return  cassandraOperation.batchUpdate(KEY_SPACE_NAME, NOTIFICATION_FEED, properties,reqContext);
 
     }
 
@@ -72,6 +90,7 @@ public class NotificationDaoImpl implements NotificationDao{
         for (NotificationFeed feed : feeds) {
             Map<String,Object> map = new HashMap<>();
             map.put(JsonKey.ID,feed.getId());
+            map.put(JsonKey.USER_ID,feed.getUserId());
             properties.add(map);
         }
        return cassandraOperation.batchDelete(KEY_SPACE_NAME,NOTIFICATION_FEED, properties, context);
