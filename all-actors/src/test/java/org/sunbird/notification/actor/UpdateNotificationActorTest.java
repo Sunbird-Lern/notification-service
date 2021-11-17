@@ -77,7 +77,7 @@ public class UpdateNotificationActorTest extends BaseActorTest{
         PowerMockito.mockStatic(ServiceFactory.class);
         cassandraOperation = mock(CassandraOperationImpl.class);
         when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
-        when(cassandraOperation.batchUpdateById(
+        when(cassandraOperation.batchUpdate(
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyList(),
@@ -108,7 +108,7 @@ public class UpdateNotificationActorTest extends BaseActorTest{
         PowerMockito.mockStatic(ServiceFactory.class);
         cassandraOperation = mock(CassandraOperationImpl.class);
         when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
-        when(cassandraOperation.batchUpdateById(
+        when(cassandraOperation.batchUpdate(
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyList(),
