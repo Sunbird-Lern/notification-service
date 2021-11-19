@@ -28,7 +28,7 @@ public interface NotificationService {
 
     Response createV1NotificationFeed(List<NotificationFeed> feedList, Map<String,Object> reqContext) throws BaseException, JsonProcessingException;
 
-    Response deleteNotificationFeed(List<String> ids, Map<String,Object> reqContext) throws BaseException, JsonProcessingException;
+    Response deleteNotificationFeed(Map<String,List<String>> feedIdMap, Map<String,Object> reqContext) throws BaseException, JsonProcessingException;
 
     Response mapV1V2Feed(List<NotificationFeed> newFeedList, List<NotificationFeed> oldFeedList, Map<String, Object> reqContext);
 
