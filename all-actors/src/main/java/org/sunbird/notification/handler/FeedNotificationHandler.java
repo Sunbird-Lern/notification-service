@@ -187,11 +187,13 @@ public class FeedNotificationHandler implements INotificationHandler{
         Map<String,Object> templateData = new HashMap<>();
         for (Map.Entry<String,Object> itr: dataMap.entrySet()) {
             if(JsonKey.ACTION_DATA.equals(itr.getKey())) {
-                for (Map.Entry<String,Object> itrKey: actionDataMap.entrySet()) {
-                    if (JsonKey.TITLE.equals(itrKey.getKey()) || JsonKey.DESCRIPTION.equals(itrKey.getKey())) {
-                        templateData.put(itrKey.getKey(), itrKey.getValue());
-                    } else {
-                        additionalInfo.put(itrKey.getKey(), itrKey.getValue());
+                if(MapUtils.isNotEmpty(actionDataMap)) {
+                    for (Map.Entry<String, Object> itrKey : actionDataMap.entrySet()) {
+                        if (JsonKey.TITLE.equals(itrKey.getKey()) || JsonKey.DESCRIPTION.equals(itrKey.getKey())) {
+                            templateData.put(itrKey.getKey(), itrKey.getValue());
+                        } else {
+                            additionalInfo.put(itrKey.getKey(), itrKey.getValue());
+                        }
                     }
                 }
             }else{
@@ -208,7 +210,9 @@ public class FeedNotificationHandler implements INotificationHandler{
         actionMap.put(JsonKey.CREATED_BY,createdBy);
         actionMap.put(JsonKey.TEMPLATE,template);
         actionMap.put(JsonKey.ADDITIONAL_INFO,additionalInfo);
-        actionMap.put(JsonKey.TYPE,actionDataMap.get(JsonKey.ACTION_TYPE));
+        if(MapUtils.isNotEmpty(actionDataMap)){
+            actionMap.put(JsonKey.TYPE,actionDataMap.get(JsonKey.ACTION_TYPE));
+        }
         actionMap.put(JsonKey.CATEGORY,notification.get(JsonKey.CATEGORY));
         notificationV2Request.setAction(actionMap);
         return notificationV2Request;
