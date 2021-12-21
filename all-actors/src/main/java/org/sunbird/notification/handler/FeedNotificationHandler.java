@@ -56,7 +56,7 @@ public class FeedNotificationHandler implements INotificationHandler{
                 notificationService.createV1NotificationFeed(oldFeedList,reqContext);
                 response =notificationService.mapV1V2Feed(newFeedList,oldFeedList,reqContext);
             }
-            List<String> feedsToBeDeleted = new ArrayList<>();
+            Map<String,List<String>> feedsToBeDeleted = new HashMap<>();
             for (NotificationFeed feed : newFeedList) {
                 List<Map<String, Object>> feeds = notificationService.readNotificationFeed(feed.getUserId(), reqContext);
                 getMaxLimitExceededFeed(feedsToBeDeleted,feeds);
@@ -80,7 +80,7 @@ public class FeedNotificationHandler implements INotificationHandler{
                 notificationService.createNotificationFeed(newFeedList,reqContext);
                 response = notificationService.mapV1V2Feed(newFeedList,oldFeedList,reqContext);
             }
-            List<String> feedsToBeDeleted = new ArrayList<>();
+            Map<String,List<String>> feedsToBeDeleted = new HashMap<>();
             for (NotificationFeed feed : oldFeedList) {
                 List<Map<String, Object>> feeds = notificationService.readV1NotificationFeed(feed.getUserId(), reqContext);
                 getMaxLimitExceededFeed(feedsToBeDeleted,feeds);
@@ -92,15 +92,19 @@ public class FeedNotificationHandler implements INotificationHandler{
         return response;
     }
 
-    private void deleteUserFeed(List<String> feedList, boolean isSupportEnabled, Map<String,Object> reqContext) throws IOException {
-         if(CollectionUtils.isNotEmpty(feedList)){
+    private void deleteUserFeed(Map<String,List<String>> feedListMap, boolean isSupportEnabled, Map<String,Object> reqContext) throws IOException {
+         if(MapUtils.isNotEmpty(feedListMap)){
+             List<String> feedList = new ArrayList<>();
+             for (List<String> feed: feedListMap.values()) {
+                 feedList.addAll(feed);
+             }
              if (isSupportEnabled) {
                 List<Map<String, Object>> mappedFeedIdLists = notificationService.getFeedMap(feedList, reqContext);
                 List<String> feedIds = mappedFeedIdLists.stream().map(x -> x.get(JsonKey.FEED_ID)).filter(Objects::nonNull).map(Object::toString)
                         .collect(Collectors.toList());
                  feedList.addAll(feedIds);
             }
-            notificationService.deleteNotificationFeed(feedList, reqContext);
+            notificationService.deleteNotificationFeed(feedListMap, reqContext);
             if(isSupportEnabled) {
                  notificationService.deleteNotificationFeedMap(feedList, reqContext);
             }
@@ -108,15 +112,17 @@ public class FeedNotificationHandler implements INotificationHandler{
 
     }
 
-    private void getMaxLimitExceededFeed(List<String> feedListMap, List<Map<String, Object>> feeds) {
+    private void getMaxLimitExceededFeed(Map<String,List<String>> feedListMap, List<Map<String, Object>> feeds) {
         if (feeds.size() >= Integer.parseInt(PropertiesCache.getInstance().getProperty(JsonKey.FEED_LIMIT))) {
+            List<String> feedList = new ArrayList<>();
              Collections.sort(feeds, new Comparator<Map<String, Object>>() {
                  public int compare(final Map<String, Object> o1, final Map<String, Object> o2) {
                      return ((Date)o1.get("createdOn")).compareTo((Date)o2.get("createdOn"));
                  }
              });
              Map<String, Object> feedMap = feeds.get(0);
-             feedListMap.add((String) feedMap.get(JsonKey.ID));
+             feedList.add((String) feedMap.get(JsonKey.ID));
+             feedListMap.put((String)feedMap.get(JsonKey.USER_ID),feedList);
          }
     }
 
@@ -181,11 +187,13 @@ public class FeedNotificationHandler implements INotificationHandler{
         Map<String,Object> templateData = new HashMap<>();
         for (Map.Entry<String,Object> itr: dataMap.entrySet()) {
             if(JsonKey.ACTION_DATA.equals(itr.getKey())) {
-                for (Map.Entry<String,Object> itrKey: actionDataMap.entrySet()) {
-                    if (JsonKey.TITLE.equals(itrKey.getKey()) || JsonKey.DESCRIPTION.equals(itrKey.getKey())) {
-                        templateData.put(itrKey.getKey(), itrKey.getValue());
-                    } else {
-                        additionalInfo.put(itrKey.getKey(), itrKey.getValue());
+                if(MapUtils.isNotEmpty(actionDataMap)) {
+                    for (Map.Entry<String, Object> itrKey : actionDataMap.entrySet()) {
+                        if (JsonKey.TITLE.equals(itrKey.getKey()) || JsonKey.DESCRIPTION.equals(itrKey.getKey())) {
+                            templateData.put(itrKey.getKey(), itrKey.getValue());
+                        } else {
+                            additionalInfo.put(itrKey.getKey(), itrKey.getValue());
+                        }
                     }
                 }
             }else{
@@ -202,7 +210,9 @@ public class FeedNotificationHandler implements INotificationHandler{
         actionMap.put(JsonKey.CREATED_BY,createdBy);
         actionMap.put(JsonKey.TEMPLATE,template);
         actionMap.put(JsonKey.ADDITIONAL_INFO,additionalInfo);
-        actionMap.put(JsonKey.TYPE,actionDataMap.get(JsonKey.ACTION_TYPE));
+        if(MapUtils.isNotEmpty(actionDataMap)){
+            actionMap.put(JsonKey.TYPE,actionDataMap.get(JsonKey.ACTION_TYPE));
+        }
         actionMap.put(JsonKey.CATEGORY,notification.get(JsonKey.CATEGORY));
         notificationV2Request.setAction(actionMap);
         return notificationV2Request;

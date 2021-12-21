@@ -21,6 +21,7 @@ import org.sunbird.util.Util;
 import org.sunbird.utils.PropertiesCache;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class DeleteNotificationActor extends BaseActor {
                 List<Map<String, Object>> mappedFeedIdLists = notificationService.getFeedMap((List<String>) request.getRequest().get(JsonKey.IDS), request.getContext());
                 getOtherVersionUpdatedFeedList(mappedFeedIdLists,feedIds);
             }
-            Response response = notificationService.deleteNotificationFeed(feedIds, request.getContext());
+            Response response = notificationService.deleteNotificationFeed(Collections.singletonMap(requestedBy,feedIds), request.getContext());
             if(isSupportEnabled){
                 notificationService.deleteNotificationFeedMap(feedIds,request.getContext());
             }
