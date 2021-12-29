@@ -5,6 +5,8 @@ import controllers.DummyActor;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.sunbird.JsonKey;
+import org.sunbird.common.request.Request;
 import play.Application;
 import play.mvc.Result;
 
@@ -29,8 +31,14 @@ public class NotificationTemplateControllerTest extends BaseControllerTest {
     @Test
     public void createTemplate(){
         Map<String, Object> reqMap = new HashMap<>();
-        reqMap.put("accept", "yes");
-        Result result = performTest("/v1/notification/template/create", "POST",reqMap);
+        reqMap.put(JsonKey.TEMPLATE_ID,"user-add");
+        reqMap.put(JsonKey.TYPE,"feed");
+        reqMap.put(JsonKey.DATA,"{\"title\":\"${param1} exit\"}");
+        reqMap.put(JsonKey.TEMPLATE_SCHEMA,"\"{\"schema}\":\"test_schema\"}\"");
+        Map<String,Object> request = new HashMap<>();
+        request.put("accept", "yes");
+        request.put(JsonKey.REQUEST,reqMap);
+        Result result = performTest("/v1/notification/template/create", "POST",request);
         assertTrue(getResponseStatus(result) == Response.Status.OK.getStatusCode());
 
     }
