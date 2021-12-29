@@ -71,4 +71,13 @@ public interface JsonKey {
   String START_TIME = "startTime";
   String HASH_TAG_ID = "hashTagId";
   String VERSION = "version";
+
+  String LIST_TEMPLATE ="listTemplate";
+  String CREATE_TEMPLATE="createTemplate";
+  String UPDATE_TEMPLATE="updateTemplate";
+  String DELETE_TEMPLATE="deleteTemplate";
+  String MAP_ACTION_TEMPLATE="mapActionTemplate";
+  String READ_ACTION_TEMPLATE= "readActionTemplate";
+
+  String ACTION = "action";
 }

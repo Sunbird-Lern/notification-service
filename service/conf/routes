@@ -27,3 +27,15 @@ POST /v1/notification/feed/delete                     @controllers.notification.
 POST /private/v1/notification/feed/delete             @controllers.notification.NotificationController.deleteV1Notification()
 
 PATCH /private/v1/notification/feed/update         @controllers.notification.NotificationController.updateV1NotificationFeed()
+
+GET  /v1/notification/template/list                @controllers.notification.NotificationTemplateController.listTemplate()
+
+POST  /v1/notification/template/create             @controllers.notification.NotificationTemplateController.createTemplate()
+
+POST  /v1/notification/template/delete             @controllers.notification.NotificationTemplateController.deleteTemplate()
+
+PATCH /v1/notification/template/update             @controllers.notification.NotificationTemplateController.updateTemplate()
+
+PATCH /v1/notification/template/action/update       @controllers.notification.NotificationTemplateController.upsertActionTemplate()
+
+GET /v1/notification/template/:action            @controllers.notification.NotificationTemplateController.getAction(action: String, request: play.mvc.Http.Request)
