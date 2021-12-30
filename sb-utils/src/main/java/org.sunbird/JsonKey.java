@@ -53,6 +53,7 @@ public interface JsonKey {
   String DATA = "data";
   String VER = "ver";
   String TEMPLATE = "template";
+  String TEMPLATES = "templates";
   String USER_ID = "userId";
   String CATEGORY = "category";
   String ACTION = "action";
@@ -94,4 +95,10 @@ public interface JsonKey {
   String FEED_ID = "feedId";
   String VERSION_SUPPORT_CONFIG_ENABLE = "version_support_config_enable";
   String FEED_LIMIT = "feed_limit";
+  String LIST_TEMPLATE="listTemplate";
+  String CREATE_TEMPLATE="createTemplate";
+  String UPDATE_TEMPLATE="updateTemplate";
+  String DELETE_TEMPLATE="deleteTemplate";
+  String MAP_ACTION_TEMPLATE = "mapActionTemplate" ;
+  String READ_ACTION_TEMPLATE= "readActionTemplate";
 }

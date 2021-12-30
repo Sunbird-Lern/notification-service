@@ -31,19 +31,6 @@ public class NotificationDaoImpl implements NotificationDao{
         return notificationDao;
     }
 
-    @Override
-    public Response getTemplate(String templateId, Map<String,Object> reqContext) throws BaseException {
-
-
-        return cassandraOperation.getRecordsByProperty(KEY_SPACE_NAME,NOTIFICATION_TEMPLATE,JsonKey.TEMPLATE_ID,templateId,reqContext);
-
-    }
-
-    @Override
-    public Response getTemplateId(String actionType, Map<String,Object> reqContext) throws BaseException {
-
-        return cassandraOperation.getRecordsByProperty(KEY_SPACE_NAME,NOTIFICATION_ACTION_TEMPLATE,JsonKey.ACTION,actionType,reqContext);
-    }
 
     @Override
     public Response createNotificationFeed(List<NotificationFeed> feeds, Map<String,Object> reqContext) throws BaseException {

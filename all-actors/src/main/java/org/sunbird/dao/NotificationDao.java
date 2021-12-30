@@ -9,9 +9,6 @@ import java.util.Map;
 
 public interface NotificationDao {
 
-    Response getTemplateId(String actionType, Map<String,Object> reqContext) throws BaseException;
-
-    Response getTemplate(String templateId, Map<String,Object> reqContext) throws BaseException;
 
     Response createNotificationFeed(List<NotificationFeed> feed, Map<String,Object> reqContext) throws BaseException;
 

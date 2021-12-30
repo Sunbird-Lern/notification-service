@@ -19,6 +19,8 @@ import org.sunbird.dao.NotificationDao;
 import org.sunbird.dao.NotificationDaoImpl;
 import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.ResponseCode;
+import org.sunbird.dao.TemplateDao;
+import org.sunbird.dao.TemplateDaoImpl;
 import org.sunbird.pojo.ActionData;
 import org.sunbird.pojo.NotificationFeed;
 import org.sunbird.pojo.NotificationType;
@@ -37,6 +39,8 @@ public class NotificationServiceImpl implements NotificationService {
     private ObjectMapper mapper = new ObjectMapper();
 
     private static NotificationDao notificationDao = NotificationDaoImpl.getInstance();
+    private static TemplateDao templateDao = TemplateDaoImpl.getInstance();
+
     public static NotificationService getInstance() {
         if (notificationService == null) {
             notificationService = new NotificationServiceImpl();
@@ -47,14 +51,14 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public Map<String,Object> getTemplate(String actionType, Map<String,Object> reqContext) throws BaseException {
 
-        Response response = notificationDao.getTemplateId(actionType,reqContext);
+        Response response = templateDao.getTemplateId(actionType,reqContext);
         if (null != response && MapUtils.isNotEmpty(response.getResult())) {
             List<Map<String, Object>> templateIdDetails =
                     (List<Map<String, Object>>) response.getResult().get(JsonKey.RESPONSE);
             if(CollectionUtils.isNotEmpty(templateIdDetails)){
                 Map<String,Object> dbTemplateId = templateIdDetails.get(0);
                 String templateId = (String) dbTemplateId.get(JsonKey.TEMPLATE_ID);
-                Response responseObj = notificationDao.getTemplate(templateId, reqContext);
+                Response responseObj = templateDao.getTemplate(templateId, reqContext);
                 if (null != responseObj && MapUtils.isNotEmpty(responseObj.getResult())) {
                     List<Map<String, Object>> templateDetails =
                             (List<Map<String, Object>>) responseObj.getResult().get(JsonKey.RESPONSE);

@@ -789,7 +789,7 @@ public abstract class CassandraOperationImpl implements CassandraOperation {
   }
 
   @Override
-  public void deleteRecord(
+  public Response deleteRecord(
       String keyspaceName, String tableName, Map<String, String> compositeKeyMap, Map<String, Object> reqContext)
       throws BaseException {
     long startTime = System.currentTimeMillis();
@@ -806,6 +806,9 @@ public abstract class CassandraOperationImpl implements CassandraOperation {
                 deleteWhere.and(clause);
               });
       connectionManager.getSession(keyspaceName).execute(delete);
+      Response response = new Response();
+      response.put(Constants.RESPONSE, Constants.SUCCESS);
+      return response;
     } catch (Exception e) {
       logger.error(reqContext,
           "CassandraOperationImpl: deleteRecord by composite key. "
