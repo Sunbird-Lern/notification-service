@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class NotificationServiceImpl implements NotificationService {
     private static LoggerUtil logger = new LoggerUtil(NotificationServiceImpl.class);
@@ -165,8 +166,11 @@ public class NotificationServiceImpl implements NotificationService {
         Response response = notificationDao.getFeedMap(feedIds, reqContext);
         List<Map<String, Object>> feedMapLists = new ArrayList<>();
         if(null != response){
-           feedMapLists = (List<Map<String, Object>>) response.getResult().get(JsonKey.RESPONSE);
+            List<Map<String, Object>> feedLists = (List<Map<String, Object>>) response.getResult().get(JsonKey.RESPONSE);
+            //remove deleted feeds
+            feedMapLists = feedLists.stream().filter(x->!JsonKey.DELETED.equals(x.get(JsonKey.STATUS))).collect(Collectors.toList());
         }
+
         return feedMapLists;
     }
 
@@ -187,6 +191,10 @@ public class NotificationServiceImpl implements NotificationService {
                 Iterator<Map<String,Object>> notifyItr = notifications.iterator();
                 while (notifyItr.hasNext()) {
                     Map<String,Object> notification = notifyItr.next();
+                    if(JsonKey.DELETED.equals(notification.get(JsonKey.STATUS))){
+                        notifyItr.remove();
+                        continue;
+                    }
                     if(JsonKey.V1.equals(notification.get(JsonKey.VERSION))){
                         notifyItr.remove();
                     }else{
@@ -218,6 +226,10 @@ public class NotificationServiceImpl implements NotificationService {
                 Iterator<Map<String,Object>> notifyItr = notifications.iterator();
                 while (notifyItr.hasNext()) {
                     Map<String,Object> notification = notifyItr.next();
+                    if(JsonKey.DELETED.equals(notification.get(JsonKey.STATUS))){
+                        notifyItr.remove();
+                        continue;
+                    }
                     if(!JsonKey.V1.equals(notification.get(JsonKey.VERSION))){
                        notifyItr.remove();
                     }else {

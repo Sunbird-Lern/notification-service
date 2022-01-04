@@ -101,4 +101,5 @@ public interface JsonKey {
   String DELETE_TEMPLATE="deleteTemplate";
   String MAP_ACTION_TEMPLATE = "mapActionTemplate" ;
   String READ_ACTION_TEMPLATE= "readActionTemplate";
+  String DELETED="deleted";
 }

@@ -10,7 +10,7 @@ public enum ResponseCode {
       IResponseMessage.INVALID_REQUESTED_DATA, IResponseMessage.Message.INVALID_REQUESTED_DATA,JsonKey.FAILED),
   serverError(IResponseMessage.SERVER_ERROR, IResponseMessage.SERVER_ERROR,JsonKey.FAILED),
   internalError(IResponseMessage.INTERNAL_ERROR, IResponseMessage.INTERNAL_ERROR,JsonKey.FAILED),
-
+  templateNotFound(IResponseMessage.TEMPLATE_NOT_FOUND, IResponseMessage.Message.TEMPLATE_NOT_FOUND,JsonKey.FAILED),
   OK(200),
   CLIENT_ERROR(400),
   SERVER_ERROR(500),

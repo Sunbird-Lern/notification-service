@@ -16,6 +16,7 @@ import org.sunbird.pojo.NotificationTemplate;
 import org.sunbird.pojo.NotificationV2Request;
 import org.sunbird.request.LoggerUtil;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -75,14 +76,17 @@ public class TemplateServiceImpl implements TemplateService{
     public Map<String,Object> getActionTemplate(String action, Map<String,Object> reqContext) throws BaseException {
         Map<String,Object> actionDetails = new HashMap<>();
         Response actionResponseObj =templateDao.getTemplateId(action,reqContext);
-        if (null != actionResponseObj && MapUtils.isNotEmpty(actionResponseObj.getResult())) {
+        if (null != actionResponseObj) {
+            actionDetails.put(JsonKey.ACTION,action);
+            if(MapUtils.isEmpty(actionResponseObj.getResult())){
+                throw new BaseException(IResponseMessage.TEMPLATE_NOT_FOUND, MessageFormat.format(IResponseMessage.Message.TEMPLATE_NOT_FOUND,action), ResponseCode.CLIENT_ERROR.getResponseCode());
+            }
             List<Map<String, Object>> templateIdDetails =
                     (List<Map<String, Object>>) actionResponseObj.getResult().get(JsonKey.RESPONSE);
             if (CollectionUtils.isNotEmpty(templateIdDetails)) {
                 Map<String, Object> dbTemplateIdDetail = templateIdDetails.get(0);
                 String templateId = (String) dbTemplateIdDetail.get(JsonKey.TEMPLATE_ID);
                 Response templateDetailResponseObj = templateDao.getTemplate(templateId,reqContext);
-                actionDetails.put(JsonKey.ACTION,action);
                 actionDetails.put(JsonKey.TYPE,dbTemplateIdDetail.get(JsonKey.TYPE));
                 Map<String, Object> templateDetailMap = new HashMap<>();
                 if (null != templateDetailResponseObj && MapUtils.isNotEmpty(templateDetailResponseObj.getResult())) {
@@ -94,7 +98,7 @@ public class TemplateServiceImpl implements TemplateService{
                 }
                 actionDetails.put(JsonKey.TEMPLATE,templateDetailMap);
             }else{
-                throw new BaseException(IResponseMessage.TEMPLATE_NOT_FOUND,IResponseMessage.Message.TEMPLATE_NOT_FOUND, ResponseCode.CLIENT_ERROR.getResponseCode());
+                throw new BaseException(IResponseMessage.TEMPLATE_NOT_FOUND,MessageFormat.format(IResponseMessage.Message.TEMPLATE_NOT_FOUND,action), ResponseCode.CLIENT_ERROR.getResponseCode());
             }
         }else{
             throw new BaseException(IResponseMessage.INTERNAL_ERROR,IResponseMessage.SERVER_ERROR, ResponseCode.SERVER_ERROR.getCode());

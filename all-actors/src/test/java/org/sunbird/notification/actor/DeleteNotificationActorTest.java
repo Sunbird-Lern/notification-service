@@ -76,7 +76,13 @@ public class DeleteNotificationActorTest extends BaseActorTest{
         PowerMockito.mockStatic(ServiceFactory.class);
         cassandraOperation = mock(CassandraOperationImpl.class);
         when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
-        when(cassandraOperation.batchDelete(
+        when(cassandraOperation.batchUpdate(
+                Mockito.anyString(),
+                Mockito.anyString(),
+                Mockito.anyList(),
+                Mockito.anyMap()))
+                .thenReturn(getCassandraResponse());
+        when(cassandraOperation.batchUpdateById(
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyList(),
@@ -113,7 +119,13 @@ public class DeleteNotificationActorTest extends BaseActorTest{
         PowerMockito.mockStatic(ServiceFactory.class);
         cassandraOperation = mock(CassandraOperationImpl.class);
         when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
-        when(cassandraOperation.batchDelete(
+        when(cassandraOperation.batchUpdate(
+                Mockito.anyString(),
+                Mockito.anyString(),
+                Mockito.anyList(),
+                Mockito.anyMap()))
+                .thenReturn(getCassandraResponse());
+        when(cassandraOperation.batchUpdateById(
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyList(),
@@ -144,7 +156,13 @@ public class DeleteNotificationActorTest extends BaseActorTest{
         PowerMockito.mockStatic(ServiceFactory.class);
         cassandraOperation = mock(CassandraOperationImpl.class);
         when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
-        when(cassandraOperation.batchDelete(
+        when(cassandraOperation.batchUpdate(
+                Mockito.anyString(),
+                Mockito.anyString(),
+                Mockito.anyList(),
+                Mockito.anyMap()))
+                .thenReturn(getCassandraResponse());
+        when(cassandraOperation.batchUpdateById(
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyList(),
