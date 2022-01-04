@@ -73,14 +73,19 @@ public class NotificationDaoImpl implements NotificationDao{
 
     @Override
     public Response deleteUserFeed(List<NotificationFeed> feeds, Map<String,Object> context) throws BaseException {
-        List<Map<String,Object>> properties = new ArrayList<>();
+        List<Map<String, Map<String, Object>>> properties = new ArrayList<>();
         for (NotificationFeed feed : feeds) {
-            Map<String,Object> map = new HashMap<>();
-            map.put(JsonKey.ID,feed.getId());
-            map.put(JsonKey.USER_ID,feed.getUserId());
-            properties.add(map);
+            Map<String,Map<String,Object>> keysMap = new HashMap<>();
+            Map<String, Object> primaryKeyMap = new HashMap<>();
+            Map<String, Object> nonPrimaryKeyMap = new HashMap<>();
+            primaryKeyMap.put(JsonKey.ID,feed.getId());
+            primaryKeyMap.put(JsonKey.USER_ID,feed.getUserId());
+            nonPrimaryKeyMap.put(JsonKey.STATUS,"deleted");
+            keysMap.put(Constants.PRIMARY_KEY,primaryKeyMap);
+            keysMap.put(Constants.NON_PRIMARY_KEY,nonPrimaryKeyMap);
+            properties.add(keysMap);
         }
-       return cassandraOperation.batchDelete(KEY_SPACE_NAME,NOTIFICATION_FEED, properties, context);
+       return cassandraOperation.batchUpdate(KEY_SPACE_NAME,NOTIFICATION_FEED, properties, context);
     }
 
     @Override
@@ -100,8 +105,9 @@ public class NotificationDaoImpl implements NotificationDao{
         for (String feedId : feedIds) {
             Map<String,Object> map = new HashMap<>();
             map.put(JsonKey.ID,feedId);
+            map.put(JsonKey.STATUS,"deleted");
             properties.add(map);
         }
-        return cassandraOperation.batchDelete(KEY_SPACE_NAME,FEED_VERSION_MAP, properties, context);
+        return cassandraOperation.batchUpdateById(KEY_SPACE_NAME,FEED_VERSION_MAP,properties,context);
     }
 }

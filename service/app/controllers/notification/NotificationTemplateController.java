@@ -8,7 +8,9 @@ import org.sunbird.request.LoggerUtil;
 import play.mvc.Http;
 import play.mvc.Result;
 import utils.RequestMapper;
+import validators.TemplateActionUpdateRequestValidator;
 import validators.TemplateRequestValidator;
+import validators.TemplateUpdateRequestValidator;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -50,7 +52,7 @@ public class NotificationTemplateController extends BaseController {
         Request request = new Request();
         try {
             request = RequestMapper.createSBRequest(request());
-            CompletionStage<Result> response = handleRequest(request, null, JsonKey.UPDATE_TEMPLATE, request());
+            CompletionStage<Result> response = handleRequest(request, new TemplateUpdateRequestValidator(), JsonKey.UPDATE_TEMPLATE, request());
             logger.info("Method call end for updateTemplate");
             return response;
         }catch (Exception ex){
@@ -64,7 +66,7 @@ public class NotificationTemplateController extends BaseController {
         Request request = new Request();
         try {
             request = RequestMapper.createSBRequest(request());
-            CompletionStage<Result> response = handleRequest(request, null, JsonKey.DELETE_TEMPLATE, request());
+            CompletionStage<Result> response = handleRequest(request, new TemplateUpdateRequestValidator(), JsonKey.DELETE_TEMPLATE, request());
             logger.info("Method call end for deleteTemplate");
             return response;
         }catch (Exception ex){
@@ -78,7 +80,7 @@ public class NotificationTemplateController extends BaseController {
         Request request = new Request();
         try {
             request = RequestMapper.createSBRequest(request());
-            CompletionStage<Result> response = handleRequest(request, null, JsonKey.MAP_ACTION_TEMPLATE, request());
+            CompletionStage<Result> response = handleRequest(request, new TemplateActionUpdateRequestValidator(), JsonKey.MAP_ACTION_TEMPLATE, request());
             logger.info("Method call end for listTemplate");
             return response;
         }catch (Exception ex){

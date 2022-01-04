@@ -46,8 +46,11 @@ public class NotificationTemplateControllerTest extends BaseControllerTest {
     @Test
     public void updateTemplate(){
         Map<String, Object> reqMap = new HashMap<>();
-        reqMap.put("accept", "yes");
-        Result result = performTest("/v1/notification/template/update", "PATCH",reqMap);
+        reqMap.put(JsonKey.TEMPLATE_ID,"user-add");
+        Map<String,Object> request = new HashMap<>();
+        request.put("accept", "yes");
+        request.put(JsonKey.REQUEST,reqMap);
+        Result result = performTest("/v1/notification/template/update", "PATCH",request);
         assertTrue(getResponseStatus(result) == Response.Status.OK.getStatusCode());
 
     }
@@ -64,8 +67,11 @@ public class NotificationTemplateControllerTest extends BaseControllerTest {
     @Test
     public void deleteTemplate(){
         Map<String, Object> reqMap = new HashMap<>();
-        reqMap.put("accept", "yes");
-        Result result = performTest("/v1/notification/template/delete", "POST",reqMap);
+        reqMap.put(JsonKey.TEMPLATE_ID,"user-add");
+        Map<String,Object> request = new HashMap<>();
+        request.put("accept", "yes");
+        request.put(JsonKey.REQUEST,reqMap);
+        Result result = performTest("/v1/notification/template/delete", "POST",request);
         assertTrue(getResponseStatus(result) == Response.Status.OK.getStatusCode());
 
     }
