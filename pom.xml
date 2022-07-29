@@ -42,7 +42,10 @@
                     <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
                     <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
                     <excludes>
-                        <exclude>**/common/**</exclude>
+                       <exclude>**/common/**</exclude>
+                       <exclude>**/org/sunbird/request/*</exclude>
+                       <exclude>**/org/sunbird/utils/*</exclude>
+                       <exclude>**/org/sunbird/auth/verifier/*</exclude> 
                         <exclude>**/routes/**</exclude>
                         <exclude>**/Reverse*/**</exclude>
                         <exclude>**/*.javascript/**</exclude>
