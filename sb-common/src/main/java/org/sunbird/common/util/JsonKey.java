@@ -70,6 +70,8 @@ public interface JsonKey {
   String CREATED_ON = "createdOn";
   String CREATED_BY = "createdBy";
   String UPDATED_ON = "updatedOn";
+  String LAST_UPDATED_ON = "lastUpdatedOn";
+  String LAST_UPDATED_BY = "lastUpdatedBy";
   String UPDATED_BY = "updatedBy";
   String USER_SERVICE_BASE_URL = "LEARNER_SERVICE_PORT";
   String USER_SERVICE_SEARCH_URL = "sunbird_user_service_search_url";
@@ -150,4 +152,5 @@ public interface JsonKey {
   String CREATE_NOTIFICATION = "create";
   String DATA = "data";
   String ACTION_DATA = "actionData";
+  String TEMPLATE_ID = "templateId";
 }

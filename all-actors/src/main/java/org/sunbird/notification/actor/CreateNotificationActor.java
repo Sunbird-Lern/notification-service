@@ -37,7 +37,7 @@ public class CreateNotificationActor extends BaseActor {
 
     @Override
     public void onReceive(Request request) throws Throwable {
-        logger.info(request.getRequest(),"Call started for onReceive method");
+        logger.info(request.getContext(),"Call started for onReceive method");
         boolean isSync = false;
         String version = (String) request.getRequest().get(JsonKey.VERSION);
         try {

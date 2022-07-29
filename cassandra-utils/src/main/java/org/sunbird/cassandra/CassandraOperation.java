@@ -65,8 +65,9 @@ public interface CassandraOperation {
    * @param keyspaceName Keyspace name
    * @param tableName Table name
    * @param compositeKeyMap Column map for composite primary key
+   * @return
    */
-  public void deleteRecord(
+  public Response deleteRecord(
       String keyspaceName, String tableName, Map<String, String> compositeKeyMap,  Map<String, Object> reqContext)
       throws BaseException;
 

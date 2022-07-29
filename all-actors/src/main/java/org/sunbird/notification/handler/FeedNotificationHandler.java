@@ -95,15 +95,15 @@ public class FeedNotificationHandler implements INotificationHandler{
     private void deleteUserFeed(Map<String,List<String>> feedListMap, boolean isSupportEnabled, Map<String,Object> reqContext) throws IOException {
          if(MapUtils.isNotEmpty(feedListMap)){
              List<String> feedList = new ArrayList<>();
-             for (List<String> feed: feedListMap.values()) {
-                 feedList.addAll(feed);
+             for (Map.Entry<String,List<String>> entry: feedListMap.entrySet()) {
+                 feedList = entry.getValue();
+                 if (isSupportEnabled) {
+                     List<Map<String, Object>> mappedFeedIdLists = notificationService.getFeedMap(feedList, reqContext);
+                     List<String> feedIds = mappedFeedIdLists.stream().map(x -> x.get(JsonKey.FEED_ID)).filter(Objects::nonNull).map(Object::toString)
+                             .collect(Collectors.toList());
+                     feedList.addAll(feedIds);
+                 }
              }
-             if (isSupportEnabled) {
-                List<Map<String, Object>> mappedFeedIdLists = notificationService.getFeedMap(feedList, reqContext);
-                List<String> feedIds = mappedFeedIdLists.stream().map(x -> x.get(JsonKey.FEED_ID)).filter(Objects::nonNull).map(Object::toString)
-                        .collect(Collectors.toList());
-                 feedList.addAll(feedIds);
-            }
             notificationService.deleteNotificationFeed(feedListMap, reqContext);
             if(isSupportEnabled) {
                  notificationService.deleteNotificationFeedMap(feedList, reqContext);
