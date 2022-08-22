@@ -72,4 +72,5 @@ public interface Constants {
   public static final String OBJECT_TYPE = "objectType";
   public static final String INSERT = "insert";
   public static final String STANDALONE_MODE = "standalone";
+  public static final String IS_MULTI_DC_ENABLED = "isMultiDCEnabled";
 }
