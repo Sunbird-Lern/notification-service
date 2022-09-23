@@ -112,5 +112,6 @@
   <root level="DEBUG">
     <appender-ref ref="ASYNCSTDOUT" />
   </root>
+  <logger name="io.netty.util" level="ERROR"/>
 
 </configuration>
