@@ -69,8 +69,7 @@ public class CassandraConnectionManagerImpl implements CassandraConnectionManage
           Integer.parseInt(cache.getProperty(Constants.POOL_TIMEOUT)));
 
       //check for multi DC enabled or not from configuration file and send the value
-      //cluster = createCluster(hosts, poolingOptions, Boolean.parseBoolean(cache.getProperty(Constants.IS_MULTI_DC_ENABLED)));
-      cluster = createCluster(hosts, poolingOptions,false);
+      cluster = createCluster(hosts, poolingOptions, Boolean.parseBoolean(cache.getProperty(Constants.IS_MULTI_DC_ENABLED)));
 
       final Metadata metadata = cluster.getMetadata();
       String msg = String.format("Connected to cluster: %s", metadata.getClusterName());
