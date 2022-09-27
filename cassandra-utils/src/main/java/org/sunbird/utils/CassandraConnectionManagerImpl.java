@@ -1,6 +1,7 @@
 package org.sunbird.utils;
 
 import com.datastax.driver.core.*;
+import com.datastax.driver.core.policies.DCAwareRoundRobinPolicy;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import java.util.Collection;
 import java.util.List;
@@ -69,7 +70,7 @@ public class CassandraConnectionManagerImpl implements CassandraConnectionManage
 
       //check for multi DC enabled or not from configuration file and send the value
       //cluster = createCluster(hosts, poolingOptions, Boolean.parseBoolean(cache.getProperty(Constants.IS_MULTI_DC_ENABLED)));
-      cluster = createCluster(hosts, poolingOptions);
+      cluster = createCluster(hosts, poolingOptions,false);
 
       final Metadata metadata = cluster.getMetadata();
       String msg = String.format("Connected to cluster: %s", metadata.getClusterName());
@@ -89,8 +90,7 @@ public class CassandraConnectionManagerImpl implements CassandraConnectionManage
     }
   }
 
-  //private static Cluster createCluster(String[] hosts, PoolingOptions poolingOptions, boolean isMultiDCEnabled) {
-  private static Cluster createCluster(String[] hosts, PoolingOptions poolingOptions) {
+  private static Cluster createCluster(String[] hosts, PoolingOptions poolingOptions, boolean isMultiDCEnabled) {
     Cluster.Builder builder =
         Cluster.builder()
             .addContactPoints(hosts)
@@ -107,11 +107,11 @@ public class CassandraConnectionManagerImpl implements CassandraConnectionManage
       builder.withQueryOptions(new QueryOptions().setConsistencyLevel(consistencyLevel));
     }
 
-//    logger.info(
-//            "CassandraConnectionManagerImpl:createCluster: isMultiDCEnabled = " + isMultiDCEnabled);
-//    if (isMultiDCEnabled) {
-//      builder.withLoadBalancingPolicy(DCAwareRoundRobinPolicy.builder().build());
-//    }
+    logger.info(
+            "CassandraConnectionManagerImpl:createCluster: isMultiDCEnabled = " + isMultiDCEnabled);
+    if (isMultiDCEnabled) {
+      builder.withLoadBalancingPolicy(DCAwareRoundRobinPolicy.builder().build());
+    }
     return builder.build();
   }
 
