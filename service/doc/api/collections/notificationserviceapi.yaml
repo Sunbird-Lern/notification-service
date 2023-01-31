@@ -1,0 +1,1946 @@
+openapi: 3.0.1
+info:
+  version: '1.0'
+  title: Notification Service API's
+  description: >-
+    - The Notification Service API allows to send different types of notifications such as email, SMS, device and also create in app user feed notifications and read user in app notification feed
+  termsOfService: 'https://github.com/project-sunbird/sunbird-commons/blob/master/LICENSE'
+
+externalDocs:
+  description: "Postman Collections"
+  url: "https://www.getpostman.com/collections/5245c31467845f40ecae"
+
+servers:
+  - url: https://staging.sunbirded.org/api
+paths:
+  "/notification/v2/send":
+    post:
+      summary: Create Notification
+      operationId: CreateNotification
+      tags:
+        - Notification APIs
+      description: >-
+        - This API allows to send email,sms,device and feed type notifications. This will only be accessible internally by different service to send notification. Template configuration needs to be configured to use this service.
+      parameters:
+        - $ref: '#/components/parameters/notification-delivery-mode'
+        - name: ts
+          in: header
+          required: true
+          style: simple
+          schema:
+            type: string
+        - name: X-msgid
+          in: header
+          required: true
+          style: simple
+          schema:
+            type: string
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Authorization'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/notificationSendRequest"
+            examples:
+              a:
+                summary: "Send Feed Notification"
+                value:
+                  request:
+                    notifications:
+                      - ids:
+                          - '12345'
+                        priority: 1
+                        type: feed
+                        action:
+                          type: add-member
+                          category: notification-feed
+                          template:
+                            type: JSON
+                            params:
+                              param1: Math's Activity
+                              param2: Test
+                          createdBy:
+                            id: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                            name: John
+                            type: User
+                          additionalInfo:
+                            group:
+                              id: '1234sa34'
+                              name: Test
+                            groupRole: admin
+                            activity:
+                              id: do_12443
+                              type: Course
+                              name: Math's Activity
+              b:
+                summary: "Send Email Notification"
+                value:
+                  request:
+                    notifications:
+                      - ids:
+                          - 'abcd@gmail.com'
+                        priority: 1
+                        type: email
+                        action:
+                          type: user-email
+                          category: user-service
+                          template:
+                            type: TEXT
+                            params:
+                              ttl: 30
+                          createdBy:
+                            id: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                            name: John
+                            type: User
+                          additionalInfo:
+                            sender: sender@sunbird.com
+                            subject: Hello to sunbird user
+
+              c:
+                summary: "Send Phone Normal Message Notification"
+                value:
+                  request:
+                    notifications:
+                      - ids:
+                          - '123207123'
+                        priority: 1
+                        type: phone
+                        action:
+                          type:  verfication
+                          category: learner-service
+                          template:
+                            type: TEXT
+                            params:
+                              installationName: system
+                              otpExpiryInMinutes: 4
+                          createdBy:
+                            id: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                            name: John
+                            type: User
+                          additionalInfo:
+                            sender: sender@sunbird.com
+                            subject: Hello from sunbird
+              d:
+                summary: "Send Phone OTP Notification"
+                value:
+                  request:
+                    notifications:
+                      - ids:
+                          - '123207123'
+                        priority: 1
+                        type: phone
+                        action:
+                          type: otp verfication
+                          category: userOTP
+                          template:
+                            type: TEXT
+                            params:
+                              ttl: 30
+                          createdBy:
+                            id: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                            name: John
+                            type: User
+                          additionalInfo:
+                            otp:
+                              length: 4
+                              expiryInMinute: 10
+
+              e:
+                summary: "Send device Notification for Multidevice"
+                value:
+                  request:
+                    notifications:
+                      - ids:
+                          - 'fcmToken1'
+                          - 'fcmtoken2'
+                        priority: 1
+                        type: device
+                        action:
+                          type: device-system-upgrade
+                          category: device-notification
+                          createdBy:
+                            id: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                            name: John
+                            type: User
+                          additionalInfo:
+                            rawData:
+                              key: 2
+              f:
+                summary: "Send broadcast device Notification using topics"
+                value:
+                  request:
+                    notifications:
+                      - ids:
+                        priority: 1
+                        type: device
+                        action:
+                          type: device-system-upgrade
+                          category: device-notification
+                          createdBy:
+                            id: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                            name: John
+                            type: User
+                          additionalInfo:
+                            topic: device-topic
+                            rawData:
+                              key: 2
+                              key2: value2
+        description: >-
+          - The body payload comprises of the metadata of the notification being
+          created - The body parameter refers to the format of the request, the
+          request body (payload) takes the following media types to make the
+          payload:
+             - JSON
+          required: true
+          - Additional Info may contains mandatory parameter for some notification type such email, phone, device.
+            email Type :
+              - sender and subject is mandatory
+            phone Type :
+              - for Normal message : subject and sender is mandatory
+              - OTP verifications : otp object is mandatory
+            device Type :
+              - rawData is mandatory.
+              - Either topic in additionalInfo or Ids is mandatory.
+
+      responses:
+        '200':
+          description: OK ! Successful operation."Send Notification" operation was successfully
+            executed.
+          content:
+            application/json:
+              schema:
+                $ref: ""
+              example:
+                id: v2.notification.send
+                ver: v1
+                ts: '2021-08-11 21:20:28:919+0530'
+                params:
+                  resmsgid: null
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: null
+                  status: null
+                  errmsg: null
+                responseCode: OK
+                result:
+                  response: SUCCESS
+        '400':
+          description: BAD REQUEST. The "Send Notifications" operation failed ! The possible
+            reason for failure is that you may have missed providing input for a
+            mandatory parameter.
+          content:
+            application/json:
+              schema:
+                $ref: ""
+              example:
+                id: v2.notification.send
+                ver: null
+                ts: 2021-08-11 21:20:28:919+0530
+                params:
+                  resmsgid: null
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: INVALID_REQUESTED_DATA
+                  status: null
+                  errmsg: '#/notifications/0: required key [type] not found'
+                  responseCode: CLIENT_ERROR
+                  result: {}
+        '401':
+          description: Unauthorized User
+          content:
+            application/json:
+              schema:
+                $ref: ""
+              example:
+                id: v2.notification.send
+                ver: null,
+                ts: 2021-08-11 21:30:57:395+0530
+                params:
+                  resmsgid: null,
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: unauthorized
+                  status: null,
+                  errmsg: you are an unauthorized user
+                  responseCode: UNAUTHORIZED
+                  result: {}
+
+        '500':
+          description: "'INTERNAL SERVER ERROR. We track these errors automatically and
+             try to set it right at the earliest. Try refreshing the page. If the
+             problem persists contact us at info@sunbird.org.'"
+          content:
+            application/json:
+              schema:
+                $ref: ""
+              example:
+                type: object
+                id: v2.notification.send
+                ver: v1
+                ts: 2020-12-01 10:49:01:948+0000
+                params:
+                  resmsgid:
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: null
+                  status: null
+                  errmsg: "SERVER_ERROR"
+                responseCode: SERVER_ERROR
+                result: {}
+  "/notification/v1/feed/read/{userId}":
+    get:
+      summary: Read User Notification Feed
+      description: >-
+        This API is used for getting in-App notification of the user, userId is uniquely identifies the user
+          - The endpoint for **Get In-App user Feed from userId** is `/notification/v1/read/{userId}`
+          - The fields marked with an asterisk (*) are mandatory. They cannot be null or empty.
+
+      tags:
+        - Notification APIs
+      operationId: Get Notification Feed by user ID
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          description: Please append a valid user Id To the Request URL
+          schema:
+            type: string
+        - name: Authorization
+          in: header
+          required: true
+          description: To make use of any Notification API, you require authorization. Raise a
+            request to the administrator for the use of the API. You will
+            receive the authorization key. Specify the key received, here.
+          schema:
+            type: string
+        - name: x-authenticated-user-token
+          in: header
+          required: true
+          description: It is a unique token/key to authenticate the user each time an API
+            is called. For corresponding sessions this token is used, not your
+            actual username/password
+          schema:
+            type: string
+        - name: x-authenticated-for
+          in: header
+          required: false
+          description: Managed User token of registered MUA user performing given API
+            request. From this LUA and MUA id are seperated and LUA is validated
+            against user_id in x-authenticated-user-token
+          schema:
+            type: string
+        - name: ts
+          in: header
+          required: false
+          description: Timestamp is a sequence of characters or encoded information
+            identifying when the list notification API call occurred, usually it gives
+            date and time of day, mostly accurate to a small fraction of a
+            second.
+          schema:
+            type: string
+        - name: X-msgid
+          in: header
+          required: false
+          description: This ID uniquely identifies a request if the same API is executed
+            multiple times.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success Read User Notification Feed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                id: v1.notification.feed.read.1234
+                ver: v1
+                ts: '1628697563377'
+                params:
+                  resmsgid: null
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: null
+                  status: null
+                  errmsg: null
+                responseCode: OK
+                result:
+                  feeds:
+                    - expireOn: null
+                      updatedBy: '1234'
+                      createdBy: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                      action:
+                        type: add-member
+                        category: null
+                        template:
+                          ver: '4.2'
+                          data: '{"title":"Math''s Activity has been added"}'
+                          type: JSON
+                        createdBy:
+                          id: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                          name: John
+                          type: User
+                        additionalInfo:
+                          group:
+                            id: '123434'
+                            name: Test
+                          groupRole: admin
+                          activity:
+                            id: do_12443
+                            type: Course
+                            name: Math's Activity
+                      id: 64ef2ccd-2ec7-4759-b500-590d4a6eccf3
+                      updatedOn: 1628614252986
+                      category: notification-feed
+                      priority: 1
+                      createdOn: 1628539887611
+                      userId: '1234'
+                      status: read
+                    - expireOn: null
+                      updatedBy: null
+                      createdBy: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                      action:
+                        type: add-member
+                        category: null
+                        template:
+                          ver: '4.2'
+                          data: '{"title":"Math''s Activity has been added"}'
+                          type: JSON
+                        createdBy:
+                          id: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                          name: John
+                          type: User
+                        additionalInfo:
+                          group:
+                            id: '123434'
+                            name: Test
+                          groupRole: admin
+                          activity:
+                            id: do_12443
+                            type: Course
+                            name: Math's Activity
+                      id: d08b579e-8cc8-4fb2-845f-3aa0af84ff94
+                      updatedOn: null
+                      category: notification-feed
+                      priority: 1
+                      createdOn: 1628610341056
+                      userId: '1234'
+                      status: unread
+                    - expireOn: null
+                      updatedBy: null
+                      createdBy: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                      action:
+                        type: add-member
+                        category: null
+                        template:
+                          ver: '4.2'
+                          data: '{"title":"Math''s Activity has been added"}'
+                          type: JSON
+                        createdBy:
+                          id: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                          name: John
+                          type: User
+                        additionalInfo:
+                          group:
+                            id: '123434'
+                            name: Test
+                          groupRole: admin
+                          activity:
+                            id: do_12443
+                            type: Course
+                            name: Math's Activity
+                      id: 04d47f39-092f-4f80-863f-0147bfde4623
+                      updatedOn: null
+                      category: notification-feed
+                      priority: 1
+                      createdOn: 1628696476011
+                      userId: '1234'
+                      status: unread
+        '401':
+          description: Unauthorized User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+              example:
+                id: v1.notification.feed.read
+                ver: null
+                ts: 2021-08-11 21:30:57:395+0530
+                params:
+                  resmsgid: null
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: unauthorized
+                  status: null
+                  errmsg: you are an unauthorized user
+                responseCode: UNAUTHORIZED
+                result: {}
+        '500':
+          description: "'INTERNAL SERVER ERROR. We track these errors automatically and
+             try to set it right at the earliest. Try refreshing the page. If the
+             problem persists contact us at info@sunbird.org.'"
+          content:
+            application/json:
+              schema:
+                $ref: ""
+              example:
+                id: v1.notification.feed.read
+                ver: null
+                ts: 2020-12-01 10:49:01:948+0000
+                params:
+                  resmsgid:
+                  msgid: 12eb0ca45ce4c776fab994d120bedd41
+                  err: null
+                  status: null
+                  errmsg: "SERVER_ERROR"
+                responseCode: SERVER_ERROR
+                result: {}
+  /notification/v1/feed/update:
+    patch:
+      summary: Update Notification Feed Status
+      operationId: UpdateNotificationFeedStatus
+      tags:
+        - Notification APIs
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: application/json
+        - name: Authorization
+          in: header
+          required: true
+          description: To make use of any Notification API, you require authorization. Raise a
+            request to the administrator for the use of the API. You will
+            receive the authorization key. Specify the key received, here.
+          schema:
+            type: string
+        - name: x-authenticated-user-token
+          in: header
+          required: true
+          description: It is a unique token/key to authenticate the user each time an API
+            is called. For corresponding sessions this token is used, not your
+            actual username/password
+          schema:
+            type: string
+        - name: x-authenticated-for
+          in: header
+          required: false
+          description: Managed User token of registered MUA user performing given API
+            request. From this LUA and MUA id are seperated and LUA is validated
+            against user_id in x-authenticated-user-token
+          schema:
+            type: string
+        - name: ts
+          in: header
+          required: false
+          description: Timestamp is a sequence of characters or encoded information
+            identifying when the list notification API call occurred, usually it gives
+            date and time of day, mostly accurate to a small fraction of a
+            second.
+          schema:
+            type: string
+        - name: X-msgid
+          in: header
+          required: false
+          description: This ID uniquely identifies a request if the same API is executed
+            multiple times.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success Notification Status Update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                id: v1.notification.feed.update
+                ver: v1
+                ts: '1628697773888'
+                params:
+                  resmsgid: null
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: null
+                  status: null
+                  errmsg: null
+                responseCode: OK
+                result:
+                  response: SUCCESS
+        '400':
+          description: Mandatory Param is Missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+              example:
+                id: api.notification.feed.update
+                ver: null
+                ts: 2021-08-11 22:05:44:382+0530
+                params:
+                  resmsgid: null
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: MANDATORY_PARAMETER_MISSING
+                  status: null
+                  errmsg: Mandatory parameter userId is missing.
+                responseCode: CLIENT_ERROR
+                result: {}
+        '401':
+          description: Unauthorized User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+              example:
+                id: v1.notification.feed.update
+                ver: null
+                ts: 2021-08-11 21:30:57:395+0530
+                params:
+                  resmsgid: null
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: unauthorized
+                  status: null
+                  errmsg: you are an unauthorized user
+                responseCode: UNAUTHORIZED
+                result: {}
+        '500':
+          description: "'INTERNAL SERVER ERROR. We track these errors automatically and
+             try to set it right at the earliest. Try refreshing the page. If the
+             problem persists contact us at info@sunbird.org.'"
+          content:
+            application/json:
+              schema:
+                $ref: ""
+              example:
+                id: v1.notification.feed.update
+                ver: null
+                ts: 2020-12-01 10:49:01:948+0000
+                params:
+                  resmsgid:
+                  msgid: 12eb0ca45ce4c776fab994d120bedd41
+                  err: null
+                  status: null
+                  errmsg: "SERVER_ERROR"
+                responseCode: SERVER_ERROR
+                result: {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateFeedReq"
+            example:
+              request:
+                - ids:
+                    - "64ef2ccd-2ec7-4759-b500-590d4a6eccf3"
+                  userId: "1234"
+
+  /notification/v1/feed/delete:
+    patch:
+      summary: Delete Notification Feed
+      operationId: DeleteNotificationFeed
+      tags:
+        - Notification APIs
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: application/json
+        - name: Authorization
+          in: header
+          required: true
+          description: To make use of any Notification API, you require authorization. Raise a
+            request to the administrator for the use of the API. You will
+            receive the authorization key. Specify the key received, here.
+          schema:
+            type: string
+        - name: x-authenticated-user-token
+          in: header
+          required: true
+          description: It is a unique token/key to authenticate the user each time an API
+            is called. For corresponding sessions this token is used, not your
+            actual username/password
+          schema:
+            type: string
+        - name: x-authenticated-for
+          in: header
+          required: false
+          description: Managed User token of registered MUA user performing given API
+            request. From this LUA and MUA id are seperated and LUA is validated
+            against user_id in x-authenticated-user-token
+          schema:
+            type: string
+        - name: ts
+          in: header
+          required: false
+          description: Timestamp is a sequence of characters or encoded information
+            identifying when the list notification API call occurred, usually it gives
+            date and time of day, mostly accurate to a small fraction of a
+            second.
+          schema:
+            type: string
+        - name: X-msgid
+          in: header
+          required: false
+          description: This ID uniquely identifies a request if the same API is executed
+            multiple times.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success Notification Status Delete
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                id: v1.notification.feed.delete
+                ver: v1
+                ts: '1628697773888'
+                params:
+                  resmsgid: null
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: null
+                  status: null
+                  errmsg: null
+                responseCode: OK
+                result:
+                  response: SUCCESS
+        '400':
+          description: Mandatory Param is Missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+              example:
+                id: api.notification.feed.delete
+                ver: null
+                ts: 2021-08-11 22:05:44:382+0530
+                params:
+                  resmsgid: null
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: MANDATORY_PARAMETER_MISSING
+                  status: null
+                  errmsg: Mandatory parameter userId is missing.
+                responseCode: CLIENT_ERROR
+                result: {}
+        '401':
+          description: Unauthorized User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+              example:
+                id: v1.notification.feed.delete
+                ver: null
+                ts: 2021-08-11 21:30:57:395+0530
+                params:
+                  resmsgid: null
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: unauthorized
+                  status: null
+                  errmsg: you are an unauthorized user
+                responseCode: UNAUTHORIZED
+                result: {}
+        '500':
+          description: "'INTERNAL SERVER ERROR. We track these errors automatically and
+             try to set it right at the earliest. Try refreshing the page. If the
+             problem persists contact us at info@sunbird.org.'"
+          content:
+            application/json:
+              schema:
+                $ref: ""
+              example:
+                id: v1.notification.feed.delete
+                ver: null
+                ts: 2020-12-01 10:49:01:948+0000
+                params:
+                  resmsgid:
+                  msgid: 12eb0ca45ce4c776fab994d120bedd41
+                  err: null
+                  status: null
+                  errmsg: "SERVER_ERROR"
+                responseCode: SERVER_ERROR
+                result: {}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/deleteFeedReq"
+            example:
+              request:
+                - ids:
+                    - "64ef2ccd-2ec7-4759-b500-590d4a6eccf3"
+                  userId: "1234"
+                  category: "groups"
+
+  /notification/v1/template/create:
+    post:
+      summary: Create Notification Template
+      operationId: CreateNotificationTemplate
+      tags:
+        - Notification APIs
+      parameters:
+        - name: Content-Type
+          in: header
+          required: true
+          style: simple
+          schema:
+            type: string
+            example: application/json
+        - name: Authorization
+          in: header
+          required: true
+          description: To make use of any Notification API, you require authorization. Raise a
+            request to the administrator for the use of the API. You will
+            receive the authorization key. Specify the key received, here.
+          schema:
+            type: string
+        - name: x-authenticated-user-token
+          in: header
+          required: true
+          description: It is a unique token/key to authenticate the user each time an API
+            is called. For corresponding sessions this token is used, not your
+            actual username/password
+          schema:
+            type: string
+        - name: x-authenticated-for
+          in: header
+          required: false
+          description: Managed User token of registered MUA user performing given API
+            request. From this LUA and MUA id are seperated and LUA is validated
+            against user_id in x-authenticated-user-token
+          schema:
+            type: string
+        - name: ts
+          in: header
+          required: false
+          description: Timestamp is a sequence of characters or encoded information
+            identifying when the list notification API call occurred, usually it gives
+            date and time of day, mostly accurate to a small fraction of a
+            second.
+          schema:
+            type: string
+        - name: X-msgid
+          in: header
+          required: false
+          description: This ID uniquely identifies a request if the same API is executed
+            multiple times.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success Notification template creation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/200'
+              example:
+                id: v1.notification.template.create
+                ver: v1
+                ts: '1628697773888'
+                params:
+                  resmsgid: null
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: null
+                  status: null
+                  errmsg: null
+                responseCode: OK
+                result:
+                  response: SUCCESS
+        '400':
+          description: Mandatory Param is Missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/400'
+              example:
+                id: api.notification.template.create
+                ver: null
+                ts: 2021-08-11 22:05:44:382+0530
+                params:
+                  resmsgid: null
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: MANDATORY_PARAMETER_MISSING
+                  status: null
+                  errmsg: Mandatory parameter data is missing.
+                responseCode: CLIENT_ERROR
+                result: { }
+        '401':
+          description: Unauthorized User
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/401'
+              example:
+                id: v1.notification.template.create
+                ver: null
+                ts: 2021-08-11 21:30:57:395+0530
+                params:
+                  resmsgid: null
+                  msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                  err: unauthorized
+                  status: null
+                  errmsg: you are an unauthorized user
+                responseCode: UNAUTHORIZED
+                result: { }
+        '500':
+          description: "'INTERNAL SERVER ERROR. We track these errors automatically and
+              try to set it right at the earliest. Try refreshing the page. If the
+              problem persists contact us at info@sunbird.org.'"
+          content:
+            application/json:
+              schema:
+                $ref: ""
+              example:
+                id: v1.notification.template.create
+                ver: null
+                ts: 2020-12-01 10:49:01:948+0000
+                params:
+                  resmsgid:
+                  msgid: 12eb0ca45ce4c776fab994d120bedd41
+                  err: null
+                  status: null
+                  errmsg: "SERVER_ERROR"
+                responseCode: SERVER_ERROR
+                result: { }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createTemplateReq'
+            example:
+              request:
+                "ver": "4.4.0"
+                "data": "{\"title\": \"${param1} has left the ${param2}\"}"
+                "templateId": "user-exit-2-2"
+                "type": "JSON"
+                "config": { "test": "13231231" }
+                "template_schema": "{\"$schema\":\"#/definition/params\",\"title\":\"params context\",\"description\":\"properties Data\",\"type\":\"object\",\"properties\":{\"param1\":{\"description\":\"property 1 value\",\"type\":\"string\"},\"param2\":{\"description\":\"property 2 value\",\"type\":\"string\"}},\"required\":[\"param1\",\"param2\"]}"
+
+
+  /notification/v1/template/update:
+      patch:
+        summary: Update Notification Template
+        operationId: UpdateNotificationTemplate
+        tags:
+          - Notification APIs
+        parameters:
+          - name: Content-Type
+            in: header
+            required: true
+            style: simple
+            schema:
+              type: string
+              example: application/json
+          - name: Authorization
+            in: header
+            required: true
+            description: To make use of any Notification API, you require authorization. Raise a
+              request to the administrator for the use of the API. You will
+              receive the authorization key. Specify the key received, here.
+            schema:
+              type: string
+          - name: x-authenticated-user-token
+            in: header
+            required: true
+            description: It is a unique token/key to authenticate the user each time an API
+              is called. For corresponding sessions this token is used, not your
+              actual username/password
+            schema:
+              type: string
+          - name: x-authenticated-for
+            in: header
+            required: false
+            description: Managed User token of registered MUA user performing given API
+              request. From this LUA and MUA id are seperated and LUA is validated
+              against user_id in x-authenticated-user-token
+            schema:
+              type: string
+          - name: ts
+            in: header
+            required: false
+            description: Timestamp is a sequence of characters or encoded information
+              identifying when the list notification API call occurred, usually it gives
+              date and time of day, mostly accurate to a small fraction of a
+              second.
+            schema:
+              type: string
+          - name: X-msgid
+            in: header
+            required: false
+            description: This ID uniquely identifies a request if the same API is executed
+              multiple times.
+            schema:
+              type: string
+        responses:
+          '200':
+            description: Success Notification template updated
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/200'
+                example:
+                  id: v1.notification.template.update
+                  ver: v1
+                  ts: '1628697773888'
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: null
+                    status: null
+                    errmsg: null
+                  responseCode: OK
+                  result:
+                    response: SUCCESS
+          '400':
+            description: Mandatory Param is Missing
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/400'
+                example:
+                  id: api.notification.template.update
+                  ver: null
+                  ts: 2021-08-11 22:05:44:382+0530
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: MANDATORY_PARAMETER_MISSING
+                    status: null
+                    errmsg: Mandatory parameter templateId is missing.
+                  responseCode: CLIENT_ERROR
+                  result: { }
+          '401':
+            description: Unauthorized User
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/401'
+                example:
+                  id: v1.notification.template.update
+                  ver: null
+                  ts: 2021-08-11 21:30:57:395+0530
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: unauthorized
+                    status: null
+                    errmsg: you are an unauthorized user
+                  responseCode: UNAUTHORIZED
+                  result: { }
+          '500':
+            description: "'INTERNAL SERVER ERROR. We track these errors automatically and
+              try to set it right at the earliest. Try refreshing the page. If the
+              problem persists contact us at info@sunbird.org.'"
+            content:
+              application/json:
+                schema:
+                  $ref: ""
+                example:
+                  id: v1.notification.template.update
+                  ver: null
+                  ts: 2020-12-01 10:49:01:948+0000
+                  params:
+                    resmsgid:
+                    msgid: 12eb0ca45ce4c776fab994d120bedd41
+                    err: null
+                    status: null
+                    errmsg: "SERVER_ERROR"
+                  responseCode: SERVER_ERROR
+                  result: { }
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/updateTemplateReq'
+              example:
+                request:
+                  "templateId": "user-exit-2-2"
+                  "ver": "4.4.0"
+                  "data": "{\"title\": \"${param1} has left the ${param2}\"}"
+
+  /notification/v1/template/delete:
+      patch:
+        summary: Delete Notification Template
+        operationId: TemplateNotificationTemplate
+        tags:
+          - Notification APIs
+        parameters:
+          - name: Content-Type
+            in: header
+            required: true
+            style: simple
+            schema:
+              type: string
+              example: application/json
+          - name: Authorization
+            in: header
+            required: true
+            description: To make use of any Notification API, you require authorization. Raise a
+              request to the administrator for the use of the API. You will
+              receive the authorization key. Specify the key received, here.
+            schema:
+              type: string
+          - name: x-authenticated-user-token
+            in: header
+            required: true
+            description: It is a unique token/key to authenticate the user each time an API
+              is called. For corresponding sessions this token is used, not your
+              actual username/password
+            schema:
+              type: string
+          - name: x-authenticated-for
+            in: header
+            required: false
+            description: Managed User token of registered MUA user performing given API
+              request. From this LUA and MUA id are seperated and LUA is validated
+              against user_id in x-authenticated-user-token
+            schema:
+              type: string
+          - name: ts
+            in: header
+            required: false
+            description: Timestamp is a sequence of characters or encoded information
+              identifying when the list notification API call occurred, usually it gives
+              date and time of day, mostly accurate to a small fraction of a
+              second.
+            schema:
+              type: string
+          - name: X-msgid
+            in: header
+            required: false
+            description: This ID uniquely identifies a request if the same API is executed
+              multiple times.
+            schema:
+              type: string
+        responses:
+          '200':
+            description: Success Notification template deleted
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/200'
+                example:
+                  id: v1.notification.template.delete
+                  ver: v1
+                  ts: '1628697773888'
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: null
+                    status: null
+                    errmsg: null
+                  responseCode: OK
+                  result:
+                    response: SUCCESS
+          '400':
+            description: Mandatory Param is Missing
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/400'
+                example:
+                  id: api.notification.template.delete
+                  ver: null
+                  ts: 2021-08-11 22:05:44:382+0530
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: MANDATORY_PARAMETER_MISSING
+                    status: null
+                    errmsg: Mandatory parameter templateId is missing.
+                  responseCode: CLIENT_ERROR
+                  result: { }
+          '401':
+            description: Unauthorized User
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/401'
+                example:
+                  id: v1.notification.template.delete
+                  ver: null
+                  ts: 2021-08-11 21:30:57:395+0530
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: unauthorized
+                    status: null
+                    errmsg: you are an unauthorized user
+                  responseCode: UNAUTHORIZED
+                  result: { }
+          '500':
+            description: "'INTERNAL SERVER ERROR. We track these errors automatically and
+              try to set it right at the earliest. Try refreshing the page. If the
+              problem persists contact us at info@sunbird.org.'"
+            content:
+              application/json:
+                schema:
+                  $ref: ""
+                example:
+                  id: v1.notification.template.delete
+                  ver: null
+                  ts: 2020-12-01 10:49:01:948+0000
+                  params:
+                    resmsgid:
+                    msgid: 12eb0ca45ce4c776fab994d120bedd41
+                    err: null
+                    status: null
+                    errmsg: "SERVER_ERROR"
+                  responseCode: SERVER_ERROR
+                  result: { }
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/deleteTemplateReq'
+              example:
+                request:
+                  "templateId": "user-exit-2-2"
+
+
+  /notification/v1/template/list:
+      get:
+        summary: List all available Notification templates
+        description: >-
+          This API is used for getting all available templates in the notification service
+        tags:
+          - Notification APIs
+        operationId: Get Notification Templates
+        parameters:
+          - name: Authorization
+            in: header
+            required: true
+            description: To make use of any Notification API, you require authorization. Raise a
+              request to the administrator for the use of the API. You will
+              receive the authorization key. Specify the key received, here.
+            schema:
+              type: string
+          - name: x-authenticated-user-token
+            in: header
+            required: true
+            description: It is a unique token/key to authenticate the user each time an API
+              is called. For corresponding sessions this token is used, not your
+              actual username/password
+            schema:
+              type: string
+          - name: x-authenticated-for
+            in: header
+            required: false
+            description: Managed User token of registered MUA user performing given API
+              request. From this LUA and MUA id are seperated and LUA is validated
+              against user_id in x-authenticated-user-token
+            schema:
+              type: string
+          - name: ts
+            in: header
+            required: false
+            description: Timestamp is a sequence of characters or encoded information
+              identifying when the list notification API call occurred, usually it gives
+              date and time of day, mostly accurate to a small fraction of a
+              second.
+            schema:
+              type: string
+          - name: X-msgid
+            in: header
+            required: false
+            description: This ID uniquely identifies a request if the same API is executed
+              multiple times.
+            schema:
+              type: string
+        responses:
+          '200':
+            description: Success list all notification templates
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/200'
+                example:
+                  id: v1.notification.template.list
+                  ver: v1
+                  ts: '1628697563377'
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: null
+                    status: null
+                    errmsg: null
+                  responseCode: OK
+                  result:
+                    templates:
+                      - lastUpdatedBy: '1234'
+                        createdBy: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                        ver: 4.4.0
+                        data: '{\"title\": \"${param1} has left the ${param2}\"}'
+                        templateId": user-exit-2-2
+                        type: JSON
+                        config: { "test": "13231231" }
+                        template_schema: '{\"$schema\":\"#/definition/params\",\"title\":\"params context\",\"description\":\"properties Data\",\"type\":\"object\",\"properties\":{\"param1\":{\"description\":\"property 1 value\",\"type\":\"string\"},\"param2\":{\"description\":\"property 2 value\",\"type\":\"string\"}},\"required\":[\"param1\",\"param2\"]}'
+                        lastUpdatedOn: null
+                        createdOn: 1628696821794
+
+          '401':
+            description: Unauthorized User
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/401'
+                example:
+                  id: v1.notification.template.list
+                  ver: null
+                  ts: 2021-08-11 21:30:57:395+0530
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: unauthorized
+                    status: null
+                    errmsg: you are an unauthorized user
+                  responseCode: UNAUTHORIZED
+                  result: { }
+          '500':
+            description: "'INTERNAL SERVER ERROR. We track these errors automatically and
+              try to set it right at the earliest. Try refreshing the page. If the
+              problem persists contact us at info@sunbird.org.'"
+            content:
+              application/json:
+                schema:
+                  $ref: ""
+                example:
+                  id: v1.notification.template.list
+                  ver: null
+                  ts: 2020-12-01 10:49:01:948+0000
+                  params:
+                    resmsgid:
+                    msgid: 12eb0ca45ce4c776fab994d120bedd41
+                    err: null
+                    status: null
+                    errmsg: "SERVER_ERROR"
+                  responseCode: SERVER_ERROR
+                  result: { }
+
+  /notification/v1/template/action/update:
+      patch:
+        summary: Map or Update Action Notification Template
+        operationId: UpdateActionToNotificationTemplate
+        tags:
+          - Notification APIs
+        parameters:
+          - name: Content-Type
+            in: header
+            required: true
+            style: simple
+            schema:
+              type: string
+              example: application/json
+          - name: Authorization
+            in: header
+            required: true
+            description: To make use of any Notification API, you require authorization. Raise a
+              request to the administrator for the use of the API. You will
+              receive the authorization key. Specify the key received, here.
+            schema:
+              type: string
+          - name: x-authenticated-user-token
+            in: header
+            required: true
+            description: It is a unique token/key to authenticate the user each time an API
+              is called. For corresponding sessions this token is used, not your
+              actual username/password
+            schema:
+              type: string
+          - name: x-authenticated-for
+            in: header
+            required: false
+            description: Managed User token of registered MUA user performing given API
+              request. From this LUA and MUA id are seperated and LUA is validated
+              against user_id in x-authenticated-user-token
+            schema:
+              type: string
+          - name: ts
+            in: header
+            required: false
+            description: Timestamp is a sequence of characters or encoded information
+              identifying when the list notification API call occurred, usually it gives
+              date and time of day, mostly accurate to a small fraction of a
+              second.
+            schema:
+              type: string
+          - name: X-msgid
+            in: header
+            required: false
+            description: This ID uniquely identifies a request if the same API is executed
+              multiple times.
+            schema:
+              type: string
+        responses:
+          '200':
+            description: Success Notification action template updated
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/200'
+                example:
+                  id: v1.notification.template.action.update
+                  ver: v1
+                  ts: '1628697773888'
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: null
+                    status: null
+                    errmsg: null
+                  responseCode: OK
+                  result:
+                    response: SUCCESS
+          '400':
+            description: Mandatory Param is Missing
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/400'
+                example:
+                  id: api.notification.template.action.update
+                  ver: null
+                  ts: 2021-08-11 22:05:44:382+0530
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: MANDATORY_PARAMETER_MISSING
+                    status: null
+                    errmsg: Mandatory parameter templateId is missing.
+                  responseCode: CLIENT_ERROR
+                  result: { }
+          '401':
+            description: Unauthorized User
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/401'
+                example:
+                  id: v1.notification.template.action.update
+                  ver: null
+                  ts: 2021-08-11 21:30:57:395+0530
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: unauthorized
+                    status: null
+                    errmsg: you are an unauthorized user
+                  responseCode: UNAUTHORIZED
+                  result: { }
+          '500':
+            description: "'INTERNAL SERVER ERROR. We track these errors automatically and
+              try to set it right at the earliest. Try refreshing the page. If the
+              problem persists contact us at info@sunbird.org.'"
+            content:
+              application/json:
+                schema:
+                  $ref: ""
+                example:
+                  id: v1.notification.template.action.update
+                  ver: null
+                  ts: 2020-12-01 10:49:01:948+0000
+                  params:
+                    resmsgid:
+                    msgid: 12eb0ca45ce4c776fab994d120bedd41
+                    err: null
+                    status: null
+                    errmsg: "SERVER_ERROR"
+                  responseCode: SERVER_ERROR
+                  result: { }
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/mapActionTemplateReq'
+              example:
+                request:
+                  "templateId": "user-exit-2-2"
+                  "action": "member-add"
+                  "type": "Feed"
+
+  "/notification/v1/template/{action}":
+      get:
+        summary: Get mapped notification template to the action
+        description: >-
+          This API is used for getting  available action mapped to templates in the notification service
+        tags:
+          - Notification APIs
+        operationId: Get Notification Templates Mapped to action
+        parameters:
+          - in: path
+            name: action
+            required: true
+            description: Please append a valid action To the Request URL
+            schema:
+              type: string
+          - name: Authorization
+            in: header
+            required: true
+            description: To make use of any Notification API, you require authorization. Raise a
+              request to the administrator for the use of the API. You will
+              receive the authorization key. Specify the key received, here.
+            schema:
+              type: string
+          - name: x-authenticated-user-token
+            in: header
+            required: true
+            description: It is a unique token/key to authenticate the user each time an API
+              is called. For corresponding sessions this token is used, not your
+              actual username/password
+            schema:
+              type: string
+          - name: x-authenticated-for
+            in: header
+            required: false
+            description: Managed User token of registered MUA user performing given API
+              request. From this LUA and MUA id are seperated and LUA is validated
+              against user_id in x-authenticated-user-token
+            schema:
+              type: string
+          - name: ts
+            in: header
+            required: false
+            description: Timestamp is a sequence of characters or encoded information
+              identifying when the list notification API call occurred, usually it gives
+              date and time of day, mostly accurate to a small fraction of a
+              second.
+            schema:
+              type: string
+          - name: X-msgid
+            in: header
+            required: false
+            description: This ID uniquely identifies a request if the same API is executed
+              multiple times.
+            schema:
+              type: string
+        responses:
+          '200':
+            description: Success templates mappend to action
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/200'
+                example:
+                  id: v1.notification.template.member-add
+                  ver: v1
+                  ts: '1628697563377'
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: null
+                    status: null
+                    errmsg: null
+                  responseCode: OK
+                  result:
+                    action: member-add
+                    type: Feed
+                    template:
+                      lastUpdatedBy: '1234'
+                      createdBy: f10d5216-6b96-404c-8d1c-cc1f720d910d
+                      ver: 4.4.0
+                      data: '{\"title\": \"${param1} has left the ${param2}\"}'
+                      templateId": user-exit-2-2
+                      type: JSON
+                      config: { "test": "13231231" }
+                      template_schema: '{\"$schema\":\"#/definition/params\",\"title\":\"params context\",\"description\":\"properties Data\",\"type\":\"object\",\"properties\":{\"param1\":{\"description\":\"property 1 value\",\"type\":\"string\"},\"param2\":{\"description\":\"property 2 value\",\"type\":\"string\"}},\"required\":[\"param1\",\"param2\"]}'
+                      lastUpdatedOn: null
+                      createdOn: 1628696821794
+          '400':
+            description: action configuration not found
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/400'
+                example:
+                  id: api.notification.template.action.member-add
+                  ver: null
+                  ts: 2021-08-11 22:05:44:382+0530
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: TEMPLATE_NOT_FOUND
+                    status: null
+                    errmsg: Template is not pre configured for member-add type.
+                  responseCode: CLIENT_ERROR
+                  result: { }
+
+          '401':
+            description: Unauthorized User
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/401'
+                example:
+                  id: v1.notification.template.member-add
+                  ver: null
+                  ts: 2021-08-11 21:30:57:395+0530
+                  params:
+                    resmsgid: null
+                    msgid: "ed1c0b7c-8f10-4a35-9f42-93966d8d97f6"
+                    err: unauthorized
+                    status: null
+                    errmsg: you are an unauthorized user
+                  responseCode: UNAUTHORIZED
+                  result: { }
+
+          '500':
+            description: "'INTERNAL SERVER ERROR. We track these errors automatically and
+              try to set it right at the earliest. Try refreshing the page. If the
+              problem persists contact us at info@sunbird.org.'"
+            content:
+              application/json:
+                schema:
+                  $ref: ""
+                example:
+                  id: v1.notification.template.member-add
+                  ver: null
+                  ts: 2020-12-01 10:49:01:948+0000
+                  params:
+                    resmsgid:
+                    msgid: 12eb0ca45ce4c776fab994d120bedd41
+                    err: null
+                    status: null
+                    errmsg: "SERVER_ERROR"
+                  responseCode: SERVER_ERROR
+                  result: { }
+components:
+  parameters:
+    notification-delivery-mode:
+      name: notification-delivery-mode
+      in: header
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: sync
+    Content-Type:
+      name: Content-Type
+      in: header
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: application/json
+    Authorization:
+      name: Authorization
+      in: header
+      required: true
+      style: simple
+      schema:
+        type: string
+        example: Bearer <key>
+  schemas:
+    'notificationSendRequest':
+      description: Notification Send Request Obj
+      type: object
+      properties:
+        request:
+          type: object
+          properties:
+            notifications:
+              type: array
+              items:
+                type: object
+                allOf:
+                  - $ref: "#/components/schemas/notificationObj"
+          required:
+            - notifications
+      required:
+        - request
+    'notificationObj':
+      description: Notification  Obj
+      type: object
+      properties:
+        ids:
+          type: array
+          items:
+            type: string
+        type:
+          type: string
+        priority:
+          type: number
+        action:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/actionObj'
+      required:
+        - ids
+        - type
+        - priority
+        - action
+
+    'actionObj':
+      description: Action Data Object
+      type: object
+      properties:
+        type:
+          type: string
+        category:
+          type: string
+        template:
+          type: object
+          allOf:
+            - $ref: '#/components/schemas/templateObj'
+        additionalInfo:
+          type: object
+      required:
+        - type
+        - category
+        - template
+    'templateObj':
+      description: Template Data Object
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        data:
+          type: string
+        ver:
+          type: string
+        params:
+          type: object
+      required:
+        - type
+        - params
+
+    'updateFeedReq':
+      description: Notification Feed update Request Obj where ids are feedids
+      type: object
+      properties:
+        request:
+          type: object
+          properties:
+            ids:
+              type: array
+              description: Feed ids
+              items:
+                type: string
+            userId:
+              type: string
+          required:
+            - ids
+            - userId
+      required:
+        - request
+
+    'deleteFeedReq':
+      description: Notification Feed delete Request Obj where ids are feedids
+      type: object
+      properties:
+        request:
+          type: object
+          properties:
+            ids:
+              type: array
+              items:
+                type: string
+            userId:
+              type: string
+          required:
+            - ids
+            - userId
+      required:
+        - request
+    'createTemplateReq':
+      description: Notification Feed create template notification Request Obj
+      type: object
+      properties:
+        request:
+          type: object
+          properties:
+            ver:
+              type: string
+            data:
+              type: string
+            templateId:
+              type: string
+            type:
+              type: string
+            config:
+              type: object
+            template_schema:
+              description: schema definition for validation of json
+              type: string
+          required:
+            - ver
+            - data
+            - templateId
+            - template_schema
+            - type
+      required:
+        - request
+
+    'updateTemplateReq':
+        description: Notification Feed update template notification Request Obj
+        type: object
+        properties:
+          request:
+            type: object
+            properties:
+              ver:
+                type: string
+              data:
+                type: string
+              templateId:
+                type: string
+              type:
+                type: string
+              config:
+                type: object
+              template_schema:
+                description: schema definition for validation of json
+                type: string
+            required:
+              - templateId
+        required:
+          - request
+
+    'deleteTemplateReq':
+        description: Notification delete template notification Request Obj
+        type: object
+        properties:
+          request:
+            type: object
+            properties:
+              templateId:
+                type: string
+            required:
+              - templateId
+
+        required:
+          - request
+
+    'mapActionTemplateReq':
+        description: Map Action to template notification Request Obj
+        type: object
+        properties:
+          request:
+            type: object
+            properties:
+              action:
+                type: string
+              templateId:
+                type: string
+              type:
+                description: defined type of notification for which template will be used such as feed, email,phone,device
+                type: string
+            required:
+              - templateId
+              - action
+              - type
+        required:
+          - request
+    '200':
+      type: object
+      properties:
+        id:
+          type: string
+          description: ''
+          default: v2.notification.send
+        ver:
+          type: string
+          description: ''
+          default: v1
+        ts:
+          type: string
+          description: ''
+          default: '1628696821794'
+        params:
+          type: object
+          properties:
+            resmsgid: {}
+            msgid: {}
+            err: {}
+            status: {}
+            errmsg: {}
+        responseCode:
+          type: string
+          description: ''
+          default: OK
+        result:
+          type: object
+          properties:
+            response:
+              type: string
+              description: ''
+              default: SUCCESS
+
+    '400':
+      type: object
+      properties:
+        id:
+          type: string
+          description: ''
+          default: notification.send
+        ver: {}
+        ts:
+          type: string
+          description: ''
+          default: 2021-08-11 21:20:28:919+0530
+        params:
+          type: object
+          properties:
+            resmsgid: {}
+            msgid: {}
+            err:
+              type: string
+              description: ''
+              default: INVALID_REQUESTED_DATA
+            status: {}
+            errmsg:
+              type: string
+              description: ''
+              default: '#/notifications/0: required key [type] not found'
+        responseCode:
+          type: string
+          description: ''
+          default: CLIENT_ERROR
+        result:
+          type: object
+          properties: {}
+    '401':
+      type: object
+      properties:
+        id:
+          type: string
+          description: ''
+          default: notification.feed.read
+        ver: {}
+        ts:
+          type: string
+          description: ''
+          default: 2021-08-11 21:30:57:395+0530
+        params:
+          type: object
+          properties:
+            resmsgid: {}
+            msgid: {}
+            err:
+              type: string
+              description: ''
+              default: unauthorized
+            status: {}
+            errmsg:
+              type: string
+              description: ''
+              default: you are an unauthorized user
+        responseCode:
+          type: string
+          description: ''
+          default: UNAUTHORIZED
+        result:
+          type: object
+          properties: {}
+
+
+
