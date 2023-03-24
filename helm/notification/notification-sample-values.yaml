@@ -1,0 +1,21 @@
+## This section has mandatory variables
+## You must provide a value for these
+## If you don't provide a value for these variables, the chart installation will not proceed
+
+## The domain name or Public IP address
+## The domain name should start with http or https
+## For example https://example.com
+domain: "https://abc.com"
+
+
+## This section has optional variables
+## If you provide a value to the variable, then that will have the highest precedence
+## If you don't provide a value, then it's fetched from kubernetes secret or subchart template
+## If the value is empty or nil, installation will be halted
+#ekstep_authorization: "EKSTEP_AUTHORIZATION_KEY"
+#sunbird_authorization: "SUNBIRD_AUTHORIZATION_KEY"
+sunbird_keycloak_user_federation_provider_id: "SUNBIRD_KEYCLOAK_USER_FEDERATION_PROVIDER_ID"
+#sunbird_pg_user: "SUNBIRD_PG_USER"
+#sunbird_pg_password: "SUNBIRD_PG_PASSWORD"
+sunbird_sso_client_secret: "SUNBIRD_SSO_CLIENT_SECRET"
+#sunbird_sso_publickey: "SUNBIRD_SSO_PUBLICKEY"
