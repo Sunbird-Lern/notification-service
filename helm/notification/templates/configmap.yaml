@@ -1,0 +1,61 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-config
+  namespace: {{ .Release.Namespace }}
+data:
+  {{/* This section has variables whose value is read from another object */}}
+  
+  {{/* This section has variables which in turn contain one or more mandatory variables */}}
+  sunbird_sso_url: {{ if .Values.domain }}
+  {{- .Values.domain }}{{ .Values.keycloak_auth_endpoint }}
+  {{- else -}}
+  {{- printf "ERROR | %s | Please provide a value for \"domain\"" .Chart.Name | fail }}
+  {{- end }}
+  
+  sunbird_keycloak_user_federation_provider_id: {{ if .Values.sunbird_keycloak_user_federation_provider_id }}
+  {{- .Values.sunbird_keycloak_user_federation_provider_id }}
+  {{- else -}}
+  {{- include "common.read.secret" (dict "ChartName" .Chart.Name "Namespace" .Release.Namespace "Name" .Values.external_secrets.keycloak_federation.name "Key" .Values.external_secrets.keycloak_federation.key "LocalDevelopment" .Values.local_chart_development) -}}
+  {{- end }}
+
+  sunbird_sso_client_secret: {{ if .Values.sunbird_sso_client_secret }}
+  {{- .Values.sunbird_sso_client_secret }}
+  {{- else -}}
+  {{- include "common.read.secret" (dict "ChartName" .Chart.Name "Namespace" .Release.Namespace "Name" .Values.external_secrets.keycloak_client_secret.name "Key" .Values.external_secrets.keycloak_client_secret.key "LocalDevelopment" .Values.local_chart_development) -}}
+  {{- end }}
+  
+  sunbird_sso_publickey: {{ if .Values.sunbird_sso_publickey }}
+  {{- .Values.sunbird_sso_publickey }}
+  {{- else -}}
+  {{- include "common.read.secret" (dict "ChartName" .Chart.Name "Namespace" .Release.Namespace "Name" .Values.external_secrets.keycloak_realm_public_key.name "Key" .Values.external_secrets.keycloak_realm_public_key.key "LocalDevelopment" .Values.local_chart_development) -}}
+  {{- end }}
+  {{/* This section has optional variables */}}
+  
+  {{/* This section has variables with default values */}}
+  ENV_NAME: {{ .Values.ENV_NAME }}
+  LEARNER_SERVICE_PORT: {{ .Values.LEARNER_SERVICE_PORT }}
+  SUNBIRD_KAFKA_URL: {{ .Values.SUNBIRD_KAFKA_URL }}
+  accesstoken.publickey.basepath: {{ .Values.accesstoken.publickey.basepath }}
+  isMultiDCEnabled: {{ .Values.isMultiDCEnabled | quote }}
+  notification_category_type_config: {{ .Values.notification_category_type_config}}
+  sunbird_cassandra_consistency_level: {{ .Values.sunbird_cassandra_consistency_level }}
+  sunbird_cassandra_host: {{ .Values.sunbird_cassandra_host }}
+  sunbird_cassandra_password: {{ .Values.sunbird_cassandra_password }}
+  sunbird_cassandra_port: {{ .Values.sunbird_cassandra_port | quote }}
+  sunbird_cassandra_username: {{ .Values.sunbird_cassandra_username }}
+  sunbird_keycloak_required_action_link_expiration_seconds: {{ .Values.sunbird_keycloak_required_action_link_expiration_seconds | quote }}
+  sunbird_mail_server_from_email: {{ .Values.sunbird_mail_server_from_email }}
+  sunbird_mail_server_host: {{ .Values.sunbird_mail_server_host }}
+  sunbird_mail_server_password: {{ .Values.sunbird_mail_server_password }}
+  sunbird_mail_server_port: {{ .Values.sunbird_mail_server_port | quote }}
+  sunbird_msg_91_auth: {{ .Values.sunbird_msg_91_auth }}
+  sunbird_notification_kafka_servers_config: {{ .Values.sunbird_notification_kafka_servers_config }}
+  sunbird_notification_kafka_topic: {{ .Values.sunbird_notification_kafka_topic }}
+  sunbird_notification_msg_default_sender: {{ .Values.sunbird_notification_msg_default_sender }}
+  sunbird_sso_client_id: {{ .Values.sunbird_sso_client_id }} 
+  sunbird_sso_realm: {{ .Values.sunbird_sso_realm }}
+  sunbird_sso_url: {{ .Values.sunbird_sso_url }}
+  sunbird_us_org_read_url: {{ .Values.sunbird_us_org_read_url }} 
+  sunbird_us_system_setting_url: {{ .Values.sunbird_us_system_setting_url }} 

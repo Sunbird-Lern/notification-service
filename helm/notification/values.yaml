@@ -1,0 +1,132 @@
+## This section has mandatory variables
+## You must provide a value for these
+## If you don't provide a value for these variables, the chart installation will not proceed
+
+## The domain name or Public IP address
+## The domain name should start with http or https
+## For example https://example.com
+#domain: "https://example.com"
+
+
+
+
+## This section has optional variables
+## If you provide a value to the variable, then that will have the highest precedence
+## If you don't provide a value, then it's auto generated
+
+
+## This section has optional variables
+## If you provide a value to the variable, then that will have the highest precedence
+## If you don't provide a value, then it's fetched from another object
+sunbird_keycloak_user_federation_provider_id: ""
+sunbird_sso_publickey: ""
+sunbird_sso_client_secret: ""
+
+## This section has variables with default values
+## These are standard defaults that work well
+## You can override these if you have a use case for it
+ENV_NAME: dev
+LEARNER_SERVICE_PORT: http://learner-service.lern.svc.cluster.local:9000
+SUNBIRD_KAFKA_URL:  http://kafka.lern.svc.cluster.local:9092
+accesstoken:
+  publickey:
+    basepath: /keys/
+isMultiDCEnabled: "False"
+notification_category_type_config: certificateUpdate
+sunbird_cassandra_consistency_level: local_quorum
+sunbird_cassandra_host:  cassandra.lern.svc.cluster.local
+sunbird_cassandra_notification_keyspace: sunbird_notifications
+sunbird_cassandra_password: password
+sunbird_cassandra_port: 9042
+sunbird_cassandra_username: cassandra
+sunbird_keycloak_required_action_link_expiration_seconds: "2592000"
+sunbird_mail_server_from_email: test@test.com 
+sunbird_mail_server_host: smtp.test.com 
+sunbird_mail_server_password: test
+sunbird_mail_server_port: "587"
+sunbird_mail_server_username: test
+sunbird_msg_91_auth: test
+sunbird_notification_kafka_servers_config: kafka.lern.svc.cluster.local:9092
+sunbird_notification_kafka_topic: sunbirdstaging.lms.notification
+sunbird_notification_msg_default_sender: DKSAPP
+sunbird_sso_client_id: lms
+sunbird_sso_realm: sunbird
+sunbird_sso_url: https://dev.test.org/auth/
+sunbird_us_org_read_url: /v1/org/read
+sunbird_us_system_setting_url: /api/data/v1/system/settings/list
+
+### Review the variables with Lern team 
+sunbird_sso_username: ""
+sunbird_sso_password: ""
+
+## Helper variables which are used to construct other variables
+keycloak_auth_endpoint: "/auth/"
+external_secrets:
+  keycloak_federation:
+    name: keycloak-federation
+    key: cassandra-storage-provider
+  keycloak_client_secret:
+    name: keycloak-clients
+    key: lms
+  keycloak_realm_public_key:
+    name: keycloak-realms
+    key: sunbird
+
+external_configmaps:
+  access_public_keys:
+    name: user-access-keys-public
+
+## Set this value to true when developing the chart
+local_chart_development: true
+
+## This section has other kubernetes variables
+## These are standard defaults that work well
+## You can override these if you have a use case for it
+image:
+  registry: docker.io
+  repository: ssksanthosh/notification_service
+  tag: release-5.0.0
+
+replicaCount: 1
+
+strategy:
+  maxSurge: 25%
+  maxUnavailable: 25%
+
+imagePullSecrets: ""
+
+javaOptions: -Xmx500m
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 100M
+  limits:
+    cpu: 1
+    memory: 1G
+
+port: 9000
+
+targetPort: 9000
+
+livenessProbe:
+  failureThreshold: 2
+  httpGet:
+      path: /service/health
+      port: 9000
+  initialDelaySeconds: 15
+  periodSeconds: 15
+  timeoutSeconds: 5
+
+readinessProbe:
+  failureThreshold: 2
+  httpGet:
+      path: /service/health
+      port: 9000
+  initialDelaySeconds: 15
+  periodSeconds: 15
+  timeoutSeconds: 5
+
+## dependency charts - change enabled: true  if you plan to use standalone chart only
+common_opa_policies:
+  enabled: false
