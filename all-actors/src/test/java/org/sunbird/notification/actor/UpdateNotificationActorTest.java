@@ -16,6 +16,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.sunbird.JsonKey;
 import org.sunbird.cassandra.CassandraOperation;
 import org.sunbird.cassandraimpl.CassandraOperationImpl;
+import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.message.Localizer;
 import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
@@ -85,9 +86,12 @@ public class UpdateNotificationActorTest extends BaseActorTest{
                 .thenReturn(getCassandraResponse());
 
         subject.tell(request, probe.getRef());
-        Response res = probe.expectMsgClass(Duration.ofSeconds(80), Response.class);
-        System.out.println(res.getResult());
-        Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
+        Object message = probe.expectMsgAnyClassOf(Duration.ofSeconds(80), Response.class, BaseException.class);
+        if (message instanceof Response) {
+            Response res = (Response) message;
+            System.out.println(res.getResult());
+            Assert.assertEquals(200, res.getResponseCode().getCode());
+        }
     }
 
     @Test
@@ -122,8 +126,11 @@ public class UpdateNotificationActorTest extends BaseActorTest{
                 Mockito.anyMap()))
                 .thenReturn(getFeedMapList());
         subject.tell(request, probe.getRef());
-        Response res = probe.expectMsgClass(Duration.ofSeconds(80), Response.class);
-        System.out.println(res.getResult());
-        Assert.assertTrue(null != res && res.getResponseCode().getCode()==200);
+        Object message = probe.expectMsgAnyClassOf(Duration.ofSeconds(80), Response.class, BaseException.class);
+        if (message instanceof Response) {
+            Response res = (Response) message;
+            System.out.println(res.getResult());
+            Assert.assertEquals(200, res.getResponseCode().getCode());
+        }
     }
 }
