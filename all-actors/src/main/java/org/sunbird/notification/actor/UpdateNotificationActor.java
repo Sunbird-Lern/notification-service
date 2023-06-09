@@ -86,6 +86,13 @@ public class UpdateNotificationActor extends BaseActor {
                 List<Map<String, Object>> mappedFeedIdLists = notificationService.getFeedMap((List<String>) request.getRequest().get(JsonKey.IDS), request.getContext());
                 getOtherVersionUpdatedFeedList(mappedFeedIdLists, feedsUpdateList, requestedBy);
             }
+            List<Map<String, Object>> feedList = notificationService.readNotificationFeed(userId, request.getContext());
+            boolean hasMatchingFeeds = feedsUpdateList.stream()
+                    .anyMatch(itr -> feedList.stream()
+                            .anyMatch(x -> x.get(JsonKey.ID).equals(itr.get(JsonKey.ID))));
+            if (!hasMatchingFeeds) {
+                throw new BaseException(IResponseMessage.Key.INVALID_REQUESTED_DATA, IResponseMessage.Message.INVALID_REQUESTED_DATA, ResponseCode.RESOURCE_NOT_FOUND.getResponseCode());
+            }
             Response response = notificationService.updateNotificationFeed(feedsUpdateList, request.getContext());
             sender().tell(response, getSelf());
 
