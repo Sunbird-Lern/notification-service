@@ -102,4 +102,6 @@ public interface JsonKey {
   String MAP_ACTION_TEMPLATE = "mapActionTemplate" ;
   String READ_ACTION_TEMPLATE= "readActionTemplate";
   String DELETED="deleted";
+  //Release-5.4.0 - LR-512
+  String SUNBIRD_NOTIFICATION_KEYSPACE = "sunbird_notification_keyspace";
 }
