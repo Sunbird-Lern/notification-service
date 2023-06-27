@@ -63,6 +63,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
         when(propertiesCache.getProperty(org.sunbird.JsonKey.NOTIFICATION_CATEGORY_TYPE_CONFIG)).thenReturn("certificateUpload,add-member");
         when(propertiesCache.getProperty(org.sunbird.JsonKey.VERSION_SUPPORT_CONFIG_ENABLE)).thenReturn("true");
         when(propertiesCache.getProperty(org.sunbird.JsonKey.FEED_LIMIT)).thenReturn("1");
+        when(propertiesCache.getProperty(org.sunbird.JsonKey.SUNBIRD_NOTIFICATION_KEYSPACE)).thenReturn("sunbird_notifications");
 
     }
 

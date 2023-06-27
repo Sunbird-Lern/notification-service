@@ -55,6 +55,7 @@ public class DeleteNotificationActorTest extends BaseActorTest{
         propertiesCache = Mockito.mock(PropertiesCache.class);
         Mockito.when(PropertiesCache.getInstance()).thenReturn(propertiesCache);
         when(propertiesCache.getProperty(org.sunbird.JsonKey.VERSION_SUPPORT_CONFIG_ENABLE)).thenReturn("true");
+        when(propertiesCache.getProperty(org.sunbird.JsonKey.SUNBIRD_NOTIFICATION_KEYSPACE)).thenReturn("sunbird_notifications");
 
     }
 
