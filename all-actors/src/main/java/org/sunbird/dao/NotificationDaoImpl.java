@@ -6,6 +6,7 @@ import org.sunbird.JsonKey;
 import org.sunbird.cassandra.CassandraOperation;
 import org.sunbird.common.Constants;
 import org.sunbird.common.exception.BaseException;
+import org.sunbird.notification.utils.Util;
 import org.sunbird.utils.ServiceFactory;
 import org.sunbird.pojo.NotificationFeed;
 import org.sunbird.common.response.Response;
@@ -16,7 +17,7 @@ public class NotificationDaoImpl implements NotificationDao{
     private static final String NOTIFICATION_FEED = "notification_feed";
     private static final String NOTIFICATION_ACTION_TEMPLATE = "action_template";
     private static final String NOTIFICATION_TEMPLATE = "notification_template";
-    private static final String KEY_SPACE_NAME = "sunbird_notifications";
+    private static final String KEY_SPACE_NAME = Util.readValue(JsonKey.SUNBIRD_NOTIFICATION_KEYSPACE);
     private static final String FEED_VERSION_MAP = "feed_version_map";
 
     private CassandraOperation cassandraOperation = ServiceFactory.getInstance();
