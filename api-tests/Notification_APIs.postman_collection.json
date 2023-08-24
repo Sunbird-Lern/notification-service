@@ -1,0 +1,643 @@
+{
+	"info": {
+		"_postman_id": "8366f1a4-351a-4d7b-b5e9-e30889f21015",
+		"name": "Notification_APIs",
+		"description": "The Notification Service Collection allows to send different types of notifications such as email, SMS, device and also create in app user feed notifications and read user in app notification feed",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "4875988",
+		"_collection_link": "https://dark-star-147860.postman.co/workspace/LernBBAPIs~32e17cc4-6806-407e-b8ef-485ad4d0b712/collection/4875988-8366f1a4-351a-4d7b-b5e9-e30889f21015?action=share&source=collection_link&creator=4875988"
+	},
+	"item": [
+		{
+			"name": "HealthCheck",
+			"item": [
+				{
+					"name": "HealthCheck",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/health"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AuthToken",
+			"item": [
+				{
+					"name": "UserToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = pm.response.json();",
+									"",
+									"// Set global variable",
+									"// pm.variables.set('refresh_token', jsonResponse.refresh_token);",
+									"// pm.globals.set(\"refresh_token\", jsonResponse.result.identifier);",
+									"pm.collectionVariables.set(\"refresh_token\", jsonResponse.refresh_token);",
+									"// pm.collectionVariables.set(\"variable_key\", \"variable_value\");",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							},
+							{
+								"key": "Cookie",
+								"value": "connect.sid=s%3Ad3chYLP8OfuB2bWgfEFohiWpDxM7GFol.gOPmzH3d2nP9enZ5qSHlVx1e%2BozTleCjXtfz7LUycCk"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{userName}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": "{{host}}/auth/realms/sunbird/protocol/openid-connect/token"
+					},
+					"response": []
+				},
+				{
+					"name": "RefreshToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Extract the locationId from the response and set it to the environment variable",
+									"pm.test(\"Set access_token in environment variable\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set(\"keycloak_access_token\", responseJson.result.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{kong_api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "refresh_token",
+									"value": "{{refresh_token}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": "{{host}}/auth/v1/refresh/token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "NotificationFeedAPIs",
+			"item": [
+				{
+					"name": "ReadUserNotificationFeed",
+					"item": [
+						{
+							"name": "ReadUserNotificationFeedV1",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text",
+										"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+									},
+									{
+										"key": "x-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text",
+										"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text",
+										"description": "This ID uniquely identifies a request if the same API is executed multiple times."
+									}
+								],
+								"url": "{{host}}/api/notification/v1/read/{{user_id}}",
+								"description": "This API is used for getting in-App notification of the user, userId is uniquely identifies the user\n  - The endpoint for **Get In-App user Feed from userId** is `/notification/v1/read/{userId}`\n  - The fields marked with an asterisk (*) are mandatory. They cannot be null or empty."
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "UpdateUserNotificationFeed",
+					"item": [
+						{
+							"name": "UpdateUserNotificationFeedV1",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text",
+										"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+									},
+									{
+										"key": "x-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text",
+										"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text",
+										"description": "This ID uniquely identifies a request if the same API is executed multiple times."
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"request\": {\n    \"ids\": [\n      \"<string>\",\n      \"<string>\"\n    ],\n    \"userId\": \"{{user_id}}\"\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{host}}/api/notification/v1/feed/update"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "DeleteUserNotificationFeed",
+					"item": [
+						{
+							"name": "DeleteUserNotificationFeedV1",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password",
+										"key": "x-authenticated-user-token",
+										"value": "<string>"
+									},
+									{
+										"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token",
+										"key": "x-authenticated-for",
+										"value": "<string>"
+									},
+									{
+										"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second.",
+										"key": "ts",
+										"value": "<string>"
+									},
+									{
+										"description": "This ID uniquely identifies a request if the same API is executed multiple times.",
+										"key": "X-msgid",
+										"value": "<string>"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"request\": {\n    \"ids\": [\n      \"<string>\",\n      \"<string>\"\n    ],\n    \"userId\": \"{{user_id}}\"\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{host}}/api/notification/v1/feed/delete"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "NotificationTemplateAPIs",
+			"item": [
+				{
+					"name": "CreateNotificationTemplate",
+					"item": [
+						{
+							"name": "CreateNotificationTemplateV1",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"let templateId =_.random(1000)",
+											"pm.environment.set('template_id',template_id)"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"request\": {\n        \"templateId\": \"{{template_id}}\",\n        \"data\": \"{\\\"title\\\":\\\"${param1} is 5.20\\\"}\",\n        \"template_schema\": \"{\\\"$schema\\\":\\\"#/definition/params\\\",\\\"title\\\":\\\"params context\\\",\\\"description\\\":\\\"properties Data\\\",\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"param1\\\":{\\\"description\\\":\\\"property 1 value\\\",\\\"type\\\":\\\"string\\\"},\\\"param2\\\":{\\\"description\\\":\\\"property 2 value\\\",\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"param1\\\",\\\"param2\\\"]}\",\n        \"type\": \"xml\",\n        \"ver\": \"5.0\"\n    }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{host}}/api/notification/v1/template/create"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "UpdateNotificationTemplate",
+					"item": [
+						{
+							"name": "UpdateNotificationTemplateV1",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+									},
+									{
+										"key": "X-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text",
+										"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text",
+										"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"request\":{\n        \"templateId\":\"{{template_id}}\",\n        \"data\":\"{\\\"title\\\": \\\"you have been removed from the ${param2} by ${param1}\\\"}\",\n        \"type\": \"ssml\",\n        \"ver\": \"4.0.0\"\n    }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{host}}/api/notification/v1/template/update"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "DeleteNotificationTemplate",
+					"item": [
+						{
+							"name": "DeleteNotificationTemplateV1",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+									},
+									{
+										"key": "X-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text",
+										"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text",
+										"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"request\": {\n    \"templateId\": \"{{template_id}}\"\n  }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{host}}/api/notification/v1/template/delete"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "ListNotificationTemplate",
+					"item": [
+						{
+							"name": "ListNotificationTemplateV1",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+									},
+									{
+										"key": "X-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text",
+										"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text",
+										"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+									}
+								],
+								"url": "{{host}}/api/notification/v1/template/list",
+								"description": "This API is used for getting all available templates in the notification service"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "NotificationActionAPIs",
+					"item": [
+						{
+							"name": "MapOrUpdateActionNotificationTemplate",
+							"item": [
+								{
+									"name": "MapOrUpdateActionNotificationTemplateV1",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"let action=_.random(1000)",
+													"pm.environment.set('user_action',action)"
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"response\", function () {",
+													"   var jsonData = pm.response.json();",
+													"   pm.expect(jsonData.result.response).to.eql(\"SUCCESS\");",
+													"});",
+													"pm.globals.set(\"user_action\",jsonResponse.result.user_action);",
+													"console.log(pm.globals.get(\"user_action\"));"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+											},
+											{
+												"key": "X-authenticated-user-token",
+												"value": "{{keycloak_access_token}}",
+												"type": "text",
+												"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+											},
+											{
+												"key": "Authorization",
+												"value": "{{kong_api_key}}",
+												"type": "text",
+												"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"request\":{\n        \"templateId\":\"{{template_id}}\",\n        \"action\":\"{{user_action}}\",\n        \"type\":\"FEED\"\n    }\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{host}}/notification/v1/template/action/update"
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "GetMappedNotificationTemplateUsingAction",
+							"item": [
+								{
+									"name": "GetMappedNotificationTemplateUsingActionV1",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+											},
+											{
+												"key": "X-authenticated-user-token",
+												"value": "{{keycloak_access_token}}",
+												"type": "text",
+												"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+											},
+											{
+												"key": "Authorization",
+												"value": "{{kong_api_key}}",
+												"type": "text",
+												"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+											}
+										],
+										"url": "{{host}}/api/notification/v1/template/{{user_action}}",
+										"description": "This API is used for getting  available action mapped to templates in the notification service"
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "NotificationSendAPIs",
+			"item": [
+				{
+					"name": "SendNotificationV2",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"description": "(Required) ",
+								"key": "notification-delivery-mode",
+								"value": "<string>"
+							},
+							{
+								"description": "(Required) ",
+								"key": "ts",
+								"value": "<string>"
+							},
+							{
+								"description": "(Required) ",
+								"key": "X-msgid",
+								"value": "<string>"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request\": {\n    \"notifications\": [\n      {\n        \"ids\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"type\": \"<string>\",\n        \"priority\": \"<number>\",\n        \"action\": {\n          \"type\": \"<string>\",\n          \"category\": \"<string>\",\n          \"template\": {\n            \"type\": \"<string>\",\n            \"params\": {},\n            \"id\": \"<string>\",\n            \"data\": \"<string>\",\n            \"ver\": \"<string>\"\n          },\n          \"additionalInfo\": {}\n        }\n      },\n      {\n        \"ids\": [\n          \"<string>\",\n          \"<string>\"\n        ],\n        \"type\": \"<string>\",\n        \"priority\": \"<number>\",\n        \"action\": {\n          \"type\": \"<string>\",\n          \"category\": \"<string>\",\n          \"template\": {\n            \"type\": \"<string>\",\n            \"params\": {},\n            \"id\": \"<string>\",\n            \"data\": \"<string>\",\n            \"ver\": \"<string>\"\n          },\n          \"additionalInfo\": {}\n        }\n      }\n    ]\n  }\n}",
+							"options": {
+								"raw": {
+									"headerFamily": "json",
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{host}}/api/notification/v2/send",
+						"description": "- This API allows to send email,sms,device and feed type notifications. This will only be accessible internally by different service to send notification. Template configuration needs to be configured to use this service."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
