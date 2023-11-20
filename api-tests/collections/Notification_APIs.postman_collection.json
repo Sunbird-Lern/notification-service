@@ -1,0 +1,1867 @@
+{
+	"info": {
+		"_postman_id": "8366f1a4-351a-4d7b-b5e9-e30889f21015",
+		"name": "Notification_APIs",
+		"description": "The Notification Service Collection allows to send different types of notifications such as email, SMS, device and also create in app user feed notifications and read user in app notification feed",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "4875988",
+		"_collection_link": "https://dark-star-147860.postman.co/workspace/LernBBAPIs~32e17cc4-6806-407e-b8ef-485ad4d0b712/collection/4875988-8366f1a4-351a-4d7b-b5e9-e30889f21015?action=share&source=collection_link&creator=4875988"
+	},
+	"item": [
+		{
+			"name": "HealthCheck",
+			"item": [
+				{
+					"name": "HealthCheck",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{host}}/health"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AuthToken",
+			"item": [
+				{
+					"name": "UserToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonResponse = pm.response.json();",
+									"",
+									"// Set global variable",
+									"// pm.variables.set('refresh_token', jsonResponse.refresh_token);",
+									"// pm.globals.set(\"refresh_token\", jsonResponse.result.identifier);",
+									"pm.collectionVariables.set(\"refresh_token\", jsonResponse.refresh_token);",
+									"// pm.collectionVariables.set(\"variable_key\", \"variable_value\");",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{auth_client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{auth_client_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "tnContentCreator@yopmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Test@123",
+									"type": "text"
+								}
+							]
+						},
+						"url": "{{host}}/auth/realms/sunbird/protocol/openid-connect/token"
+					},
+					"response": []
+				},
+				{
+					"name": "RefreshToken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Extract the locationId from the response and set it to the environment variable",
+									"pm.test(\"Set access_token in environment variable\", function () {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set(\"keycloak_access_token\", responseJson.result.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{kong_api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "refresh_token",
+									"value": "{{refresh_token}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": "{{host}}/auth/v1/refresh/token"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "NotificationFeedAPIs",
+			"item": [
+				{
+					"name": "UpdateUserNotificationFeed",
+					"item": [
+						{
+							"name": "UpdateUserNotificationFeedV1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Parse the response JSON body",
+											"let jsonResponse = pm.response.json();",
+											"",
+											"// Verification",
+											"pm.test(\"Status code is 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is present\", () => {",
+											"    pm.response.to.have.header(\"Content-Type\");",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is application/json\", () => {",
+											"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+											"});",
+											"",
+											"// Validation",
+											"pm.test(\"responseCode should be 'OK'\", function () {",
+											"    pm.expect(jsonResponse.responseCode).to.eql(\"OK\");",
+											"});",
+											"",
+											"pm.test(\"result.response should be 'SUCCESS'\", function () {",
+											"    pm.expect(jsonResponse.result.response).to.eql(\"SUCCESS\");",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text",
+										"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+									},
+									{
+										"key": "x-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text",
+										"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text",
+										"description": "This ID uniquely identifies a request if the same API is executed multiple times."
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"request\": {\n        \"ids\": [\n            \"fbe926ac-a395-40e4-a65b-9b4f711d7642\"\n        ],\n        \"userId\": \"{{user_id}}\"\n    }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{host}}/api/notification/v1/feed/update"
+							},
+							"response": [
+								{
+									"name": "UpdateUserNotificationFeedV1",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text",
+												"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+											},
+											{
+												"key": "x-authenticated-user-token",
+												"value": "{{keycloak_access_token}}",
+												"type": "text",
+												"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+											},
+											{
+												"key": "Authorization",
+												"value": "{{kong_api_key}}",
+												"type": "text",
+												"description": "This ID uniquely identifies a request if the same API is executed multiple times."
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"request\": {\n        \"ids\": [\n            \"fbe926ac-a395-40e4-a65b-9b4f711d7642\"\n        ],\n        \"userId\": \"{{user_id}}\"\n    }\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{host}}/api/notification/v1/feed/update"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Thu, 28 Sep 2023 09:00:37 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "199"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "X-RateLimit-Limit-hour",
+											"value": "30000"
+										},
+										{
+											"key": "X-RateLimit-Remaining-hour",
+											"value": "29999"
+										},
+										{
+											"key": "referrer-policy",
+											"value": "origin-when-cross-origin, strict-origin-when-cross-origin"
+										},
+										{
+											"key": "x-frame-options",
+											"value": "DENY"
+										},
+										{
+											"key": "x-xss-protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "x-content-type-options",
+											"value": "nosniff"
+										},
+										{
+											"key": "access-control-allow-origin",
+											"value": "*"
+										},
+										{
+											"key": "x-permitted-cross-domain-policies",
+											"value": "master-only"
+										},
+										{
+											"key": "x-envoy-upstream-service-time",
+											"value": "6"
+										},
+										{
+											"key": "X-Kong-Upstream-Latency",
+											"value": "9"
+										},
+										{
+											"key": "X-Kong-Proxy-Latency",
+											"value": "62"
+										},
+										{
+											"key": "Via",
+											"value": "kong/0.14.1"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": \"v1.notification.feed.update\",\n    \"ver\": \"v1\",\n    \"ts\": \"1695891637981\",\n    \"params\": {\n        \"resmsgid\": null,\n        \"msgid\": null,\n        \"err\": null,\n        \"status\": null,\n        \"errmsg\": null\n    },\n    \"responseCode\": \"OK\",\n    \"result\": {\n        \"response\": \"SUCCESS\"\n    }\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "ReadUserNotificationFeed",
+					"item": [
+						{
+							"name": "ReadUserNotificationFeedV1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Parse the response JSON body",
+											"let jsonResponse = pm.response.json();",
+											"",
+											"// Verification",
+											"pm.test(\"Status code is 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is present\", () => {",
+											"    pm.response.to.have.header(\"Content-Type\");",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is application/json\", () => {",
+											"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+											"});",
+											"",
+											"// Validation",
+											"pm.test(\"responseCode should be 'OK'\", function () {",
+											"    pm.expect(jsonResponse.responseCode).to.eql(\"OK\");",
+											"});",
+											"",
+											"// Check that there is at least one feed item",
+											"pm.test(\"At least one feed item is returned\", function () {",
+											"    pm.expect(jsonResponse.result.feeds.length).to.be.above(0);",
+											"});",
+											"",
+											"// Check the properties of the first feed item",
+											"pm.test(\"Feed item properties are as expected\", function () {",
+											"    let firstFeedItem = jsonResponse.result.feeds[0];",
+											"    ",
+											"    pm.expect(firstFeedItem).to.have.property(\"id\");",
+											"    pm.expect(firstFeedItem).to.have.property(\"userId\");",
+											"    pm.expect(firstFeedItem).to.have.property(\"status\");",
+											"    ",
+											"    // Add more property checks as needed",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text",
+										"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+									},
+									{
+										"key": "x-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text",
+										"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text",
+										"description": "This ID uniquely identifies a request if the same API is executed multiple times."
+									}
+								],
+								"url": "{{host}}/api/notification/v1/feed/read/{{user_id}}",
+								"description": "This API is used for getting in-App notification of the user, userId is uniquely identifies the user\n  - The endpoint for **Get In-App user Feed from userId** is `/notification/v1/read/{userId}`\n  - The fields marked with an asterisk (*) are mandatory. They cannot be null or empty."
+							},
+							"response": [
+								{
+									"name": "ReadUserNotificationFeedV1",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text",
+												"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+											},
+											{
+												"key": "x-authenticated-user-token",
+												"value": "{{keycloak_access_token}}",
+												"type": "text",
+												"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+											},
+											{
+												"key": "Authorization",
+												"value": "{{kong_api_key}}",
+												"type": "text",
+												"description": "This ID uniquely identifies a request if the same API is executed multiple times."
+											}
+										],
+										"url": "{{host}}/api/notification/v1/feed/read/{{user_id}}"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Thu, 28 Sep 2023 09:02:15 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Transfer-Encoding",
+											"value": "chunked"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Vary",
+											"value": "Accept-Encoding"
+										},
+										{
+											"key": "X-RateLimit-Limit-hour",
+											"value": "30000"
+										},
+										{
+											"key": "X-RateLimit-Remaining-hour",
+											"value": "29999"
+										},
+										{
+											"key": "referrer-policy",
+											"value": "origin-when-cross-origin, strict-origin-when-cross-origin"
+										},
+										{
+											"key": "x-frame-options",
+											"value": "DENY"
+										},
+										{
+											"key": "x-xss-protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "x-content-type-options",
+											"value": "nosniff"
+										},
+										{
+											"key": "access-control-allow-origin",
+											"value": "*"
+										},
+										{
+											"key": "x-permitted-cross-domain-policies",
+											"value": "master-only"
+										},
+										{
+											"key": "x-envoy-upstream-service-time",
+											"value": "4"
+										},
+										{
+											"key": "X-Kong-Upstream-Latency",
+											"value": "7"
+										},
+										{
+											"key": "X-Kong-Proxy-Latency",
+											"value": "127"
+										},
+										{
+											"key": "Via",
+											"value": "kong/0.14.1"
+										},
+										{
+											"key": "Content-Encoding",
+											"value": "gzip"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": \"v1.notification.feed.read.6a1aea7a-841f-4d09-8760-c5224d7b07fd\",\n    \"ver\": \"v1\",\n    \"ts\": \"1695891735393\",\n    \"params\": {\n        \"resmsgid\": null,\n        \"msgid\": null,\n        \"err\": null,\n        \"status\": null,\n        \"errmsg\": null\n    },\n    \"responseCode\": \"OK\",\n    \"result\": {\n        \"feeds\": [\n            {\n                \"expireOn\": null,\n                \"updatedBy\": \"6a1aea7a-841f-4d09-8760-c5224d7b07fd\",\n                \"createdBy\": null,\n                \"action\": null,\n                \"id\": \"fbe926ac-a395-40e4-a65b-9b4f711d7642\",\n                \"updatedOn\": 1695891637978,\n                \"category\": null,\n                \"priority\": null,\n                \"userId\": \"6a1aea7a-841f-4d09-8760-c5224d7b07fd\",\n                \"createdOn\": null,\n                \"version\": null,\n                \"status\": \"read\"\n            }\n        ]\n    }\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "DeleteUserNotificationFeed",
+					"item": [
+						{
+							"name": "DeleteUserNotificationFeedV1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Parse the response JSON body",
+											"let jsonResponse = pm.response.json();",
+											"",
+											"// Verification",
+											"pm.test(\"Status code is 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is present\", () => {",
+											"    pm.response.to.have.header(\"Content-Type\");",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is application/json\", () => {",
+											"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+											"});",
+											"",
+											"// Validation",
+											"pm.test(\"responseCode should be 'OK'\", function () {",
+											"    pm.expect(jsonResponse.responseCode).to.eql(\"OK\");",
+											"});",
+											"",
+											"pm.test(\"result.response should be 'SUCCESS'\", function () {",
+											"    pm.expect(jsonResponse.result.response).to.eql(\"SUCCESS\");",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "x-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"request\": {\n        \"ids\": [\n            \"fbe926ac-a395-40e4-a65b-9b4f711d7642\"\n        ],\n        \"category\": \"abcd\",\n        \"userId\": \"{{user_id}}\"\n    }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{host}}/api/notification/v1/feed/delete"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "NotificationTemplateAPIs",
+			"item": [
+				{
+					"name": "CreateNotificationTemplate",
+					"item": [
+						{
+							"name": "CreateNotificationTemplateV1",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Parse the response JSON body",
+											"let jsonResponse = pm.response.json();",
+											"",
+											"// Verification",
+											"pm.test(\"Status code is 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is present\", () => {",
+											"    pm.response.to.have.header(\"Content-Type\");",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is application/json\", () => {",
+											"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+											"});",
+											"",
+											"// Validation",
+											"pm.test(\"responseCode should be 'OK'\", function () {",
+											"    pm.expect(jsonResponse.responseCode).to.eql(\"OK\");",
+											"});",
+											"",
+											"pm.test(\"result.response should be 'SUCCESS'\", function () {",
+											"    pm.expect(jsonResponse.result.response).to.eql(\"SUCCESS\");",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "X-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"request\": {\n        \"templateId\": \"{{random_code}}\",\n        \"data\": \"{\\\"title\\\":\\\"${param1} is 5.20\\\"}\",\n        \"template_schema\": \"{\\\"$schema\\\":\\\"#/definition/params\\\",\\\"title\\\":\\\"params context\\\",\\\"description\\\":\\\"properties Data\\\",\\\"type\\\":\\\"object\\\",\\\"properties\\\":{\\\"param1\\\":{\\\"description\\\":\\\"property 1 value\\\",\\\"type\\\":\\\"string\\\"},\\\"param2\\\":{\\\"description\\\":\\\"property 2 value\\\",\\\"type\\\":\\\"string\\\"}},\\\"required\\\":[\\\"param1\\\",\\\"param2\\\"]}\",\n        \"type\": \"xml\",\n        \"ver\": \"5.0\"\n    }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{host}}/api/notification/v1/template/create"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "UpdateNotificationTemplate",
+					"item": [
+						{
+							"name": "UpdateNotificationTemplateV1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Parse the response JSON body",
+											"let jsonResponse = pm.response.json();",
+											"",
+											"// Verification",
+											"pm.test(\"Status code is 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is present\", () => {",
+											"    pm.response.to.have.header(\"Content-Type\");",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is application/json\", () => {",
+											"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+											"});",
+											"",
+											"// Validation",
+											"pm.test(\"responseCode should be 'OK'\", function () {",
+											"    pm.expect(jsonResponse.responseCode).to.eql(\"OK\");",
+											"});",
+											"",
+											"// You can add more specific validations here if needed based on the actual response data.",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+									},
+									{
+										"key": "X-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text",
+										"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text",
+										"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"request\":{\n        \"templateId\":\"1FTIS0\",\n        \"data\":\"{\\\"title\\\": \\\"you have been removed from the ${param2} by ${param1}\\\"}\",\n        \"type\": \"ssml\",\n        \"ver\": \"4.0.0\"\n    }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{host}}/api/notification/v1/template/update"
+							},
+							"response": [
+								{
+									"name": "UpdateNotificationTemplateV1",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+											},
+											{
+												"key": "X-authenticated-user-token",
+												"value": "{{keycloak_access_token}}",
+												"type": "text",
+												"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+											},
+											{
+												"key": "Authorization",
+												"value": "{{kong_api_key}}",
+												"type": "text",
+												"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"request\":{\n        \"templateId\":\"1FTIS0\",\n        \"data\":\"{\\\"title\\\": \\\"you have been removed from the ${param2} by ${param1}\\\"}\",\n        \"type\": \"ssml\",\n        \"ver\": \"4.0.0\"\n    }\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{host}}/api/notification/v1/template/update"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Thu, 28 Sep 2023 09:05:04 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "183"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "X-RateLimit-Limit-hour",
+											"value": "30000"
+										},
+										{
+											"key": "X-RateLimit-Remaining-hour",
+											"value": "29997"
+										},
+										{
+											"key": "referrer-policy",
+											"value": "origin-when-cross-origin, strict-origin-when-cross-origin"
+										},
+										{
+											"key": "x-frame-options",
+											"value": "DENY"
+										},
+										{
+											"key": "x-xss-protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "x-content-type-options",
+											"value": "nosniff"
+										},
+										{
+											"key": "access-control-allow-origin",
+											"value": "*"
+										},
+										{
+											"key": "x-permitted-cross-domain-policies",
+											"value": "master-only"
+										},
+										{
+											"key": "x-envoy-upstream-service-time",
+											"value": "6"
+										},
+										{
+											"key": "X-Kong-Upstream-Latency",
+											"value": "9"
+										},
+										{
+											"key": "X-Kong-Proxy-Latency",
+											"value": "14"
+										},
+										{
+											"key": "Via",
+											"value": "kong/0.14.1"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": \"v1.notification.template.update\",\n    \"ver\": \"v1\",\n    \"ts\": \"1695891904990\",\n    \"params\": {\n        \"resmsgid\": null,\n        \"msgid\": null,\n        \"err\": null,\n        \"status\": null,\n        \"errmsg\": null\n    },\n    \"responseCode\": \"OK\",\n    \"result\": {}\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "NotificationActionAPIs",
+					"item": [
+						{
+							"name": "MapOrUpdateActionNotificationTemplate",
+							"item": [
+								{
+									"name": "MapOrUpdateActionNotificationTemplateV1",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// Parse the response JSON body",
+													"let jsonResponse = pm.response.json();",
+													"",
+													"// Verification",
+													"pm.test(\"Status code is 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Content-Type header is present\", () => {",
+													"    pm.response.to.have.header(\"Content-Type\");",
+													"});",
+													"",
+													"pm.test(\"Content-Type header is application/json\", () => {",
+													"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+													"});",
+													"",
+													"// Validation",
+													"pm.test(\"responseCode should be 'OK'\", function () {",
+													"    pm.expect(jsonResponse.responseCode).to.eql(\"OK\");",
+													"});",
+													"",
+													"pm.test(\"result should be an object\", function () {",
+													"    pm.expect(jsonResponse.result).to.be.an(\"object\");",
+													"});",
+													"",
+													"// Validate the \"response\" property",
+													"pm.test(\"response should be 'SUCCESS'\", function () {",
+													"    pm.expect(jsonResponse.result.response).to.eql(\"SUCCESS\");",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+											},
+											{
+												"key": "X-authenticated-user-token",
+												"value": "{{keycloak_access_token}}",
+												"type": "text",
+												"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+											},
+											{
+												"key": "Authorization",
+												"value": "{{kong_api_key}}",
+												"type": "text",
+												"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"request\": {\n        \"templateId\": \"1FTIS0\",\n        \"action\": \"group-activity-added\",\n        \"type\": \"FEED\"\n    }\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{host}}/api/notification/v1/template/action/update"
+									},
+									"response": [
+										{
+											"name": "MapOrUpdateActionNotificationTemplateV1",
+											"originalRequest": {
+												"method": "PATCH",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json",
+														"type": "text",
+														"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+													},
+													{
+														"key": "X-authenticated-user-token",
+														"value": "{{keycloak_access_token}}",
+														"type": "text",
+														"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+													},
+													{
+														"key": "Authorization",
+														"value": "{{kong_api_key}}",
+														"type": "text",
+														"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"request\": {\n        \"templateId\": \"1FTIS0\",\n        \"action\": \"group-activity-added\",\n        \"type\": \"FEED\"\n    }\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": "{{host}}/api/notification/v1/template/action/update"
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Date",
+													"value": "Thu, 28 Sep 2023 09:17:57 GMT"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												},
+												{
+													"key": "Content-Length",
+													"value": "210"
+												},
+												{
+													"key": "Connection",
+													"value": "keep-alive"
+												},
+												{
+													"key": "X-RateLimit-Limit-hour",
+													"value": "30000"
+												},
+												{
+													"key": "X-RateLimit-Remaining-hour",
+													"value": "29999"
+												},
+												{
+													"key": "referrer-policy",
+													"value": "origin-when-cross-origin, strict-origin-when-cross-origin"
+												},
+												{
+													"key": "x-frame-options",
+													"value": "DENY"
+												},
+												{
+													"key": "x-xss-protection",
+													"value": "1; mode=block"
+												},
+												{
+													"key": "x-content-type-options",
+													"value": "nosniff"
+												},
+												{
+													"key": "access-control-allow-origin",
+													"value": "*"
+												},
+												{
+													"key": "x-permitted-cross-domain-policies",
+													"value": "master-only"
+												},
+												{
+													"key": "x-envoy-upstream-service-time",
+													"value": "6"
+												},
+												{
+													"key": "X-Kong-Upstream-Latency",
+													"value": "9"
+												},
+												{
+													"key": "X-Kong-Proxy-Latency",
+													"value": "19"
+												},
+												{
+													"key": "Via",
+													"value": "kong/0.14.1"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"id\": \"v1.notification.template.action.update\",\n    \"ver\": \"v1\",\n    \"ts\": \"1695892677084\",\n    \"params\": {\n        \"resmsgid\": null,\n        \"msgid\": null,\n        \"err\": null,\n        \"status\": null,\n        \"errmsg\": null\n    },\n    \"responseCode\": \"OK\",\n    \"result\": {\n        \"response\": \"SUCCESS\"\n    }\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "GetMappedNotificationTemplateUsingAction",
+							"item": [
+								{
+									"name": "GetMappedNotificationTemplateUsingActionV1",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"// Parse the response JSON body",
+													"let jsonResponse = pm.response.json();",
+													"",
+													"// Verification",
+													"pm.test(\"Status code is 200 (OK)\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"Content-Type header is present\", () => {",
+													"    pm.response.to.have.header(\"Content-Type\");",
+													"});",
+													"",
+													"pm.test(\"Content-Type header is application/json\", () => {",
+													"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+													"});",
+													"",
+													"// Validation",
+													"pm.test(\"responseCode should be 'OK'\", function () {",
+													"    pm.expect(jsonResponse.responseCode).to.eql(\"OK\");",
+													"});",
+													"",
+													"pm.test(\"result should be an object\", function () {",
+													"    pm.expect(jsonResponse.result).to.be.an(\"object\");",
+													"});",
+													"",
+													"// Validate the \"template\" property",
+													"pm.test(\"template should be an object\", function () {",
+													"    pm.expect(jsonResponse.result.template).to.be.an(\"object\");",
+													"});",
+													"",
+													"pm.test(\"templateId should be '1FTIS0'\", function () {",
+													"    pm.expect(jsonResponse.result.template.templateId).to.eql(\"1FTIS0\");",
+													"});",
+													"",
+													"// Validate the \"action\" property",
+													"pm.test(\"action should be 'group-activity-added'\", function () {",
+													"    pm.expect(jsonResponse.result.action).to.eql(\"group-activity-added\");",
+													"});",
+													"",
+													"// Validate the \"type\" property",
+													"pm.test(\"type should be 'FEED'\", function () {",
+													"    pm.expect(jsonResponse.result.type).to.eql(\"FEED\");",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+											},
+											{
+												"key": "X-authenticated-user-token",
+												"value": "{{keycloak_access_token}}",
+												"type": "text",
+												"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+											},
+											{
+												"key": "Authorization",
+												"value": "{{kong_api_key}}",
+												"type": "text",
+												"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+											}
+										],
+										"url": "{{host}}/api/notification/v1/template/group-activity-added",
+										"description": "This API is used for getting  available action mapped to templates in the notification service"
+									},
+									"response": [
+										{
+											"name": "GetMappedNotificationTemplateUsingActionV1",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json",
+														"type": "text",
+														"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+													},
+													{
+														"key": "X-authenticated-user-token",
+														"value": "{{keycloak_access_token}}",
+														"type": "text",
+														"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+													},
+													{
+														"key": "Authorization",
+														"value": "{{kong_api_key}}",
+														"type": "text",
+														"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+													}
+												],
+												"url": "{{host}}/api/notification/v1/template/group-activity-added"
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Date",
+													"value": "Thu, 28 Sep 2023 09:22:29 GMT"
+												},
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												},
+												{
+													"key": "Transfer-Encoding",
+													"value": "chunked"
+												},
+												{
+													"key": "Connection",
+													"value": "keep-alive"
+												},
+												{
+													"key": "Vary",
+													"value": "Accept-Encoding"
+												},
+												{
+													"key": "X-RateLimit-Limit-hour",
+													"value": "30000"
+												},
+												{
+													"key": "X-RateLimit-Remaining-hour",
+													"value": "29995"
+												},
+												{
+													"key": "referrer-policy",
+													"value": "origin-when-cross-origin, strict-origin-when-cross-origin"
+												},
+												{
+													"key": "x-frame-options",
+													"value": "DENY"
+												},
+												{
+													"key": "x-xss-protection",
+													"value": "1; mode=block"
+												},
+												{
+													"key": "x-content-type-options",
+													"value": "nosniff"
+												},
+												{
+													"key": "access-control-allow-origin",
+													"value": "*"
+												},
+												{
+													"key": "x-permitted-cross-domain-policies",
+													"value": "master-only"
+												},
+												{
+													"key": "x-envoy-upstream-service-time",
+													"value": "4"
+												},
+												{
+													"key": "X-Kong-Upstream-Latency",
+													"value": "7"
+												},
+												{
+													"key": "X-Kong-Proxy-Latency",
+													"value": "0"
+												},
+												{
+													"key": "Via",
+													"value": "kong/0.14.1"
+												},
+												{
+													"key": "Content-Encoding",
+													"value": "gzip"
+												}
+											],
+											"cookie": [],
+											"body": "{\n    \"id\": \"v1.notification.template.group-activity-added\",\n    \"ver\": \"v1\",\n    \"ts\": \"1695892949639\",\n    \"params\": {\n        \"resmsgid\": null,\n        \"msgid\": null,\n        \"err\": null,\n        \"status\": null,\n        \"errmsg\": null\n    },\n    \"responseCode\": \"OK\",\n    \"result\": {\n        \"template\": {\n            \"lastUpdatedBy\": \"6a1aea7a-841f-4d09-8760-c5224d7b07fd\",\n            \"ver\": \"4.0.0\",\n            \"data\": \"{\\\"title\\\": \\\"you have been removed from the ${param2} by ${param1}\\\"}\",\n            \"createdBy\": null,\n            \"lastUpdatedOn\": 1695892937770,\n            \"templateId\": \"1FTIS0\",\n            \"type\": \"ssml\",\n            \"config\": {},\n            \"createdOn\": null,\n            \"template_schema\": null\n        },\n        \"action\": \"group-activity-added\",\n        \"type\": \"FEED\"\n    }\n}"
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "NotificationSendAPIs",
+					"item": [
+						{
+							"name": "SendNotificationV2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Parse the response JSON body",
+											"let jsonResponse = pm.response.json();",
+											"",
+											"// Verification",
+											"pm.test(\"Status code is 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is present\", () => {",
+											"    pm.response.to.have.header(\"Content-Type\");",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is application/json\", () => {",
+											"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+											"});",
+											"",
+											"// Validation",
+											"pm.test(\"responseCode should be 'OK'\", function () {",
+											"    pm.expect(jsonResponse.responseCode).to.eql(\"OK\");",
+											"});",
+											"",
+											"pm.test(\"result should be an object\", function () {",
+											"    pm.expect(jsonResponse.result).to.be.an(\"object\");",
+											"});",
+											"",
+											"// Validate the \"response\" property",
+											"pm.test(\"response should be 'SUCCESS'\", function () {",
+											"    pm.expect(jsonResponse.result.response).to.eql(\"SUCCESS\");",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"description": "(Required) "
+									},
+									{
+										"key": "X-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text",
+										"description": "(Required) "
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text",
+										"description": "(Required) "
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"request\": {\n        \"notifications\": [\n            {\n                \"ids\": [\n                    \"c977cd14-8cdf-4f17-b4bd-418736e97861\"\n                ],\n                \"priority\": 1,\n                \"type\": \"feed\",\n                \"action\": {\n                    \"type\": \"group-activity-added\",\n                    \"category\": \"groups\",\n                    \"template\": {\n                        \"type\": \"JSON\",\n                        \"params\": {\n                            \"param1\": \"Test\",\n                            \"param2\": \"John\",\n                            \"param3\": \"123231\"\n                        }\n                    },\n                    \"createdBy\": {\n                        \"id\": \"f10d5216-6b96-404c-8d1c-cc1f720d910d\",\n                        \"name\": \"John\",\n                        \"type\": \"User\"\n                    },\n                    \"additionalInfo\": {\n                        \"group\": {\n                            \"id\": \"123434\",\n                            \"name\": \"Test\"\n                        },\n                        \"groupRole\": \"admin\",\n                        \"activity\": {\n                            \"id\": \"do_12443\",\n                            \"type\": \"Course\",\n                            \"name\": \"Maths Activity\"\n                        }\n                    }\n                }\n            }\n        ]\n    }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{host}}/api/notification/v2/send",
+								"description": "- This API allows to send email,sms,device and feed type notifications. This will only be accessible internally by different service to send notification. Template configuration needs to be configured to use this service."
+							},
+							"response": [
+								{
+									"name": "SendNotificationV2",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"description": "(Required) "
+											},
+											{
+												"key": "X-authenticated-user-token",
+												"value": "{{keycloak_access_token}}",
+												"type": "text",
+												"description": "(Required) "
+											},
+											{
+												"key": "Authorization",
+												"value": "{{kong_api_key}}",
+												"type": "text",
+												"description": "(Required) "
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"request\": {\n        \"notifications\": [\n            {\n                \"ids\": [\n                    \"c977cd14-8cdf-4f17-b4bd-418736e97861\"\n                ],\n                \"priority\": 1,\n                \"type\": \"feed\",\n                \"action\": {\n                    \"type\": \"group-activity-added\",\n                    \"category\": \"groups\",\n                    \"template\": {\n                        \"type\": \"JSON\",\n                        \"params\": {\n                            \"param1\": \"Test\",\n                            \"param2\": \"John\",\n                            \"param3\": \"123231\"\n                        }\n                    },\n                    \"createdBy\": {\n                        \"id\": \"f10d5216-6b96-404c-8d1c-cc1f720d910d\",\n                        \"name\": \"John\",\n                        \"type\": \"User\"\n                    },\n                    \"additionalInfo\": {\n                        \"group\": {\n                            \"id\": \"123434\",\n                            \"name\": \"Test\"\n                        },\n                        \"groupRole\": \"admin\",\n                        \"activity\": {\n                            \"id\": \"do_12443\",\n                            \"type\": \"Course\",\n                            \"name\": \"Maths Activity\"\n                        }\n                    }\n                }\n            }\n        ]\n    }\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{host}}/api/notification/v2/send"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Thu, 28 Sep 2023 09:24:22 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "192"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "X-RateLimit-Limit-hour",
+											"value": "30000"
+										},
+										{
+											"key": "X-RateLimit-Remaining-hour",
+											"value": "29998"
+										},
+										{
+											"key": "referrer-policy",
+											"value": "origin-when-cross-origin, strict-origin-when-cross-origin"
+										},
+										{
+											"key": "x-frame-options",
+											"value": "DENY"
+										},
+										{
+											"key": "x-xss-protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "x-content-type-options",
+											"value": "nosniff"
+										},
+										{
+											"key": "access-control-allow-origin",
+											"value": "*"
+										},
+										{
+											"key": "x-permitted-cross-domain-policies",
+											"value": "master-only"
+										},
+										{
+											"key": "x-envoy-upstream-service-time",
+											"value": "16"
+										},
+										{
+											"key": "X-Kong-Upstream-Latency",
+											"value": "18"
+										},
+										{
+											"key": "X-Kong-Proxy-Latency",
+											"value": "9"
+										},
+										{
+											"key": "Via",
+											"value": "kong/0.14.1"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": \"v2.notification.send\",\n    \"ver\": \"v1\",\n    \"ts\": \"1695893062311\",\n    \"params\": {\n        \"resmsgid\": null,\n        \"msgid\": null,\n        \"err\": null,\n        \"status\": null,\n        \"errmsg\": null\n    },\n    \"responseCode\": \"OK\",\n    \"result\": {\n        \"response\": \"SUCCESS\"\n    }\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "DeleteNotificationTemplate",
+					"item": [
+						{
+							"name": "DeleteNotificationTemplateV1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Parse the response JSON body",
+											"let jsonResponse = pm.response.json();",
+											"",
+											"// Verification",
+											"pm.test(\"Status code is 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is present\", () => {",
+											"    pm.response.to.have.header(\"Content-Type\");",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is application/json\", () => {",
+											"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+											"});",
+											"",
+											"// Validation",
+											"pm.test(\"responseCode should be 'OK'\", function () {",
+											"    pm.expect(jsonResponse.responseCode).to.eql(\"OK\");",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+									},
+									{
+										"key": "X-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text",
+										"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text",
+										"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"request\": {\n        \"templateId\": \"1FTIS0\"\n    }\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{host}}/api/notification/v1/template/delete"
+							},
+							"response": [
+								{
+									"name": "DeleteNotificationTemplateV1",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+											},
+											{
+												"key": "X-authenticated-user-token",
+												"value": "{{keycloak_access_token}}",
+												"type": "text",
+												"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+											},
+											{
+												"key": "Authorization",
+												"value": "{{kong_api_key}}",
+												"type": "text",
+												"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"request\": {\n        \"templateId\": \"1FTIS0\"\n    }\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{host}}/api/notification/v1/template/delete"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Thu, 28 Sep 2023 09:07:30 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "183"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "X-RateLimit-Limit-hour",
+											"value": "30000"
+										},
+										{
+											"key": "X-RateLimit-Remaining-hour",
+											"value": "29997"
+										},
+										{
+											"key": "referrer-policy",
+											"value": "origin-when-cross-origin, strict-origin-when-cross-origin"
+										},
+										{
+											"key": "x-frame-options",
+											"value": "DENY"
+										},
+										{
+											"key": "x-xss-protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "x-content-type-options",
+											"value": "nosniff"
+										},
+										{
+											"key": "access-control-allow-origin",
+											"value": "*"
+										},
+										{
+											"key": "x-permitted-cross-domain-policies",
+											"value": "master-only"
+										},
+										{
+											"key": "x-envoy-upstream-service-time",
+											"value": "4"
+										},
+										{
+											"key": "X-Kong-Upstream-Latency",
+											"value": "7"
+										},
+										{
+											"key": "X-Kong-Proxy-Latency",
+											"value": "14"
+										},
+										{
+											"key": "Via",
+											"value": "kong/0.14.1"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": \"v1.notification.template.delete\",\n    \"ver\": \"v1\",\n    \"ts\": \"1695892050168\",\n    \"params\": {\n        \"resmsgid\": null,\n        \"msgid\": null,\n        \"err\": null,\n        \"status\": null,\n        \"errmsg\": null\n    },\n    \"responseCode\": \"OK\",\n    \"result\": {}\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "ListNotificationTemplate",
+					"item": [
+						{
+							"name": "ListNotificationTemplateV1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Parse the response JSON body",
+											"let jsonResponse = pm.response.json();",
+											"",
+											"// Verification",
+											"pm.test(\"Status code is 200 (OK)\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is present\", () => {",
+											"    pm.response.to.have.header(\"Content-Type\");",
+											"});",
+											"",
+											"pm.test(\"Content-Type header is application/json\", () => {",
+											"    pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+											"});",
+											"",
+											"// Validation",
+											"pm.test(\"responseCode should be 'OK'\", function () {",
+											"    pm.expect(jsonResponse.responseCode).to.eql(\"OK\");",
+											"});",
+											"",
+											"// Validate the structure of the \"result\" object",
+											"pm.test(\"result should be an object\", function () {",
+											"    pm.expect(jsonResponse.result).to.be.an(\"object\");",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text",
+										"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+									},
+									{
+										"key": "X-authenticated-user-token",
+										"value": "{{keycloak_access_token}}",
+										"type": "text",
+										"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{kong_api_key}}",
+										"type": "text",
+										"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+									}
+								],
+								"url": "{{host}}/api/notification/v1/template/list",
+								"description": "This API is used for getting all available templates in the notification service"
+							},
+							"response": [
+								{
+									"name": "ListNotificationTemplateV1",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text",
+												"description": "(Required) It is a unique token/key to authenticate the user each time an API is called. For corresponding sessions this token is used, not your actual username/password"
+											},
+											{
+												"key": "X-authenticated-user-token",
+												"value": "{{keycloak_access_token}}",
+												"type": "text",
+												"description": "Managed User token of registered MUA user performing given API request. From this LUA and MUA id are seperated and LUA is validated against user_id in x-authenticated-user-token"
+											},
+											{
+												"key": "Authorization",
+												"value": "{{kong_api_key}}",
+												"type": "text",
+												"description": "Timestamp is a sequence of characters or encoded information identifying when the list notification API call occurred, usually it gives date and time of day, mostly accurate to a small fraction of a second."
+											}
+										],
+										"url": "{{host}}/api/notification/v1/template/list"
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Date",
+											"value": "Thu, 28 Sep 2023 09:10:57 GMT"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Content-Length",
+											"value": "194"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "X-RateLimit-Limit-hour",
+											"value": "30000"
+										},
+										{
+											"key": "X-RateLimit-Remaining-hour",
+											"value": "29998"
+										},
+										{
+											"key": "referrer-policy",
+											"value": "origin-when-cross-origin, strict-origin-when-cross-origin"
+										},
+										{
+											"key": "x-frame-options",
+											"value": "DENY"
+										},
+										{
+											"key": "x-xss-protection",
+											"value": "1; mode=block"
+										},
+										{
+											"key": "x-content-type-options",
+											"value": "nosniff"
+										},
+										{
+											"key": "access-control-allow-origin",
+											"value": "*"
+										},
+										{
+											"key": "x-permitted-cross-domain-policies",
+											"value": "master-only"
+										},
+										{
+											"key": "x-envoy-upstream-service-time",
+											"value": "3"
+										},
+										{
+											"key": "X-Kong-Upstream-Latency",
+											"value": "6"
+										},
+										{
+											"key": "X-Kong-Proxy-Latency",
+											"value": "12"
+										},
+										{
+											"key": "Via",
+											"value": "kong/0.14.1"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"id\": \"v1.notification.template.list\",\n    \"ver\": \"v1\",\n    \"ts\": \"1695892257890\",\n    \"params\": {\n        \"resmsgid\": null,\n        \"msgid\": null,\n        \"err\": null,\n        \"status\": null,\n        \"errmsg\": null\n    },\n    \"responseCode\": \"OK\",\n    \"result\": {\n        \"template\": []\n    }\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "refresh_token",
+			"value": ""
+		}
+	]
+}
