@@ -8,47 +8,10 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>all-actors</artifactId>
   <build>
-    <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
-    <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
-    <resources>
-      <resource>
-        <directory>${project.basedir}/src/main/resources</directory>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
-        <groupId>com.google.code.play2-maven-plugin</groupId>
-        <artifactId>play2-maven-plugin</artifactId>
-        <version>${play2.plugin.version}</version>
-        <extensions>true</extensions>
-      </plugin>
-      <plugin>
-        <groupId>com.google.code.sbt-compiler-maven-plugin</groupId>
-        <artifactId>sbt-compiler-maven-plugin</artifactId>
-        <version>1.0.0</version>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
-        <configuration>
-          <release>11</release>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.20</version>
-        <configuration>
-          <forkCount>3</forkCount>
-          <reuseForks>true</reuseForks>
-          <argLine>-Xmx1024m -XX:MaxPermSize=256m</argLine>
-          <includes>
-            <include>**/*Spec.java</include>
-            <include>**/*Test.java</include>
-          </includes>
-        </configuration>
-      </plugin>
-      <plugin>
         <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -56,16 +19,15 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                  </excludes>
-                </filter>
-              </filters>
+              <artifactSet>
+                <excludes>
+                  <exclude>classworlds:classworlds</exclude>
+                  <exclude>junit:junit</exclude>
+                  <exclude>jmock:*</exclude>
+                  <exclude>*:xml-apis</exclude>
+                  <exclude>org.apache.maven:lib:tests</exclude>
+                </excludes>
+              </artifactSet>
             </configuration>
           </execution>
         </executions>
@@ -92,55 +54,22 @@
         <configuration>
           <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
           <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
-          <excludes>
-            <exclude>**/common/**</exclude>
-            <exclude>**/routes/**</exclude>
-            <exclude>**/Reverse*/**</exclude>
-            <exclude>**/*.javascript/**</exclude>
-          </excludes>
         </configuration>
       </plugin>
     </plugins>
   </build>
   <dependencies>
     <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>com.typesafe.akka</groupId>
       <artifactId>akka-testkit_2.11</artifactId>
       <version>2.5.22</version>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>akka-actor_2.11</artifactId>
-          <groupId>com.typesafe.akka</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.cassandraunit</groupId>
-      <artifactId>cassandra-unit</artifactId>
-      <version>3.11.2.0</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>cassandra-all</artifactId>
-          <groupId>org.apache.cassandra</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>libthrift</artifactId>
-          <groupId>org.apache.thrift</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jna</artifactId>
-          <groupId>net.java.dev.jna</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>hamcrest-library</artifactId>
-          <groupId>org.hamcrest</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
-  <properties>
-    <scala.binary.version>2.11</scala.binary.version>
-  </properties>
 </project>
