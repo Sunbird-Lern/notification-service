@@ -1,14 +1,10 @@
 package org.sunbird.notification.email.service.impl;
 
-import com.mashape.unirest.http.Unirest;
 import com.sun.mail.util.PropUtil;
-import org.apache.http.StatusLine;
-import org.apache.http.impl.client.HttpClients;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -17,16 +13,13 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.sunbird.notification.beans.Constants;
 import org.sunbird.notification.beans.EmailConfig;
 import org.sunbird.notification.beans.EmailRequest;
-import org.sunbird.notification.utils.NotificationConstant;
 import org.sunbird.notification.utils.Util;
 
 import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Properties;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({

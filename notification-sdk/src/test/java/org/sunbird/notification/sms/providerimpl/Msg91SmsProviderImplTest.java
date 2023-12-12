@@ -1,10 +1,10 @@
 package org.sunbird.notification.sms.providerimpl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import com.mashape.unirest.request.GetRequest;
-import org.apache.http.HttpResponse;
+import kong.unirest.GetRequest;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -68,7 +68,7 @@ public class Msg91SmsProviderImplTest {
 
         PowerMockito.mockStatic(Unirest.class);
         GetRequest getRequest = Mockito.mock(GetRequest.class);
-        com.mashape.unirest.http.HttpResponse response1  = Mockito.mock(com.mashape.unirest.http.HttpResponse.class);
+        HttpResponse response1  = Mockito.mock(HttpResponse.class);
         Mockito.when(response1.getStatus()).thenReturn(NotificationConstant.SUCCESS_CODE);
         MessageResponse messageResponse = new MessageResponse();
         messageResponse.setType(NotificationConstant.SUCCESS);
@@ -76,7 +76,7 @@ public class Msg91SmsProviderImplTest {
         messageResponse.setCode("1234");
         Mockito.when(response1.getBody()).thenReturn(mapper.writeValueAsString(messageResponse));
         Mockito.when(getRequest.header(Mockito.anyString(),Mockito.anyString())).thenReturn(getRequest);
-        Mockito.when(getRequest.asString()).thenReturn((com.mashape.unirest.http.HttpResponse) response1);
+        Mockito.when(getRequest.asString()).thenReturn((HttpResponse) response1);
 
         PowerMockito.when(Unirest.get(Mockito.anyString())).thenReturn(getRequest);
 

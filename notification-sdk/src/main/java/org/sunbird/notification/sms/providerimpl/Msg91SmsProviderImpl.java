@@ -3,18 +3,9 @@ package org.sunbird.notification.sms.providerimpl;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonParseException;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.StatusLine;
@@ -31,6 +22,12 @@ import org.sunbird.notification.utils.JsonUtil;
 import org.sunbird.notification.utils.NotificationConstant;
 import org.sunbird.notification.utils.Util;
 import org.sunbird.request.LoggerUtil;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /** @author manzarul */
 public class Msg91SmsProviderImpl implements ISmsProvider {

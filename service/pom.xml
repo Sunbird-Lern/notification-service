@@ -78,8 +78,8 @@
             <version>${akka.x.version}</version>
             <exclusions>
                 <exclusion>
-                    <groupId>io.netty</groupId>
                     <artifactId>netty</artifactId>
+                    <groupId>io.netty</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -160,11 +160,21 @@
             <artifactId>logstash-logback-encoder</artifactId>
             <version>6.6</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+            <version>1.1.10.4</version>
+        </dependency>
         <dependency>
             <groupId>ch.qos.logback.contrib</groupId>
             <artifactId>logback-jackson</artifactId>
             <version>0.1.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- ch.qos.logback.contrib.json.classic.JsonLayout -->
@@ -172,18 +182,22 @@
             <groupId>ch.qos.logback.contrib</groupId>
             <artifactId>logback-json-classic</artifactId>
             <version>0.1.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <version>1.4.12</version>
         </dependency>
-
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.2.3</version>
+            <version>1.4.12</version>
         </dependency>
     </dependencies>
     <build>
