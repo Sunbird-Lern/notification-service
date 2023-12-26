@@ -47,24 +47,8 @@
 			<version>2.0</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>commons-collections</artifactId>
-					<groupId>commons-collections</groupId>
-				</exclusion>
-				<exclusion>
 					<artifactId>commons-beanutils</artifactId>
 					<groupId>commons-beanutils</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>dom4j</artifactId>
-					<groupId>dom4j</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.apache.velocity</artifactId>
-					<groupId>velocity</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.apache.struts</artifactId>
-					<groupId>struts</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -72,6 +56,11 @@
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
 			<version>1.9.4</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2.2</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
 		<dependency>

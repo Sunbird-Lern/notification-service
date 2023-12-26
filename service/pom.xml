@@ -76,12 +76,6 @@
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-remote_${scala.major.version}</artifactId>
             <version>${akka.x.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>netty</artifactId>
-                    <groupId>io.netty</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
