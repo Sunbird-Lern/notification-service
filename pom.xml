@@ -30,7 +30,6 @@
         <commons-collections4.version>4.1</commons-collections4.version>
         <spotbugs.plugin.version>3.0.4</spotbugs.plugin.version>
         <surefire.plugin.version>2.22.1</surefire.plugin.version>
-        <sbt-compiler.plugin.version>1.0.0</sbt-compiler.plugin.version>
     </properties>
     <build>
         <plugins>
