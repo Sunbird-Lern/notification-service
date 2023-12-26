@@ -12,8 +12,19 @@
     <dependency>
         <groupId>org.apache.kafka</groupId>
         <artifactId>kafka-clients</artifactId>
-        <version>0.10.0.1</version>
+        <version>3.2.3</version>
+        <exclusions>
+            <exclusion>
+                <groupId>org.xerial.snappy</groupId>
+                <artifactId>snappy-java</artifactId>
+            </exclusion>
+        </exclusions>
     </dependency>
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+            <version>1.1.10.4</version>
+        </dependency>
     <dependency>
         <groupId>org.sunbird</groupId>
         <artifactId>sb-telemetry-utils</artifactId>
@@ -44,11 +55,23 @@
         <groupId>org.everit.json</groupId>
         <artifactId>org.everit.json.schema</artifactId>
         <version>1.5.1</version>
+        <exclusions>
+            <exclusion>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+            </exclusion>
+        </exclusions>
     </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+            <scope>compile</scope>
+        </dependency>
     <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
-        <version>3.2</version>
+        <version>3.2.2</version>
     </dependency>
     <dependency>
         <groupId>org.powermock</groupId>
@@ -99,6 +122,18 @@
                                     <exclude>org.apache.maven:lib:tests</exclude>
                                 </excludes>
                             </artifactSet>
+                            <filters>
+                                <filter>
+                                    <!-- Do not copy the signatures in the META-INF folder.
+                                    Otherwise, this might cause SecurityExceptions when using the JAR. -->
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                         </configuration>
                     </execution>
                 </executions>
