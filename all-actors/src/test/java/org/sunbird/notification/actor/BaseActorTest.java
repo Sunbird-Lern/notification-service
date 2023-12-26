@@ -2,9 +2,7 @@ package org.sunbird.notification.actor;
 
 import akka.actor.ActorSystem;
 import akka.testkit.javadsl.TestKit;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.sunbird.Application;

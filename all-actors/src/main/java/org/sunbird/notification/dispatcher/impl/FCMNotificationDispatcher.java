@@ -4,10 +4,6 @@ package org.sunbird.notification.dispatcher.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.producer.Producer;
@@ -17,13 +13,20 @@ import org.sunbird.notification.dispatcher.INotificationDispatcher;
 import org.sunbird.notification.fcm.provider.IFCMNotificationService;
 import org.sunbird.notification.fcm.provider.NotificationFactory;
 import org.sunbird.notification.utils.FCMResponse;
-import org.sunbird.pojo.*;
+import org.sunbird.pojo.Actor;
+import org.sunbird.pojo.EventData;
 import org.sunbird.pojo.KafkaMessage;
+import org.sunbird.pojo.NotificationRequest;
 import org.sunbird.request.LoggerUtil;
 import org.sunbird.util.ConfigUtil;
 import org.sunbird.util.Constant;
 import org.sunbird.util.DataHash;
 import org.sunbird.util.kafka.KafkaClient;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** @author manzarul */
 public class FCMNotificationDispatcher implements INotificationDispatcher {

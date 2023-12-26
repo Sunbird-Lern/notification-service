@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.sunbird.JsonKey;
 import org.sunbird.NotificationValidator;
-import  org.sunbird.common.request.Request;
+import org.sunbird.common.request.Request;
 import org.sunbird.pojo.Config;
 import org.sunbird.pojo.NotificationRequest;
 

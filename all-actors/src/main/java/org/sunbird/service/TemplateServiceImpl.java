@@ -6,14 +6,12 @@ import org.apache.commons.collections4.MapUtils;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.ResponseCode;
-import org.sunbird.common.request.RequestContext;
 import org.sunbird.common.response.Response;
 import org.sunbird.common.util.JsonKey;
 import org.sunbird.dao.TemplateDao;
 import org.sunbird.dao.TemplateDaoImpl;
 import org.sunbird.pojo.ActionTemplate;
 import org.sunbird.pojo.NotificationTemplate;
-import org.sunbird.pojo.NotificationV2Request;
 import org.sunbird.request.LoggerUtil;
 
 import java.text.MessageFormat;

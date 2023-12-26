@@ -1,6 +1,5 @@
 package org.sunbird.util.kafka;
 
-import java.util.Properties;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -12,6 +11,8 @@ import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.sunbird.request.LoggerUtil;
+
+import java.util.Properties;
 
 /**
  * Helper class for creating a Kafka consumer and producer.

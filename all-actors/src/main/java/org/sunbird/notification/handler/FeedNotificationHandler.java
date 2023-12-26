@@ -2,20 +2,17 @@ package org.sunbird.notification.handler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.firebase.internal.NonNull;
 import org.apache.commons.collections.CollectionUtils;
-
 import org.apache.commons.collections.MapUtils;
-import org.mockito.internal.matchers.Not;
 import org.sunbird.JsonKey;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.ResponseCode;
+import org.sunbird.common.response.Response;
 import org.sunbird.pojo.NotificationFeed;
 import org.sunbird.pojo.NotificationType;
 import org.sunbird.pojo.NotificationV2Request;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.common.response.Response;
 import org.sunbird.service.NotificationService;
 import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.Util;
@@ -25,7 +22,6 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 public class FeedNotificationHandler implements INotificationHandler{
