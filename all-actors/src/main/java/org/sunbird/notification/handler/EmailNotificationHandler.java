@@ -6,14 +6,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.sunbird.JsonKey;
 import org.sunbird.common.exception.BaseException;
+import org.sunbird.common.response.Response;
 import org.sunbird.notification.dispatcher.NotificationRouter;
 import org.sunbird.notification.dispatcher.NotificationRouter.DeliveryMode;
-
 import org.sunbird.notification.dispatcher.SyncMessageDispatcher;
-
-import org.sunbird.pojo.*;
+import org.sunbird.pojo.Config;
+import org.sunbird.pojo.NotificationRequest;
+import org.sunbird.pojo.NotificationV2Request;
+import org.sunbird.pojo.Template;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.common.response.Response;
 import org.sunbird.service.NotificationService;
 import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.Util;

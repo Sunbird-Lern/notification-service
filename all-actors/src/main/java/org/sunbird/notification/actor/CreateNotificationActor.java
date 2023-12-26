@@ -11,12 +11,12 @@ import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.ResponseCode;
 import org.sunbird.common.request.Request;
+import org.sunbird.common.response.Response;
 import org.sunbird.notification.handler.FeedNotificationHandler;
 import org.sunbird.notification.handler.INotificationHandler;
 import org.sunbird.notification.handler.NotificationHandlerFactory;
 import org.sunbird.pojo.NotificationV2Request;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.common.response.Response;
 import org.sunbird.telemetry.TelemetryEnvKey;
 import org.sunbird.telemetry.util.TelemetryUtil;
 

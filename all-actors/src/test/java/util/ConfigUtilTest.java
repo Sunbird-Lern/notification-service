@@ -2,7 +2,6 @@ package util;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import org.apache.kafka.clients.ClientUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

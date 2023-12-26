@@ -2,14 +2,12 @@ package org.sunbird.dao;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jnr.ffi.annotations.Synchronized;
 import org.sunbird.cassandra.CassandraOperation;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.response.Response;
 import org.sunbird.common.util.JsonKey;
 import org.sunbird.pojo.ActionTemplate;
 import org.sunbird.pojo.NotificationTemplate;
-import org.sunbird.util.DBUtil;
 import org.sunbird.utils.ServiceFactory;
 
 import java.sql.Timestamp;

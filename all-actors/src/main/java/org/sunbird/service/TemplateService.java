@@ -1,7 +1,6 @@
 package org.sunbird.service;
 
 import org.sunbird.common.exception.BaseException;
-import org.sunbird.common.request.RequestContext;
 import org.sunbird.common.response.Response;
 import org.sunbird.pojo.ActionTemplate;
 import org.sunbird.pojo.NotificationTemplate;

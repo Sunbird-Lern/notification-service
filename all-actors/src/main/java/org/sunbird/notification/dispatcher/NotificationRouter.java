@@ -3,15 +3,6 @@ package org.sunbird.notification.dispatcher;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.velocity.Template;
@@ -23,6 +14,7 @@ import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.IUserResponseMessage;
 import org.sunbird.common.message.ResponseCode;
+import org.sunbird.common.response.Response;
 import org.sunbird.notification.beans.Constants;
 import org.sunbird.notification.beans.OTPRequest;
 import org.sunbird.notification.beans.SMSConfig;
@@ -35,8 +27,13 @@ import org.sunbird.pojo.Config;
 import org.sunbird.pojo.NotificationRequest;
 import org.sunbird.pojo.OTP;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.common.response.Response;
 import org.sunbird.util.Constant;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.text.MessageFormat;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  *

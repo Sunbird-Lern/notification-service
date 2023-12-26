@@ -3,9 +3,6 @@ package controllers;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
-import akka.dispatch.Futures;
-import akka.pattern.Patterns;
-import akka.util.Timeout;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +15,6 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.sunbird.common.exception.BaseException;
-import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
 import org.sunbird.common.response.ResponseParams;
 import org.sunbird.common.util.JsonKey;
@@ -29,8 +25,6 @@ import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
-import scala.compat.java8.FutureConverters;
-import scala.concurrent.Future;
 import utils.module.OnRequestHandler;
 import utils.module.RequestInterceptor;
 import utils.module.StartModule;
@@ -39,8 +33,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.mockito.Mockito.when;
 
 
 @RunWith(PowerMockRunner.class)

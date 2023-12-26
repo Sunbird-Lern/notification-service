@@ -1,11 +1,11 @@
 package org.sunbird.service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.response.Response;
 import org.sunbird.common.util.JsonKey;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public interface UserService {
 

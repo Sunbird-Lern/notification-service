@@ -69,11 +69,6 @@
             <scope>compile</scope>
         </dependency>
     <dependency>
-        <groupId>commons-collections</groupId>
-        <artifactId>commons-collections</artifactId>
-        <version>3.2.2</version>
-    </dependency>
-    <dependency>
         <groupId>org.powermock</groupId>
         <artifactId>powermock-core</artifactId>
         <version>2.0.2</version>
@@ -81,7 +76,7 @@
     <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.12</version>
+        <version>${junit.version}</version>
     </dependency>
     <dependency>
         <groupId>com.typesafe.akka</groupId>

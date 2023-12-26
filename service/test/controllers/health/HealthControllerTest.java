@@ -1,21 +1,18 @@
 package controllers.health;
 
-import akka.actor.Props;
 import controllers.BaseControllerTest;
 import controllers.DummyActor;
-import controllers.TestHelper;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import play.Application;
 import play.mvc.Result;
-import play.test.Helpers;
 
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class HealthControllerTest extends BaseControllerTest {
   public static Application app;
