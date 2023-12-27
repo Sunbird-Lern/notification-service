@@ -107,6 +107,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <artifactId>netty-common</artifactId>
+            <groupId>io.netty</groupId>
+            <version>4.1.77.Final</version>
+        </dependency>
+        <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-netty-server_${scala.major.version}</artifactId>
             <version>2.7.2</version>
