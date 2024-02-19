@@ -28,7 +28,6 @@
         <powermock.version>2.0.9</powermock.version>
         <httpClient.version>4.5.1</httpClient.version>
         <commons-collections4.version>4.3</commons-collections4.version>
-        <spotbugs.plugin.version>3.0.4</spotbugs.plugin.version>
         <surefire.plugin.version>2.22.1</surefire.plugin.version>
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
     </properties>
