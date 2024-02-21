@@ -15,7 +15,7 @@
         <dependency>
             <groupId>com.typesafe.akka</groupId>
             <artifactId>akka-actor_${scala.major.version}</artifactId>
-            <version>${akka.x.version}</version>
+            <version>${typesafe.akka.version}</version>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
