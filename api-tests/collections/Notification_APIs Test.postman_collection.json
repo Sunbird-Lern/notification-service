@@ -41,7 +41,8 @@
 									"// pm.collectionVariables.set(\"variable_key\", \"variable_value\");",
 									""
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -76,12 +77,12 @@
 								},
 								{
 									"key": "username",
-									"value": "{{username}}",
+									"value": "{{org_admin_username}}",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "{{password}}",
+									"value": "{{org_admin_password}}",
 									"type": "text"
 								}
 							]
@@ -7075,6 +7076,48 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
+					"const requiresHeaders = () => {",
+					"    const requestUrl = pm.request.url.toString();",
+					"",
+					"    // List of paths to ignore",
+					"    const ignoredPaths = [",
+					"        '/health',",
+					"        '/auth/realms/sunbird/protocol/openid-connect/token',",
+					"        '/auth/v1/refresh/token'",
+					"    ];",
+					"",
+					"    // Check if the request URL contains any of the ignored paths",
+					"    return !ignoredPaths.some(path => requestUrl.includes(path));",
+					"};",
+					"",
+					"// Function to check if a specific header is present and not empty",
+					"const isHeaderProvided = (headerName) => {",
+					"    const headers = pm.request.headers;",
+					"    if (!headers) return false; // Check if headers exist",
+					"",
+					"    // Find the specified header",
+					"    const header = headers.find(h => h.key.toLowerCase() === headerName.toLowerCase());",
+					"",
+					"    // Check if the header exists and is not disabled and its value is not empty",
+					"    return header && !header.disabled && header.value.trim() !== '';",
+					"};",
+					"",
+					"// Check if the current endpoint requires headers",
+					"if (requiresHeaders()) {",
+					"    // Check if Authorization header is provided",
+					"    if (!isHeaderProvided('Authorization')) {",
+					"        // If Authorization header is missing or empty, throw an error",
+					"        throw new Error('Authorization header is missing or empty. Please provide a valid Authorization header.');",
+					"    }",
+					"",
+					"    // Check if X-Authenticated-User-Token header is provided",
+					"    if (!isHeaderProvided('X-Authenticated-User-Token')) {",
+					"        // If X-Authenticated-User-Token header is missing or empty, throw an error",
+					"        throw new Error('X-Authenticated-User-Token header is missing or empty. Please provide a valid X-Authenticated-User-Token header.');",
+					"    }",
+					"} else {",
+					"    console.log('Skipping header checks for this endpoint.');",
+					"}",
 					""
 				]
 			}
