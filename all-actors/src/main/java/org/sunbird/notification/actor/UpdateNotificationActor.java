@@ -16,7 +16,6 @@ import org.sunbird.request.LoggerUtil;
 import org.sunbird.service.NotificationService;
 import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.RequestHandler;
-import org.sunbird.util.Util;
 import org.sunbird.utils.PropertiesCache;
 
 import java.sql.Timestamp;

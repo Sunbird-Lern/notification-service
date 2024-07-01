@@ -12,7 +12,6 @@ export isMultiDCEnabled=False
 export notification_category_type_config=certificateUpdate
 export sunbird_cassandra_consistency_level=local_quorum
 export sunbird_cassandra_host=
-export sunbird_cassandra_notification_keyspace=sunbird_notifications
 export sunbird_cassandra_password=
 export sunbird_cassandra_port=9042
 export sunbird_cassandra_username=

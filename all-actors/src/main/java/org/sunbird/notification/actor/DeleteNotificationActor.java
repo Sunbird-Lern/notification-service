@@ -1,8 +1,5 @@
 package org.sunbird.notification.actor;
 
-import akka.actor.AbstractActor;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sunbird.BaseActor;
 import org.sunbird.JsonKey;
@@ -17,12 +14,10 @@ import org.sunbird.request.LoggerUtil;
 import org.sunbird.service.NotificationService;
 import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.RequestHandler;
-import org.sunbird.util.Util;
 import org.sunbird.utils.PropertiesCache;
 
 import java.text.MessageFormat;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

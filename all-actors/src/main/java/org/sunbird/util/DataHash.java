@@ -1,9 +1,10 @@
 /** */
 package org.sunbird.util;
 
+import org.sunbird.request.LoggerUtil;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import org.sunbird.request.LoggerUtil;
 
 /** @author manzarul */
 public class DataHash {

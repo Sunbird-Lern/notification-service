@@ -2,9 +2,8 @@ package org.sunbird.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.sunbird.common.exception.BaseException;
-import org.sunbird.pojo.NotificationFeed;
-import org.sunbird.pojo.NotificationV2Request;
 import org.sunbird.common.response.Response;
+import org.sunbird.pojo.NotificationFeed;
 
 import java.io.IOException;
 import java.util.List;

@@ -1,6 +1,7 @@
 /** */
 package org.sunbird.notification.dispatcher;
 
+import org.sunbird.common.response.Response;
 import org.sunbird.notification.beans.EmailConfig;
 import org.sunbird.notification.beans.EmailRequest;
 import org.sunbird.notification.beans.SMSConfig;
@@ -11,7 +12,6 @@ import org.sunbird.notification.email.service.impl.IEmailProviderFactory;
 import org.sunbird.notification.sms.provider.ISmsProvider;
 import org.sunbird.notification.sms.providerimpl.Msg91SmsProviderFactory;
 import org.sunbird.pojo.NotificationRequest;
-import org.sunbird.common.response.Response;
 import org.sunbird.util.Constant;
 
 import java.util.Map;

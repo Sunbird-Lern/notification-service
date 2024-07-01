@@ -5,11 +5,11 @@ import org.sunbird.JsonKey;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.ResponseCode;
+import org.sunbird.common.response.Response;
 import org.sunbird.notification.dispatcher.impl.FCMNotificationDispatcher;
 import org.sunbird.notification.utils.NotificationConstant;
 import org.sunbird.pojo.NotificationRequest;
 import org.sunbird.pojo.NotificationV2Request;
-import org.sunbird.common.response.Response;
 import org.sunbird.service.NotificationService;
 
 import java.text.MessageFormat;

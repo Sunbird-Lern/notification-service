@@ -3,8 +3,6 @@ package org.sunbird.notification.actor;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import akka.testkit.javadsl.TestKit;
-
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,7 +21,6 @@ import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
 import org.sunbird.common.util.JsonKey;
 import org.sunbird.notification.email.Email;
-
 import org.sunbird.util.SystemConfigUtil;
 import org.sunbird.utils.PropertiesCache;
 import org.sunbird.utils.ServiceFactory;
@@ -31,7 +28,8 @@ import org.sunbird.utils.ServiceFactory;
 import java.time.Duration;
 import java.util.*;
 
-import static org.powermock.api.mockito.PowerMockito.*;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({

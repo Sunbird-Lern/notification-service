@@ -1,9 +1,5 @@
 package org.sunbird;
 
-import java.text.MessageFormat;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +11,10 @@ import org.sunbird.common.message.ResponseCode;
 import org.sunbird.common.request.Request;
 import org.sunbird.pojo.NotificationMode;
 import org.sunbird.pojo.NotificationRequest;
+
+import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
 
 /** Validates send notification api request */
 public class NotificationValidator {

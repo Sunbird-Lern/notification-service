@@ -2,7 +2,7 @@ package org.sunbird.notification.actor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.sunbird.BaseActor;
 import org.sunbird.JsonKey;
 import org.sunbird.actor.core.ActorConfig;
 import org.sunbird.common.exception.BaseException;
@@ -13,18 +13,13 @@ import org.sunbird.common.response.Response;
 import org.sunbird.pojo.ActionTemplate;
 import org.sunbird.pojo.NotificationTemplate;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.BaseActor;
 import org.sunbird.service.TemplateService;
 import org.sunbird.service.TemplateServiceImpl;
-import org.sunbird.telemetry.TelemetryEnvKey;
-import org.sunbird.telemetry.util.TelemetryUtil;
 import org.sunbird.util.RequestHandler;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @ActorConfig(
         tasks = {JsonKey.LIST_TEMPLATE, JsonKey.UPDATE_TEMPLATE,

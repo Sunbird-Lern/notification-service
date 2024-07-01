@@ -7,15 +7,12 @@ import org.sunbird.JsonKey;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.ResponseCode;
+import org.sunbird.common.response.Response;
 import org.sunbird.notification.dispatcher.NotificationRouter;
-import org.sunbird.notification.dispatcher.SyncMessageDispatcher;
 import org.sunbird.pojo.Config;
 import org.sunbird.pojo.NotificationRequest;
 import org.sunbird.pojo.NotificationV2Request;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.common.response.Response;
-import org.sunbird.service.NotificationService;
-import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.Util;
 
 import java.text.MessageFormat;

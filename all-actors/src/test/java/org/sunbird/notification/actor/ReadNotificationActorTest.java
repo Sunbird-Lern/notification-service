@@ -24,9 +24,7 @@ import org.sunbird.utils.PropertiesCache;
 import org.sunbird.utils.ServiceFactory;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.powermock.api.mockito.PowerMockito.mock;

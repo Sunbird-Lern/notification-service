@@ -2,7 +2,6 @@ package org.sunbird.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.velocity.VelocityContext;
@@ -11,26 +10,20 @@ import org.apache.velocity.app.VelocityEngine;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
-import org.mockito.internal.matchers.Not;
 import org.sunbird.JsonKey;
 import org.sunbird.common.exception.BaseException;
-import org.sunbird.common.util.Notification;
-import org.sunbird.dao.NotificationDao;
-import org.sunbird.dao.NotificationDaoImpl;
 import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.ResponseCode;
+import org.sunbird.common.response.Response;
+import org.sunbird.dao.NotificationDao;
+import org.sunbird.dao.NotificationDaoImpl;
 import org.sunbird.dao.TemplateDao;
 import org.sunbird.dao.TemplateDaoImpl;
-import org.sunbird.pojo.ActionData;
 import org.sunbird.pojo.NotificationFeed;
-import org.sunbird.pojo.NotificationType;
-import org.sunbird.pojo.NotificationV2Request;
 import org.sunbird.request.LoggerUtil;
-import org.sunbird.common.response.Response;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
