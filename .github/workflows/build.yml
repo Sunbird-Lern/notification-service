@@ -1,0 +1,65 @@
+name: Build and Deploy
+on:
+  push:
+    tags:
+      - '*' 
+      
+jobs:
+  run-test-cases:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore Maven cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: notification-dependency-cache-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            notification-dependency-cache-
+
+      - name: Build and Run test cases
+        run: mvn clean install
+
+      - name: Save the build artifact
+        run: mvn -f service/pom.xml play2:dist
+
+      - name: Store build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: notification-service
+          path: service/target/notification-service-1.0.0-dist.zip
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: notification-service
+          path: ./service/target
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./service/target
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ vars.DOCKERHUB_USERNAME }}/notification-service:${{ github.ref_name }}
+
