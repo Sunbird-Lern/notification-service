@@ -3,9 +3,12 @@ on:
   push:
     tags:
       - '*' 
+    branches:
+      - master
+      - release-*
       
 jobs:
-  Docker build:
+  Docker-build:
     runs-on: ubuntu-latest
     steps:
       - name: Set up JDK 11
@@ -63,3 +66,19 @@ jobs:
           tags: |
             ${{ vars.DOCKERHUB_USERNAME }}/notification_service:${{ github.ref_name }}
 
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Run SonarQube analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+           mvn verify -DskipTests sonar:sonar
+              -Dsonar.projectKey=project-sunbird_sunbird-notification-service
+              -Dsonar.organization=project-sunbird
+              -Dsonar.host.url=https://sonarcloud.io
+              -Dsonar.coverage.exclusions=**/cassandra-utils/**,**/platform-cache/**,**/sb-actor/**,**/sb-telemetry-utils/**,**/sb-utils/**,**/models/**,**/bean/*,**/sb-common/**
+              -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/notification-service/notification-service/reports/target/jacoco/jacoco.xml 

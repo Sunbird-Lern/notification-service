@@ -57,5 +57,10 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-         mvn verify -DskipTests sonar:sonar -Dsonar.projectKey=project-sunbird_sunbird-notification-service -Dsonar.organization=project-sunbird -Dsonar.host.url=https://sonarcloud.io -Dsonar.coverage.exclusions=**/cassandra-utils/**,**/platform-cache/**,**/sb-actor/**,**/sb-telemetry-utils/**,**/sb-utils/**,**/models/**,**/bean/*,**/sb-common/** -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/notification-service/notification-service/reports/target/jacoco/jacoco.xml
+            mvn verify -DskipTests sonar:sonar
+	       -Dsonar.projectKey=project-sunbird_sunbird-notification-service
+	       -Dsonar.organization=project-sunbird
+	       -Dsonar.host.url=https://sonarcloud.io
+	       -Dsonar.coverage.exclusions=**/cassandra-utils/**,**/platform-cache/**,**/sb-actor/**,**/sb-telemetry-utils/**,**/sb-utils/**,**/models/**,**/bean/*,**/sb-common/**
+	       -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/notification-service/notification-service/reports/target/jacoco/jacoco.xml
 
