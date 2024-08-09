@@ -1,14 +1,10 @@
 name: Build and Deploy
 on:
-  push:
-    tags:
-      - '*' 
-    branches:
-      - master
-      - release-*
+  pull_request:
+    types: [opened, synchronize]
       
 jobs:
-  Docker-build:
+  run-test-cases:
     runs-on: ubuntu-latest
     steps:
       - name: Set up JDK 11
@@ -51,21 +47,6 @@ jobs:
           name: notification-service
           path: ./service/target
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ vars.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and Push Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./service/target
-          file: ./Dockerfile
-          push: true
-          tags: |
-            ${{ vars.DOCKERHUB_USERNAME }}/notification_service:${{ github.ref_name }}
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -76,9 +57,9 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-           mvn verify -DskipTests sonar:sonar \
+          mvn verify -DskipTests sonar:sonar \
             -Dsonar.projectKey=project-sunbird_sunbird-notification-service \
             -Dsonar.organization=project-sunbird \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.coverage.exclusions=**/cassandra-utils/**,**/platform-cache/**,**/sb-actor/**,**/sb-telemetry-utils/**,**/sb-utils/**,**/models/**,**/bean/*,**/sb-common/** \
-            -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/notification-service/notification-service/reports/target/jacoco/jacoco.xml 
+            -Dsonar.coverage.jacoco.xmlReportPaths=/home/runner/work/notification-service/notification-service/reports/target/jacoco/jacoco.xml
