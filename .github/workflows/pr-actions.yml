@@ -31,6 +31,7 @@ jobs:
             -   name: Run SonarQube analysis
                 env:
                     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN}}
+                if: env.SONAR_TOKEN != ''
                 run: |
                       mvn sonar:sonar \
                         -Dsonar.projectKey=sunbird-lern \
