@@ -17,6 +17,7 @@ import org.sunbird.service.NotificationService;
 import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.RequestHandler;
 import org.sunbird.utils.PropertiesCache;
+import scala.collection.JavaConverters;
 
 import java.sql.Timestamp;
 import java.text.MessageFormat;
@@ -82,7 +83,15 @@ public class UpdateNotificationActor extends BaseActor {
             NotificationService notificationService = NotificationServiceImpl.getInstance();
             boolean isSupportEnabled = Boolean.parseBoolean(PropertiesCache.getInstance().getProperty(JsonKey.VERSION_SUPPORT_CONFIG_ENABLE));
             if(isSupportEnabled) {
-                List<Map<String, Object>> mappedFeedIdLists = notificationService.getFeedMap((List<String>) request.getRequest().get(JsonKey.IDS), request.getContext());
+                // Convert Scala collection to Java List to avoid ClassCastException
+                Object idsObject = request.getRequest().get(JsonKey.IDS);
+                List<String> feedIdsList;
+                if (idsObject instanceof scala.collection.Seq) {
+                    feedIdsList = new ArrayList<>(JavaConverters.asJavaCollectionConverter((scala.collection.Seq<String>) idsObject).asJavaCollection());
+                } else {
+                    feedIdsList = (List<String>) idsObject;
+                }
+                List<Map<String, Object>> mappedFeedIdLists = notificationService.getFeedMap(feedIdsList, request.getContext());
                 getOtherVersionUpdatedFeedList(mappedFeedIdLists, feedsUpdateList, requestedBy);
             }
             List<Map<String, Object>> feedList = notificationService.readNotificationFeed(userId, request.getContext());
@@ -132,7 +141,14 @@ public class UpdateNotificationActor extends BaseActor {
     private  List<Map<String,Object>>  createUpdateStatusReq(Map<String, Object> request, String requestedBy) {
 
         List<Map<String,Object>> updateReqList = new ArrayList<>();
-        List<String> feedIds = (List<String>) request.get(JsonKey.IDS);
+        // Convert Scala collection to Java List to avoid ClassCastException
+        Object idsObject = request.get(JsonKey.IDS);
+        List<String> feedIds;
+        if (idsObject instanceof scala.collection.Seq) {
+            feedIds = new ArrayList<>(JavaConverters.asJavaCollectionConverter((scala.collection.Seq<String>) idsObject).asJavaCollection());
+        } else {
+            feedIds = (List<String>) idsObject;
+        }
         for (String feedId: feedIds) {
             Map<String,Object> notificationFeed= new HashMap<>();
             notificationFeed.put(JsonKey.ID,feedId);

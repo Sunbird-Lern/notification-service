@@ -1,6 +1,6 @@
 package org.sunbird;
 
-import akka.actor.ActorRef;
+import org.apache.pekko.actor.ActorRef;
 import org.sunbird.actor.core.ActorCache;
 import org.sunbird.actor.core.ActorService;
 

@@ -1,6 +1,7 @@
 package controllers.log;
 
 import controllers.BaseController;
+import play.mvc.Http;
 import play.mvc.Result;
 
 import java.util.concurrent.CompletionStage;
@@ -13,7 +14,7 @@ public class LogController extends BaseController {
    *
    * @return
    */
-  public CompletionStage<Result> setLogLevel() {
-    return handleLogRequest();
+  public CompletionStage<Result> setLogLevel(Http.Request req) {
+    return handleLogRequest(req);
   }
 }

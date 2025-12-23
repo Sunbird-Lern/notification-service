@@ -33,17 +33,17 @@ public class NotificationController extends BaseController {
    *
    * @return a CompletableFuture of success response
    */
-  public CompletionStage<Result> sendNotification() {
+  public CompletionStage<Result> sendNotification(Http.Request req) {
     logger.info("method call started for sendNotification ");
     Request request = new Request();
     try {
-      request = RequestMapper.createSBRequest(request());
-      CompletionStage<Result> response = handleRequest(request, null, NOTIFICATION, request());
+      request = RequestMapper.createSBRequest(req);
+      CompletionStage<Result> response = handleRequest(request, null, NOTIFICATION, req);
       logger.info("Method call end for sendNotification");
       return response;
     }catch (Exception ex){
       return CompletableFuture.completedFuture(
-              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, request() ));
+              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, req));
     }
 
   }
@@ -54,18 +54,18 @@ public class NotificationController extends BaseController {
    *
    * @return a CompletableFuture of success response
    */
-  public CompletionStage<Result> sendSyncNotification() {
+  public CompletionStage<Result> sendSyncNotification(Http.Request req) {
     logger.info("method call started for sendNotification ");
-    request().getHeaders().addHeader(NOTIFICATION_DELIVERY_MODE, "sync");
+    req.getHeaders().addHeader(NOTIFICATION_DELIVERY_MODE, "sync");
     Request request = new Request();
     try {
-      request = RequestMapper.createSBRequest(request());
-      CompletionStage<Result> response = handleRequest(request, null, NOTIFICATION, request());
+      request = RequestMapper.createSBRequest(req);
+      CompletionStage<Result> response = handleRequest(request, null, NOTIFICATION, req);
       logger.info("Method call end for sendNotification");
       return response;
     }catch (Exception ex){
       return CompletableFuture.completedFuture(
-              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, request()));
+              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, req));
     }
 
   }
@@ -75,16 +75,16 @@ public class NotificationController extends BaseController {
    *
    * @return
    */
-  public CompletionStage<Result> verifyOTP() {
+  public CompletionStage<Result> verifyOTP(Http.Request req) {
     logger.info("method call started for verifyOTP ");
     Request request = new Request();
     try {
-      request = RequestMapper.createSBRequest(request());
-      CompletionStage<Result> response = handleRequest(request, null, JsonKey.VERIFY_OTP, request());
+      request = RequestMapper.createSBRequest(req);
+      CompletionStage<Result> response = handleRequest(request, null, JsonKey.VERIFY_OTP, req);
       logger.info("Method call end for verifyOTP");
       return response;
     }catch (Exception ex){
-      return CompletableFuture.completedFuture(ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, request()));
+      return CompletableFuture.completedFuture(ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, req));
     }
 
   }
@@ -96,17 +96,17 @@ public class NotificationController extends BaseController {
    *
    * @return a CompletableFuture of success response
    */
-  public CompletionStage<Result> sendV2Notification() {
+  public CompletionStage<Result> sendV2Notification(Http.Request req) {
     logger.info("method call started for sendNotification ");
     Request request = new Request();
     try {
-      request = RequestMapper.createSBRequest(request());
-      CompletionStage<Result> response = handleRequest(request, new RequestValidator(), JsonKey.CREATE_NOTIFICATION, request());
+      request = RequestMapper.createSBRequest(req);
+      CompletionStage<Result> response = handleRequest(request, new RequestValidator(), JsonKey.CREATE_NOTIFICATION, req);
       logger.info("Method call end for v2 sendNotification");
       return response;
     }catch (Exception ex){
       return CompletableFuture.completedFuture(
-              ResponseHandler.handleFailureResponse(request,ex, httpExecutionContext, request()));
+              ResponseHandler.handleFailureResponse(request,ex, httpExecutionContext, req));
     }
 
   }
@@ -123,7 +123,7 @@ public class NotificationController extends BaseController {
     try {
       request =RequestMapper.createSBRequest(req);
       request.getRequest().put(JsonKey.USER_ID, userId);
-      CompletionStage<Result> response = handleRequest(request, null, JsonKey.READ_FEED, request());
+      CompletionStage<Result> response = handleRequest(request, null, JsonKey.READ_FEED, req);
       logger.info("Method call end for read Notification Feed");
       return response;
     }catch (BaseException ex){
@@ -139,17 +139,17 @@ public class NotificationController extends BaseController {
    *
    * @return a CompletableFuture of success response
    */
-  public CompletionStage<Result> updateNotificationFeed() {
+  public CompletionStage<Result> updateNotificationFeed(Http.Request req) {
     logger.info("method call started for read Notification Feed ");
     Request request = new Request();
     try {
-      request = RequestMapper.createSBRequest(request());
-      CompletionStage<Result> response = handleRequest(request, null, JsonKey.UPDATE_FEED, request());
+      request = RequestMapper.createSBRequest(req);
+      CompletionStage<Result> response = handleRequest(request, null, JsonKey.UPDATE_FEED, req);
       logger.info("Method call end for read Notification Feed");
       return response;
     }catch (Exception ex){
       return CompletableFuture.completedFuture(
-              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, request()));
+              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, req));
     }
 
   }
@@ -160,17 +160,17 @@ public class NotificationController extends BaseController {
    *
    * @return a CompletableFuture of success response
    */
-  public CompletionStage<Result> updateV1NotificationFeed() {
+  public CompletionStage<Result> updateV1NotificationFeed(Http.Request req) {
     logger.info("method call started for read Notification Feed ");
     Request request = new Request();
     try {
-      request = RequestMapper.createSBRequest(request());
-      CompletionStage<Result> response = handleRequest(request, null, JsonKey.UPDATE_V1_FEED, request());
+      request = RequestMapper.createSBRequest(req);
+      CompletionStage<Result> response = handleRequest(request, null, JsonKey.UPDATE_V1_FEED, req);
       logger.info("Method call end for read Notification Feed");
       return response;
     }catch (Exception ex){
       return CompletableFuture.completedFuture(
-              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, request()));
+              ResponseHandler.handleFailureResponse(request, ex, httpExecutionContext, req));
     }
 
   }
@@ -189,7 +189,7 @@ public class NotificationController extends BaseController {
       request =RequestMapper.createSBRequest(req);
       request.getRequest().put(JsonKey.USER_ID, userId);
       request.getRequest().put(JsonKey.VERSION,"v1");
-      CompletionStage<Result> response = handleRequest(request, null, JsonKey.READ_V1_FEED, request());
+      CompletionStage<Result> response = handleRequest(request, null, JsonKey.READ_V1_FEED, req);
       logger.info("Method call end for read Notification Feed");
       return response;
     }catch (BaseException ex){
@@ -204,18 +204,18 @@ public class NotificationController extends BaseController {
    *
    * @return a CompletableFuture of success response
    */
-  public CompletionStage<Result> sendV1Notification() {
+  public CompletionStage<Result> sendV1Notification(Http.Request req) {
     logger.info("method call started for sendNotification ");
     Request request = new Request();
     try {
-      request = RequestMapper.createSBRequest(request());
+      request = RequestMapper.createSBRequest(req);
       request.getRequest().put(JsonKey.VERSION,"v1");
-      CompletionStage<Result> response = handleRequest(request, null, JsonKey.CREATE_NOTIFICATION, request());
+      CompletionStage<Result> response = handleRequest(request, null, JsonKey.CREATE_NOTIFICATION, req);
       logger.info("Method call end for v2 sendNotification");
       return response;
     }catch (Exception ex){
       return CompletableFuture.completedFuture(
-              ResponseHandler.handleFailureResponse(request,ex, httpExecutionContext, request()));
+              ResponseHandler.handleFailureResponse(request,ex, httpExecutionContext, req));
     }
 
   }
@@ -225,18 +225,18 @@ public class NotificationController extends BaseController {
    *
    * @return a CompletableFuture of success response
    */
-  public CompletionStage<Result> deleteV1Notification() {
+  public CompletionStage<Result> deleteV1Notification(Http.Request req) {
     logger.info("method call started for sendNotification ");
     Request request = new Request();
     try {
-      request = RequestMapper.createSBRequest(request());
+      request = RequestMapper.createSBRequest(req);
       NotificationValidator.validateDeleteRequest(request);
-      CompletionStage<Result> response = handleRequest(request, null, JsonKey.DELETE_V1_FEED, request());
+      CompletionStage<Result> response = handleRequest(request, null, JsonKey.DELETE_V1_FEED, req);
       logger.info("Method call end for v2 sendNotification");
       return response;
     }catch (Exception ex){
       return CompletableFuture.completedFuture(
-              ResponseHandler.handleFailureResponse(request,ex, httpExecutionContext, request()));
+              ResponseHandler.handleFailureResponse(request,ex, httpExecutionContext, req));
     }
 
   }
@@ -246,18 +246,18 @@ public class NotificationController extends BaseController {
    *
    * @return a CompletableFuture of success response
    */
-  public CompletionStage<Result> deleteNotification() {
+  public CompletionStage<Result> deleteNotification(Http.Request req) {
     logger.info("method call started for sendNotification ");
     Request request = new Request();
     try {
-      request = RequestMapper.createSBRequest(request());
+      request = RequestMapper.createSBRequest(req);
       NotificationValidator.validateDeleteRequest(request);
-      CompletionStage<Result> response = handleRequest(request, null, JsonKey.DELETE_FEED, request());
+      CompletionStage<Result> response = handleRequest(request, null, JsonKey.DELETE_FEED, req);
       logger.info("Method call end for v2 sendNotification");
       return response;
     }catch (Exception ex){
       return CompletableFuture.completedFuture(
-              ResponseHandler.handleFailureResponse(request,ex, httpExecutionContext, request()));
+              ResponseHandler.handleFailureResponse(request,ex, httpExecutionContext, req));
     }
 
   }

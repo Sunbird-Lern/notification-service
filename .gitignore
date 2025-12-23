@@ -83,3 +83,7 @@ RUNNING_PID
 /bin/
 /logs
 *.zip
+
+# Maven build artifacts
+dependency-reduced-pom.xml
+**/dependency-reduced-pom.xml

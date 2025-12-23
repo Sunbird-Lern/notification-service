@@ -130,6 +130,10 @@ public class NotificationValidator {
   }
 
   public static boolean isInstanceOf(Class objClass, Class targetClass) {
+    // Handle Scala collections - Scala Seq should be treated as List
+    if (targetClass == List.class && scala.collection.Seq.class.isAssignableFrom(objClass)) {
+      return true;
+    }
     return targetClass.isAssignableFrom(objClass);
   }
 

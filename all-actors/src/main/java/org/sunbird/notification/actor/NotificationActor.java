@@ -21,6 +21,9 @@ import org.sunbird.pojo.NotificationRequest;
 import org.sunbird.request.LoggerUtil;
 import org.sunbird.util.validator.OtpRequestValidator;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.sunbird.util.Util;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +57,10 @@ public class NotificationActor extends BaseActor {
     logger.info(request.getRequest(),"Call started for notify method");
     List<NotificationRequest> notificationRequestList =
         NotificationRequestMapper.toList(
-            (List<Map<String, Object>>) request.getRequest().get(JsonKey.NOTIFICATIONS));
+            Util.convertToList(
+                request.getRequest().get(JsonKey.NOTIFICATIONS),
+                new TypeReference<List<Map<String, Object>>>() {}
+            ));
     List<String> ids = new ArrayList<String>();
     for (NotificationRequest notificationRequest : notificationRequestList) {
       if (CollectionUtils.isNotEmpty(notificationRequest.getIds())) {

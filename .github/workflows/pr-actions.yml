@@ -1,0 +1,40 @@
+name: PR Coverage Check
+
+on:
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build and Generate Coverage Report
+        run: |
+          mvn clean verify jacoco:report
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run SonarQube analysis
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=sunbird-lern \
+            -Dsonar.organization=sunbird-lern \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.coverage.jacoco.xmlReportPaths=all-actors/target/site/jacoco/jacoco.xml,notification-sdk/target/site/jacoco/jacoco.xml,service/target/site/jacoco/jacoco.xml

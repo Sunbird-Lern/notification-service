@@ -1,8 +1,8 @@
 package controllers;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import akka.actor.Props;
+import org.apache.pekko.actor.ActorRef;
+import org.apache.pekko.actor.ActorSystem;
+import org.apache.pekko.actor.Props;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -46,7 +46,8 @@ import java.util.Map;
   "javax.script.*",
   "javax.xml.*",
   "com.sun.org.apache.xerces.*",
-  "org.xml.*"
+  "org.xml.*",
+  "java.util.concurrent.*"
 })
 
 public class BaseControllerTest {
@@ -60,7 +61,6 @@ public class BaseControllerTest {
 		try {
 			application =
 					new GuiceApplicationBuilder()
-							.in(new File("path/to/app"))
 							.in(Mode.TEST)
 							.disable(StartModule.class)
 							.build();
@@ -79,6 +79,7 @@ public class BaseControllerTest {
 			PowerMockito.mockStatic(OnRequestHandler.class);
 		} catch (Exception e) {
 			System.out.println("exception occurred " + e.getMessage());
+			e.printStackTrace();
 		}
 	}
 

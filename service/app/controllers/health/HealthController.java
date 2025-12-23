@@ -13,6 +13,7 @@ import org.sunbird.common.request.Request;
 import org.sunbird.request.LoggerUtil;
 import org.sunbird.common.response.Response;
 import play.libs.Json;
+import play.mvc.Http;
 import play.mvc.Result;
 import utils.RequestMapper;
 
@@ -36,16 +37,16 @@ public class HealthController extends BaseController {
    *
    * @return a CompletableFuture of success response
    */
-  public CompletionStage<Result> getHealth() {
+  public CompletionStage<Result> getHealth(Http.Request req) {
     Request request = new Request();
     try {
       handleSigTerm();
       logger.info("complete health method called.");
-      request = RequestMapper.createSBRequest(request());
-      CompletionStage<Result> response = handleRequest(request, null, HEALTH_ACTOR_OPERATION_NAME, request());
+      request = RequestMapper.createSBRequest(req);
+      CompletionStage<Result> response = handleRequest(request, null, HEALTH_ACTOR_OPERATION_NAME, req);
       return response;
     }  catch (Exception e) {
-      return CompletableFuture.completedFuture(ResponseHandler.handleFailureResponse(request,e ,httpExecutionContext,request()));
+      return CompletableFuture.completedFuture(ResponseHandler.handleFailureResponse(request,e ,httpExecutionContext,req));
     }
   }
 
@@ -54,19 +55,19 @@ public class HealthController extends BaseController {
    *
    * @return a CompletableFuture of success response
    */
-  public CompletionStage<Result> getServiceHealth(String health) {
+  public CompletionStage<Result> getServiceHealth(String health, Http.Request req) {
     Request request = new Request();
     try {
       handleSigTerm();
       logger.info("get healh called for service =." + health);
-      request = RequestMapper.createSBRequest(request());
+      request = RequestMapper.createSBRequest(req);
       CompletableFuture<JsonNode> cf = new CompletableFuture<>();
       Response response = new Response();
       response.put(RESPONSE, SUCCESS);
       cf.complete(Json.toJson(response));
       return CompletableFuture.completedFuture(ok(play.libs.Json.toJson(response)));
       }  catch (Exception e) {
-        return CompletableFuture.completedFuture(ResponseHandler.handleFailureResponse(request,e,httpExecutionContext,request()));
+        return CompletableFuture.completedFuture(ResponseHandler.handleFailureResponse(request,e,httpExecutionContext,req));
       }
   }
 

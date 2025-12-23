@@ -1,7 +1,7 @@
 package controllers;
 
-import akka.pattern.Patterns;
-import akka.util.Timeout;
+import org.apache.pekko.pattern.Patterns;
+import org.apache.pekko.util.Timeout;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -18,7 +18,7 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Results;
-import scala.compat.java8.FutureConverters;
+import scala.jdk.javaapi.FutureConverters;
 import scala.concurrent.Future;
 import utils.PrintEntryExitLog;
 import utils.RequestMapper;
@@ -58,7 +58,7 @@ public class ResponseHandler extends BaseController {
 
         Timeout t = new Timeout(Long.valueOf(request.getTimeout()), TimeUnit.SECONDS);
         Future<Object> future = Patterns.ask(getActorRef(operation), request, t);
-        return FutureConverters.toJava(future).thenApplyAsync(fn);
+        return FutureConverters.asJava(future).thenApplyAsync(fn);
     }
 
     /**

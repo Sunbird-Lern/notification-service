@@ -1,6 +1,6 @@
 package utils.module;
 
-import akka.actor.ActorSystem;
+import org.apache.pekko.actor.ActorSystem;
 import org.apache.commons.lang3.StringUtils;
 import org.sunbird.request.LoggerUtil;
 import play.api.Application;

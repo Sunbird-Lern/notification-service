@@ -3,39 +3,39 @@
 # ~~~~
 
 #Health check
-GET  /health                               @controllers.health.HealthController.getHealth()
-GET  /:service/health                      @controllers.health.HealthController.getServiceHealth(service:String)
-POST /v1/notification/send				   @controllers.notification.NotificationController.sendNotification()
-POST /v1/notification/send/sync			   @controllers.notification.NotificationController.sendSyncNotification()
-POST /v1/notification/otp/verify           @controllers.notification.NotificationController.verifyOTP()
+GET  /health                               @controllers.health.HealthController.getHealth(request: play.mvc.Http.Request)
+GET  /:service/health                      @controllers.health.HealthController.getServiceHealth(service:String, request: play.mvc.Http.Request)
+POST /v1/notification/send				   @controllers.notification.NotificationController.sendNotification(request: play.mvc.Http.Request)
+POST /v1/notification/send/sync			   @controllers.notification.NotificationController.sendSyncNotification(request: play.mvc.Http.Request)
+POST /v1/notification/otp/verify           @controllers.notification.NotificationController.verifyOTP(request: play.mvc.Http.Request)
 
 # Logs Management APIs
 # POST    /v1.3/system/log/update           @controllers.logsmanager.LogController.setLogLevel()
 
-POST /v2/notification/send                 @controllers.notification.NotificationController.sendV2Notification()
+POST /v2/notification/send                 @controllers.notification.NotificationController.sendV2Notification(request: play.mvc.Http.Request)
 
 GET  /v1/notification/feed/read/:userId    @controllers.notification.NotificationController.readFeedNotification(userId: String, request: play.mvc.Http.Request)
 
-PATCH /v1/notification/feed/update         @controllers.notification.NotificationController.updateNotificationFeed()
+PATCH /v1/notification/feed/update         @controllers.notification.NotificationController.updateNotificationFeed(request: play.mvc.Http.Request)
 
 GET  /private/v1/notification/feed/read/:userId   @controllers.notification.NotificationController.readV1FeedNotification(userId: String, request: play.mvc.Http.Request)
 
-POST /private/v2/notification/send                @controllers.notification.NotificationController.sendV1Notification()
+POST /private/v2/notification/send                @controllers.notification.NotificationController.sendV1Notification(request: play.mvc.Http.Request)
 
-POST /v1/notification/feed/delete                     @controllers.notification.NotificationController.deleteNotification()
+POST /v1/notification/feed/delete                     @controllers.notification.NotificationController.deleteNotification(request: play.mvc.Http.Request)
 
-POST /private/v1/notification/feed/delete             @controllers.notification.NotificationController.deleteV1Notification()
+POST /private/v1/notification/feed/delete             @controllers.notification.NotificationController.deleteV1Notification(request: play.mvc.Http.Request)
 
-PATCH /private/v1/notification/feed/update         @controllers.notification.NotificationController.updateV1NotificationFeed()
+PATCH /private/v1/notification/feed/update         @controllers.notification.NotificationController.updateV1NotificationFeed(request: play.mvc.Http.Request)
 
-GET  /v1/notification/template/list                @controllers.notification.NotificationTemplateController.listTemplate()
+GET  /v1/notification/template/list                @controllers.notification.NotificationTemplateController.listTemplate(request: play.mvc.Http.Request)
 
-POST  /v1/notification/template/create             @controllers.notification.NotificationTemplateController.createTemplate()
+POST  /v1/notification/template/create             @controllers.notification.NotificationTemplateController.createTemplate(request: play.mvc.Http.Request)
 
-POST  /v1/notification/template/delete             @controllers.notification.NotificationTemplateController.deleteTemplate()
+POST  /v1/notification/template/delete             @controllers.notification.NotificationTemplateController.deleteTemplate(request: play.mvc.Http.Request)
 
-PATCH /v1/notification/template/update             @controllers.notification.NotificationTemplateController.updateTemplate()
+PATCH /v1/notification/template/update             @controllers.notification.NotificationTemplateController.updateTemplate(request: play.mvc.Http.Request)
 
-PATCH /v1/notification/template/action/update       @controllers.notification.NotificationTemplateController.upsertActionTemplate()
+PATCH /v1/notification/template/action/update       @controllers.notification.NotificationTemplateController.upsertActionTemplate(request: play.mvc.Http.Request)
 
 GET /v1/notification/template/:action            @controllers.notification.NotificationTemplateController.getAction(action: String, request: play.mvc.Http.Request)

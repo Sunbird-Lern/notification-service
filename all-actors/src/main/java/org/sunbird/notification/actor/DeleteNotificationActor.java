@@ -15,8 +15,10 @@ import org.sunbird.service.NotificationService;
 import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.RequestHandler;
 import org.sunbird.utils.PropertiesCache;
+import scala.collection.JavaConverters;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +65,14 @@ public class DeleteNotificationActor extends BaseActor {
 
     private void deleteFeed(Request request, String requestedBy){
         String userId = (String) request.getRequest().get(JsonKey.USER_ID);
-        List<String> feedIds = (List<String>)request.getRequest().get(JsonKey.IDS);
+        // Convert Scala collection to Java List to avoid ClassCastException
+        Object idsObject = request.getRequest().get(JsonKey.IDS);
+        List<String> feedIds;
+        if (idsObject instanceof scala.collection.Seq) {
+            feedIds = new ArrayList<>(JavaConverters.asJavaCollectionConverter((scala.collection.Seq<String>) idsObject).asJavaCollection());
+        } else {
+            feedIds = (List<String>) idsObject;
+        }
         try {
             if (StringUtils.isEmpty(userId)) {
                 throw new BaseException(IResponseMessage.Key.MANDATORY_PARAMETER_MISSING,
@@ -77,7 +86,7 @@ public class DeleteNotificationActor extends BaseActor {
             NotificationService notificationService = NotificationServiceImpl.getInstance();
             boolean isSupportEnabled = Boolean.parseBoolean(PropertiesCache.getInstance().getProperty(JsonKey.VERSION_SUPPORT_CONFIG_ENABLE));
             if(isSupportEnabled) {
-                List<Map<String, Object>> mappedFeedIdLists = notificationService.getFeedMap((List<String>) request.getRequest().get(JsonKey.IDS), request.getContext());
+                List<Map<String, Object>> mappedFeedIdLists = notificationService.getFeedMap(feedIds, request.getContext());
                 getOtherVersionUpdatedFeedList(mappedFeedIdLists,feedIds);
             }
             Response response = notificationService.deleteNotificationFeed(Collections.singletonMap(requestedBy,feedIds), request.getContext());

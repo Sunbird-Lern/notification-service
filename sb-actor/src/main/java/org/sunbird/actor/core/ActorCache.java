@@ -1,6 +1,6 @@
 package org.sunbird.actor.core;
 
-import akka.actor.ActorRef;
+import org.apache.pekko.actor.ActorRef;
 
 import java.util.HashMap;
 import java.util.Map;

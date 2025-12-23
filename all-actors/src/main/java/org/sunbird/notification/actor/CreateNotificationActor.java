@@ -1,6 +1,7 @@
 package org.sunbird.notification.actor;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.sunbird.BaseActor;
@@ -19,6 +20,7 @@ import org.sunbird.pojo.NotificationV2Request;
 import org.sunbird.request.LoggerUtil;
 import org.sunbird.telemetry.TelemetryEnvKey;
 import org.sunbird.telemetry.util.TelemetryUtil;
+import org.sunbird.util.Util;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -43,8 +45,11 @@ public class CreateNotificationActor extends BaseActor {
         try {
             Response response = new Response();
             ObjectMapper mapper = new ObjectMapper();
-            List<Map<String, Object>> notifications =
-                    (List<Map<String, Object>>) request.getRequest().get(JsonKey.NOTIFICATIONS);
+            Object notificationsObject = request.getRequest().get(JsonKey.NOTIFICATIONS);
+            List<Map<String, Object>> notifications = Util.convertToList(
+                notificationsObject, 
+                new TypeReference<List<Map<String, Object>>>() {}
+            );
 
             String deliveryMode = request.getManagerName();
             if (StringUtils.isNotBlank(deliveryMode) && "sync".equalsIgnoreCase(deliveryMode)) {
