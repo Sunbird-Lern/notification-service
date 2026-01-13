@@ -32,6 +32,7 @@
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <guice.version>5.1.0</guice.version>
         <slf4j.version>2.0.13</slf4j.version>
+        <kafka.version>3.7.1</kafka.version>
         <logback.version>1.4.14</logback.version>
         <netty.version>4.1.112.Final</netty.version>
     </properties>
