@@ -2,7 +2,7 @@ package org.sunbird.notification.fcm.provider;
 
 import org.sunbird.notification.fcm.providerImpl.FCMHttpNotificationServiceImpl;
 import org.sunbird.notification.fcm.providerImpl.FCMNotificationServiceImpl;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 public class NotificationFactory {
   private static LoggerUtil logger = new LoggerUtil(NotificationFactory.class);

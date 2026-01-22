@@ -12,7 +12,7 @@ import org.sunbird.dao.TemplateDao;
 import org.sunbird.dao.TemplateDaoImpl;
 import org.sunbird.pojo.ActionTemplate;
 import org.sunbird.pojo.NotificationTemplate;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;

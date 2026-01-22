@@ -17,7 +17,7 @@ import org.sunbird.pojo.Actor;
 import org.sunbird.pojo.EventData;
 import org.sunbird.pojo.KafkaMessage;
 import org.sunbird.pojo.NotificationRequest;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import org.sunbird.util.ConfigUtil;
 import org.sunbird.util.Constant;
 import org.sunbird.util.DataHash;

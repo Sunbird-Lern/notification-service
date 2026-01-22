@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 import org.sunbird.JsonKey;
 import org.sunbird.utils.PropertiesCache;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 
 public class KeyManager {

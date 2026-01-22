@@ -3,7 +3,7 @@ package org.sunbird.util;
 import org.sunbird.common.response.Response;
 import org.sunbird.common.util.JsonKey;
 import org.sunbird.common.util.LoggerEnum;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import org.sunbird.service.UserService;
 import org.sunbird.service.UserServiceImpl;
 

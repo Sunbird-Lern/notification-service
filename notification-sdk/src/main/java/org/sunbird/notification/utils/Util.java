@@ -3,7 +3,7 @@ package org.sunbird.notification.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.sunbird.utils.PropertiesCache;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 /** @author manzarul */
 public class Util {
@@ -20,14 +20,14 @@ public class Util {
    */
   public static String readValue(String key) {
     if (StringUtils.isBlank(key)) {
-      logger.info("Provided key is either null or emapty :" + key);
+      logger.info(null, "Provided key is either null or emapty :" + key);
       return null;
     }
     String val = System.getenv(key);
     if (StringUtils.isBlank(val)) {
       val = propertiesCache.getProperty(key);
     }
-    logger.info("found value for key:" + key + " value: " + val);
+    logger.info(null, "found value for key:" + key + " value: " + val);
     return val;
   }
 }

@@ -3,7 +3,7 @@ package org.sunbird.util;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.commons.lang3.StringUtils;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 /**
  * This util class for providing type safe config to any service that requires it.

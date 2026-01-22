@@ -1,7 +1,7 @@
 package org.sunbird.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
                 try {
                     configProp.load(in);
                 } catch (IOException e) {
-                    logger.error("Error in properties cache", e);
+                    logger.error(null, "Error in properties cache", e);
                 }
             }
         }

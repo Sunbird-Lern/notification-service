@@ -17,7 +17,7 @@ import org.sunbird.notification.dispatcher.NotificationRouter;
 import org.sunbird.notification.dispatcher.SyncMessageDispatcher;
 import org.sunbird.notification.utils.NotificationConstant;
 import org.sunbird.pojo.*;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import org.sunbird.service.NotificationService;
 import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.Util;

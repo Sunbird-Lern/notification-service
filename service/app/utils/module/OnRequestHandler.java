@@ -8,7 +8,7 @@ import org.sunbird.common.exception.AuthorizationException;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.message.ResponseCode;
 import org.sunbird.request.HeaderParam;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import org.sunbird.util.SystemConfigUtil;
 import org.sunbird.utils.PropertiesCache;
 import play.http.ActionCreator;

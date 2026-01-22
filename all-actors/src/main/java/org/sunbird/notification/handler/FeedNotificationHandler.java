@@ -12,7 +12,7 @@ import org.sunbird.common.response.Response;
 import org.sunbird.pojo.NotificationFeed;
 import org.sunbird.pojo.NotificationType;
 import org.sunbird.pojo.NotificationV2Request;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import org.sunbird.service.NotificationService;
 import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.Util;

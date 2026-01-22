@@ -16,7 +16,7 @@ import java.util.Map;
 import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.ResponseCode;
 import org.sunbird.common.response.Response;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import utils.ValidationUtil;
 
 public class TemplateActionUpdateRequestValidatorTest {

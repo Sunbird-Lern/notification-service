@@ -2,7 +2,7 @@ package utils.module;
 
 import org.apache.pekko.actor.ActorSystem;
 import org.apache.commons.lang3.StringUtils;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import play.api.Application;
 import play.api.Play;
 import scala.concurrent.duration.Duration;

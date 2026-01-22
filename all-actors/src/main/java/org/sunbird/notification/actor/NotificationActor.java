@@ -18,7 +18,7 @@ import org.sunbird.notification.beans.OTPRequest;
 import org.sunbird.notification.dispatcher.NotificationRouter;
 import org.sunbird.notification.utils.NotificationConstant;
 import org.sunbird.pojo.NotificationRequest;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import org.sunbird.util.validator.OtpRequestValidator;
 
 import com.fasterxml.jackson.core.type.TypeReference;

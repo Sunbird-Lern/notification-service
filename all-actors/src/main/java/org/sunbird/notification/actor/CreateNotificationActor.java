@@ -17,7 +17,7 @@ import org.sunbird.notification.handler.FeedNotificationHandler;
 import org.sunbird.notification.handler.INotificationHandler;
 import org.sunbird.notification.handler.NotificationHandlerFactory;
 import org.sunbird.pojo.NotificationV2Request;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import org.sunbird.telemetry.TelemetryEnvKey;
 import org.sunbird.telemetry.util.TelemetryUtil;
 import org.sunbird.util.Util;

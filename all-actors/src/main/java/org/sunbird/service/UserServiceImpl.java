@@ -8,7 +8,7 @@ import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.request.SearchRequest;
 import org.sunbird.common.response.Response;
 import org.sunbird.common.util.JsonKey;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import org.sunbird.utils.HttpClientUtil;
 import org.sunbird.utils.PropertiesCache;
 

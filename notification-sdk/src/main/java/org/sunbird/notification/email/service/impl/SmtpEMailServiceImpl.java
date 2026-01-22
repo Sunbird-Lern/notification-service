@@ -6,7 +6,7 @@ import org.sunbird.notification.beans.EmailConfig;
 import org.sunbird.notification.beans.EmailRequest;
 import org.sunbird.notification.email.Email;
 import org.sunbird.notification.email.service.IEmailService;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 import java.util.Map;
 

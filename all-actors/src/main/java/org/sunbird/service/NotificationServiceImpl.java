@@ -20,7 +20,7 @@ import org.sunbird.dao.NotificationDaoImpl;
 import org.sunbird.dao.TemplateDao;
 import org.sunbird.dao.TemplateDaoImpl;
 import org.sunbird.pojo.NotificationFeed;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 import java.io.IOException;
 import java.io.StringWriter;
