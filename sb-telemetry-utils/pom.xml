@@ -2,17 +2,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-    <parent>
-        <artifactId>notification-play-service</artifactId>
-        <groupId>org.sunbird</groupId>
-        <version>1.0.0</version>
-    </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>sb-telemetry-utils</artifactId>
-    <properties>
-        <slf4j.version>1.6.1</slf4j.version>
 
+    <groupId>org.sunbird</groupId>
+    <artifactId>sb-telemetry-utils</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <kafka.version>2.0.0</kafka.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <slf4j.version>1.7.36</slf4j.version>
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
