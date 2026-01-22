@@ -20,7 +20,7 @@ import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
 import org.sunbird.util.SystemConfigUtil;
 import org.sunbird.utils.PropertiesCache;
-import org.sunbird.utils.ServiceFactory;
+import org.sunbird.helper.ServiceFactory;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -81,13 +81,13 @@ public class DeleteNotificationActorTest extends BaseActorTest{
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyList(),
-                Mockito.anyMap()))
+                Mockito.any()))
                 .thenReturn(getCassandraResponse());
         when(cassandraOperation.batchUpdateById(
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyList(),
-                Mockito.anyMap()))
+                Mockito.any()))
                 .thenReturn(getCassandraResponse());
         when(cassandraOperation.getRecordsByProperty(
                 Mockito.eq(org.sunbird.common.util.JsonKey.SUNBIRD_NOTIFICATIONS),
@@ -124,13 +124,13 @@ public class DeleteNotificationActorTest extends BaseActorTest{
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyList(),
-                Mockito.anyMap()))
+                Mockito.any()))
                 .thenReturn(getCassandraResponse());
         when(cassandraOperation.batchUpdateById(
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyList(),
-                Mockito.anyMap()))
+                Mockito.any()))
                 .thenReturn(getCassandraResponse());
 
         subject.tell(request, probe.getRef());
@@ -161,13 +161,13 @@ public class DeleteNotificationActorTest extends BaseActorTest{
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyList(),
-                Mockito.anyMap()))
+                Mockito.any()))
                 .thenReturn(getCassandraResponse());
         when(cassandraOperation.batchUpdateById(
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyList(),
-                Mockito.anyMap()))
+                Mockito.any()))
                 .thenReturn(getCassandraResponse());
 
         subject.tell(request, probe.getRef());
