@@ -7,10 +7,12 @@ import com.google.common.util.concurrent.FutureCallback;
 
 import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.KeyspaceMetadata;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.Statement;
+import com.datastax.driver.core.UserType;
 import com.datastax.driver.core.WriteType;
 import com.datastax.driver.core.exceptions.NoHostAvailableException;
 import com.datastax.driver.core.exceptions.QueryExecutionException;
@@ -38,6 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.sunbird.cassandra.CassandraOperation;
 import org.sunbird.common.CassandraUtil;
 import org.sunbird.common.Constants;
+import org.sunbird.common.exception.BaseException;
 import org.sunbird.exception.ProjectCommonException;
 import org.sunbird.common.response.Response;
 import org.sunbird.keys.JsonKey;
@@ -688,6 +691,28 @@ public abstract class CassandraOperationImpl implements CassandraOperation {
       RequestContext requestContext) {
     return getRecordsByProperty(
         keyspaceName, tableName, propertyName, propertyValueList, null, requestContext);
+  }
+
+
+  /**
+   * Retrieves all fields from records where a property matches a given value.
+   * Convenience method that delegates to the full getRecordsByProperty method.
+   *
+   * @param keyspaceName The keyspace name.
+   * @param tableName The table name.
+   * @param propertyName The property/column name to filter by.
+   * @param propertyValue The value to match (single value, not a list).
+   * @param requestContext Request context for logging.
+   * @return Response containing all fields from matching records.
+   */
+  @Override
+  public Response getRecordsByProperty(
+      String keyspaceName,
+      String tableName,
+      String propertyName,
+      Object propertyValue,
+      RequestContext requestContext) {
+    return getRecordsByProperty(keyspaceName, tableName, propertyName, propertyValue, null, requestContext);
   }
 
 
@@ -2021,6 +2046,163 @@ public abstract class CassandraOperationImpl implements CassandraOperation {
   }
 
 
+  /**
+   * Performs a batch delete operation to delete multiple records in a single atomic operation.
+   * Each record is identified by its composite primary key. More efficient than individual deletes.
+   *
+   * @param keyspaceName The keyspace name.
+   * @param tableName The table name.
+   * @param primaryKeys List of maps, each containing the composite primary key for a record to delete.
+   * @param requestContext Request context for logging.
+   * @return Response with "SUCCESS" status.
+   * @throws ProjectCommonException if operation fails.
+   */
+  @Override
+  public Response batchDelete(
+      String keyspaceName,
+      String tableName,
+      List<Map<String, Object>> primaryKeys,
+      RequestContext requestContext) {
+
+    long startTime = System.currentTimeMillis();
+    int recordCount = primaryKeys != null ? primaryKeys.size() : 0;
+
+    logDebug(
+        requestContext, formatLogMessage("Starting batchDelete - keyspace: {}, table: {}, records: {}",
+        keyspaceName,
+        tableName,
+        recordCount));
+
+    // Warn about large batch sizes
+    if (recordCount > 1000) {
+      logWarn(
+          requestContext, formatLogMessage("Large batch delete detected - keyspace: {}, table: {}, records: {} - Consider splitting into smaller batches for better performance",
+          keyspaceName,
+          tableName,
+          recordCount));
+    }
+
+    Response response = new Response();
+    BatchStatement batchStatement = new BatchStatement();
+
+    try {
+      Session session = connectionManager.getSession(keyspaceName);
+
+      // Build DELETE statements for each primary key
+      for (Map<String, Object> primaryKey : primaryKeys) {
+        if (primaryKey != null && !primaryKey.isEmpty()) {
+          Statement deleteStatement = CassandraUtil.createDeleteQuery(primaryKey, keyspaceName, tableName);
+          batchStatement.add(deleteStatement);
+        } else {
+          logWarn(requestContext, "Skipping null or empty primary key in batch delete");
+        }
+      }
+
+      logDebug(
+          requestContext, formatLogMessage("Executing batch delete with {} statements",
+          batchStatement.size()));
+
+      // Execute batch
+      ResultSet resultSet = session.execute(batchStatement);
+      response.put(Constants.RESPONSE, Constants.SUCCESS);
+
+      // Log successful batch delete at INFO level
+      logInfo(
+          requestContext, formatLogMessage("Successfully batch deleted records - keyspace: {}, table: {}, records: {}",
+          keyspaceName,
+          tableName,
+          recordCount));
+
+    } catch (QueryExecutionException e) {
+      // Handle query execution errors
+      logError(
+          requestContext, "Batch delete query execution failed - keyspace: {}, table: {}, records: {}, error: {}",
+          keyspaceName,
+          tableName,
+          recordCount,
+          e.getMessage(),
+          e);
+
+      throw new ProjectCommonException(
+          ResponseCode.SERVER_ERROR.getErrorCode(),
+          ResponseCode.SERVER_ERROR.getErrorMessage(),
+          ResponseCode.SERVER_ERROR.getResponseCode());
+
+    } catch (QueryValidationException e) {
+      // Handle query validation errors
+      logError(
+          requestContext, "Batch delete query validation failed - keyspace: {}, table: {}, records: {}, error: {}",
+          keyspaceName,
+          tableName,
+          recordCount,
+          e.getMessage(),
+          e);
+
+      throw new ProjectCommonException(
+          ResponseCode.SERVER_ERROR.getErrorCode(),
+          ResponseCode.SERVER_ERROR.getErrorMessage(),
+          ResponseCode.SERVER_ERROR.getResponseCode());
+
+    } catch (NoHostAvailableException e) {
+      // Handle no available hosts errors
+      logError(
+          requestContext, "No Cassandra hosts available for batch delete - keyspace: {}, table: {}, records: {}, error: {}",
+          keyspaceName,
+          tableName,
+          recordCount,
+          e.getMessage(),
+          e);
+
+      throw new ProjectCommonException(
+          ResponseCode.SERVER_ERROR.getErrorCode(),
+          ResponseCode.SERVER_ERROR.getErrorMessage(),
+          ResponseCode.SERVER_ERROR.getResponseCode());
+
+    } catch (IllegalStateException e) {
+      // Handle illegal state errors
+      logError(
+          requestContext, "Illegal state during batch delete - keyspace: {}, table: {}, records: {}, error: {}",
+          keyspaceName,
+          tableName,
+          recordCount,
+          e.getMessage(),
+          e);
+
+      throw new ProjectCommonException(
+          ResponseCode.SERVER_ERROR.getErrorCode(),
+          ResponseCode.SERVER_ERROR.getErrorMessage(),
+          ResponseCode.SERVER_ERROR.getResponseCode());
+
+    } catch (Exception e) {
+      // Handle any other unexpected errors
+      logError(
+          requestContext, "Unexpected error during batch delete - keyspace: {}, table: {}, records: {}, error: {}",
+          keyspaceName,
+          tableName,
+          recordCount,
+          e.getMessage(),
+          e);
+
+      throw new ProjectCommonException(
+          ResponseCode.SERVER_ERROR.getErrorCode(),
+          ResponseCode.SERVER_ERROR.getErrorMessage(),
+          ResponseCode.SERVER_ERROR.getResponseCode());
+
+    } finally {
+      // Log query execution time
+      if (batchStatement != null && batchStatement.size() > 0) {
+        logQueryElapseTime(
+            "batchDelete",
+            startTime,
+            batchStatement.getStatements().toString(),
+            requestContext);
+      } else {
+        logQueryElapseTime("batchDelete", startTime);
+      }
+    }
+
+    return response;
+  }
 
 
 
@@ -4125,6 +4307,65 @@ public abstract class CassandraOperationImpl implements CassandraOperation {
     }
 
     return response;
+  }
+
+  /**
+   * Retrieves a User Defined Type (UDT) from a Cassandra keyspace.
+   * Accesses the cluster metadata to fetch the specified user-defined type definition.
+   *
+   * @param keyspaceName The Cassandra keyspace name containing the user-defined type.
+   * @param typeName The name of the user-defined type to retrieve.
+   * @return UserType object representing the specified user-defined type.
+   * @throws ProjectCommonException if the keyspace or type is not found, or if no hosts are available.
+   */
+  @Override
+  public UserType getUDTType(String keyspaceName, String typeName){
+    logDebug(null, formatLogMessage("Retrieving UDT - keyspace: {}, type: {}", keyspaceName, typeName));
+
+    try {
+      Session session = connectionManager.getSession(keyspaceName);
+      KeyspaceMetadata keyspaceMetadata = session.getCluster().getMetadata().getKeyspace(keyspaceName);
+      
+      if (keyspaceMetadata == null) {
+        String errorMsg = formatLogMessage("Keyspace not found - keyspace: {}", keyspaceName);
+        logError(null, errorMsg);
+        throw new ProjectCommonException(
+            ResponseCode.SERVER_ERROR.getErrorCode(),
+            errorMsg,
+            ResponseCode.SERVER_ERROR.getResponseCode());
+      }
+      
+      UserType userType = keyspaceMetadata.getUserType(typeName);
+      
+      if (userType == null) {
+        String errorMsg = formatLogMessage("User-defined type not found - keyspace: {}, type: {}", keyspaceName, typeName);
+        logError(null, errorMsg);
+        throw new ProjectCommonException(
+            ResponseCode.SERVER_ERROR.getErrorCode(),
+            errorMsg,
+            ResponseCode.SERVER_ERROR.getResponseCode());
+      }
+      
+      logInfo(null, formatLogMessage("Successfully retrieved UDT - keyspace: {}, type: {}", keyspaceName, typeName));
+      return userType;
+      
+    } catch (ProjectCommonException e) {
+      throw e;
+    } catch (NoHostAvailableException e) {
+      String errorMsg = formatLogMessage("No Cassandra hosts available - keyspace: {}, type: {}", keyspaceName, typeName);
+      logError(null, errorMsg, e);
+      throw new ProjectCommonException(
+          ResponseCode.SERVER_ERROR.getErrorCode(),
+          errorMsg,
+          ResponseCode.SERVER_ERROR.getResponseCode());
+    } catch (Exception e) {
+      String errorMsg = formatLogMessage("Failed to retrieve UDT - keyspace: {}, type: {}, error: {}", keyspaceName, typeName, e.getMessage());
+      logError(null, errorMsg, e);
+      throw new ProjectCommonException(
+          ResponseCode.SERVER_ERROR.getErrorCode(),
+          ResponseCode.SERVER_ERROR.getErrorMessage(),
+          ResponseCode.SERVER_ERROR.getResponseCode());
+    }
   }
 
   /**
