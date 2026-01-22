@@ -67,8 +67,10 @@ public class TemplateDaoImpl implements TemplateDao{
     public Response deleteTemplate(String templateId, Map<String, Object> reqContext) throws BaseException {
         Map<String,String> compositeKey = new HashMap<>();
         compositeKey.put(JsonKey.TEMPLATE_ID,templateId);
-        // deleteRecord expects Map<String, String>, NOT Map<String, Object> for composite key. So this is fine.
-        return cassandraOperation.deleteRecord(KEY_SPACE_NAME, NOTIFICATION_TEMPLATE, compositeKey, getRequestContext(reqContext));
+        cassandraOperation.deleteRecord(KEY_SPACE_NAME, NOTIFICATION_TEMPLATE, compositeKey, getRequestContext(reqContext));
+        Response response = new Response();
+        response.put("response", "SUCCESS");
+        return response;
     }
 
     @Override
