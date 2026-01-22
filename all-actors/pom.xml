@@ -43,13 +43,18 @@
     </dependency>
     <dependency>
         <groupId>org.sunbird</groupId>
-        <artifactId>cassandra-utils</artifactId>
-        <version>1.0.0</version>
+        <artifactId>sunbird-cassandra-utils</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
         <groupId>org.sunbird</groupId>
         <artifactId>notification-sdk</artifactId>
         <version>${project.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.sunbird</groupId>
+        <artifactId>sb-utils</artifactId>
+        <version>1.0.0</version>
     </dependency>
     <dependency>
         <groupId>org.everit.json</groupId>
