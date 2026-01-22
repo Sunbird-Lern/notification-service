@@ -6,10 +6,11 @@ import org.sunbird.JsonKey;
 import org.sunbird.cassandra.CassandraOperation;
 import org.sunbird.common.Constants;
 import org.sunbird.common.exception.BaseException;
+import org.sunbird.common.request.RequestContext;
 import org.sunbird.common.response.Response;
 import org.sunbird.notification.utils.Util;
 import org.sunbird.pojo.NotificationFeed;
-import org.sunbird.utils.ServiceFactory;
+import org.sunbird.helper.ServiceFactory;
 
 import java.util.*;
 
@@ -37,7 +38,7 @@ public class NotificationDaoImpl implements NotificationDao{
     public Response createNotificationFeed(List<NotificationFeed> feeds, Map<String,Object> reqContext) throws BaseException {
         List<Map<String, Object>> feedList =
                 mapper.convertValue(feeds, new TypeReference<List<Map<String, Object>>>() {});
-        return cassandraOperation.batchInsert(KEY_SPACE_NAME, NOTIFICATION_FEED, feedList, reqContext);
+        return cassandraOperation.batchInsert(KEY_SPACE_NAME, NOTIFICATION_FEED, feedList, getRequestContext(reqContext));
 
     }
 
@@ -45,7 +46,7 @@ public class NotificationDaoImpl implements NotificationDao{
     public Response readNotificationFeed(String userId, Map<String,Object> reqContext) throws BaseException {
         Map<String, Object> reqMap = new WeakHashMap<>(2);
         reqMap.put(JsonKey.USER_ID, userId);
-        return cassandraOperation.getRecordById(KEY_SPACE_NAME,NOTIFICATION_FEED,reqMap,reqContext);
+        return cassandraOperation.getRecordById(KEY_SPACE_NAME,NOTIFICATION_FEED,reqMap,getRequestContext(reqContext));
     }
 
 
@@ -68,7 +69,7 @@ public class NotificationDaoImpl implements NotificationDao{
             keysMap.put(Constants.NON_PRIMARY_KEY,nonPrimaryKeyMap);
             properties.add(keysMap);
         }
-        return  cassandraOperation.batchUpdate(KEY_SPACE_NAME, NOTIFICATION_FEED, properties,reqContext);
+        return  cassandraOperation.batchUpdate(KEY_SPACE_NAME, NOTIFICATION_FEED, properties,getRequestContext(reqContext));
 
     }
 
@@ -86,18 +87,18 @@ public class NotificationDaoImpl implements NotificationDao{
             keysMap.put(Constants.NON_PRIMARY_KEY,nonPrimaryKeyMap);
             properties.add(keysMap);
         }
-       return cassandraOperation.batchUpdate(KEY_SPACE_NAME,NOTIFICATION_FEED, properties, context);
+       return cassandraOperation.batchUpdate(KEY_SPACE_NAME,NOTIFICATION_FEED, properties, getRequestContext(context));
     }
 
     @Override
     public Response mapV1V2Feed(List<Map<String, Object>> mappedList, Map<String, Object> reqContext) {
-        return cassandraOperation.batchInsert(KEY_SPACE_NAME, FEED_VERSION_MAP, mappedList, reqContext);
+        return cassandraOperation.batchInsert(KEY_SPACE_NAME, FEED_VERSION_MAP, mappedList, getRequestContext(reqContext));
 
     }
 
     @Override
     public Response getFeedMap(List<String> feedIds, Map<String, Object> reqContext) {
-        return cassandraOperation.getRecordsByPrimaryKeys(KEY_SPACE_NAME,FEED_VERSION_MAP,feedIds,JsonKey.ID,reqContext);
+        return cassandraOperation.getRecordsByPrimaryKeys(KEY_SPACE_NAME,FEED_VERSION_MAP,feedIds,JsonKey.ID,getRequestContext(reqContext));
     }
 
     @Override
@@ -109,6 +110,18 @@ public class NotificationDaoImpl implements NotificationDao{
             map.put(JsonKey.STATUS,"deleted");
             properties.add(map);
         }
-        return cassandraOperation.batchUpdateById(KEY_SPACE_NAME,FEED_VERSION_MAP,properties,context);
+        return cassandraOperation.batchUpdateById(KEY_SPACE_NAME,FEED_VERSION_MAP,properties,getRequestContext(context));
+    }
+
+    private RequestContext getRequestContext(Map<String, Object> reqContext) {
+        RequestContext requestContext = new RequestContext();
+        if (reqContext != null) {
+            requestContext.setReqId((String) reqContext.get(JsonKey.REQUEST_ID));
+            requestContext.setActorId((String) reqContext.get(JsonKey.ACTOR_ID));
+            requestContext.setDid((String) reqContext.get(JsonKey.DEVICE_ID));
+            requestContext.setAppId((String) reqContext.get(JsonKey.APP_ID));
+            requestContext.getContextMap().putAll(reqContext);
+        }
+        return requestContext;
     }
 }
