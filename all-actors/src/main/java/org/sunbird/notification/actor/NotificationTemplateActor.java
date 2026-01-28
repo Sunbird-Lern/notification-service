@@ -12,7 +12,7 @@ import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
 import org.sunbird.pojo.ActionTemplate;
 import org.sunbird.pojo.NotificationTemplate;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import org.sunbird.service.TemplateService;
 import org.sunbird.service.TemplateServiceImpl;
 import org.sunbird.util.RequestHandler;

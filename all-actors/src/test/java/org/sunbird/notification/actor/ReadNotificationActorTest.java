@@ -21,7 +21,7 @@ import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
 import org.sunbird.util.SystemConfigUtil;
 import org.sunbird.utils.PropertiesCache;
-import org.sunbird.utils.ServiceFactory;
+import org.sunbird.helper.ServiceFactory;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -70,7 +70,7 @@ public class ReadNotificationActorTest extends BaseActorTest{
                Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyMap(),
-                Mockito.anyMap()))
+                Mockito.any()))
                 .thenReturn(getNotificationFeedResponse());
 
         subject.tell(request, probe.getRef());
@@ -92,7 +92,7 @@ public class ReadNotificationActorTest extends BaseActorTest{
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyMap(),
-                Mockito.anyMap()))
+                Mockito.any()))
                 .thenReturn(getNotificationFeedResponse());
 
         subject.tell(request, probe.getRef());
@@ -114,7 +114,7 @@ public class ReadNotificationActorTest extends BaseActorTest{
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyMap(),
-                Mockito.anyMap()))
+                Mockito.any()))
                 .thenReturn(getNotificationFeedResponse());
 
         subject.tell(request, probe.getRef());

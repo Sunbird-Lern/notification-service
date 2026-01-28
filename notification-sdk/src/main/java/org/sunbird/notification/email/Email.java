@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.sunbird.notification.beans.Constants;
 import org.sunbird.notification.beans.EmailConfig;
 import org.sunbird.notification.utils.Util;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;

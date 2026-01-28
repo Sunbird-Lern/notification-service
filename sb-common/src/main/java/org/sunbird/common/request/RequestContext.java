@@ -108,7 +108,39 @@ public class RequestContext {
     this.op = op;
   }
 
+  private String loggerLevel;
+  private String actorId;
+  private String actorType;
+
   public Map<String, Object> getContextMap() {
     return contextMap;
+  }
+  
+  public String getRequestId() {
+      return reqId;
+  }
+
+  public String getLoggerLevel() {
+      return loggerLevel;
+  }
+
+  public void setLoggerLevel(String loggerLevel) {
+      this.loggerLevel = loggerLevel;
+  }
+
+  public String getActorId() {
+      return actorId;
+  }
+
+  public void setActorId(String actorId) {
+      this.actorId = actorId;
+  }
+
+  public String getActorType() {
+      return actorType;
+  }
+
+  public void setActorType(String actorType) {
+      this.actorType = actorType;
   }
 }

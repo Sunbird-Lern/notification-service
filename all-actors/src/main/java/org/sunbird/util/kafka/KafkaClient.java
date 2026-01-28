@@ -10,7 +10,7 @@ import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 import java.util.Properties;
 

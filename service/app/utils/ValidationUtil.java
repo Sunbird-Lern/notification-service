@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.exception.ValidationException;
 import org.sunbird.common.request.Request;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 import java.text.MessageFormat;
 import java.util.List;

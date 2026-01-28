@@ -8,7 +8,7 @@ import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.message.ResponseCode;
 import org.sunbird.common.request.Request;
 import org.sunbird.request.EntryExitLogEvent;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import org.sunbird.common.response.Response;
 import org.sunbird.common.response.ResponseParams;
 

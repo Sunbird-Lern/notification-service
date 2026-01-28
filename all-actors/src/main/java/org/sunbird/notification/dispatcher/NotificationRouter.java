@@ -26,7 +26,7 @@ import org.sunbird.notification.utils.Util;
 import org.sunbird.pojo.Config;
 import org.sunbird.pojo.NotificationRequest;
 import org.sunbird.pojo.OTP;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import org.sunbird.util.Constant;
 
 import java.io.IOException;

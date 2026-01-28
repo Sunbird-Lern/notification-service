@@ -18,7 +18,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.sunbird.common.util.LoggerEnum;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;

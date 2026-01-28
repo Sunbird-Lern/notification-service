@@ -12,7 +12,7 @@ import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.ResponseCode;
 import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import org.sunbird.service.NotificationService;
 import org.sunbird.service.NotificationServiceImpl;
 import org.sunbird.util.RequestHandler;
@@ -33,7 +33,7 @@ public class UpdateNotificationActor extends BaseActor {
     private static LoggerUtil logger = new LoggerUtil(UpdateNotificationActor.class);
 
     @Override
-    public void onReceive(Request request) throws Throwable {
+        public void onReceive(Request request) throws Throwable {
         String operation = request.getOperation();
         switch (operation) {
             case "updateFeed":
@@ -46,20 +46,20 @@ public class UpdateNotificationActor extends BaseActor {
         }
     }
     private void updateV1Feed(Request request){
-        logger.info(request.getContext(),"UpdateNotificationActor: updateV1Feed Started");
+        logger.info(request.getRequestContext(),"UpdateNotificationActor: updateV1Feed Started");
 
         String requestedBy = (String) request.getRequest().get(JsonKey.USER_ID);
         updateFeed(request,requestedBy);
-        logger.info(request.getContext(),"UpdateNotificationActor: updateV1Feed Ended");
+        logger.info(request.getRequestContext(),"UpdateNotificationActor: updateV1Feed Ended");
 
     }
 
     private void updateV2Feed(Request request){
-        logger.info(request.getContext(),"UpdateNotificationActor: updateV2Feed Started");
+        logger.info(request.getRequestContext(),"UpdateNotificationActor: updateV2Feed Started");
         RequestHandler requestHandler = new RequestHandler();
         String requestedBy = requestHandler.getRequestedBy(request);
         updateFeed(request,requestedBy);
-        logger.info(request.getContext(),"UpdateNotificationActor: updateV2Feed Ended");
+        logger.info(request.getRequestContext(),"UpdateNotificationActor: updateV2Feed Ended");
 
     }
 
@@ -105,14 +105,14 @@ public class UpdateNotificationActor extends BaseActor {
             sender().tell(response, getSelf());
 
         }   catch (BaseException ex){
-            logger.error(request.getContext(),MessageFormat.format(":Error Msg: {0} ",ex.getMessage()),
+            logger.error(request.getRequestContext(),MessageFormat.format(":Error Msg: {0} ",ex.getMessage()),
                     ex);
             throw ex;
         }
             catch (Exception ex){
-            logger.error(request.getContext(),MessageFormat.format("UpdateNotificationActor:Error Msg: {0} ",ex.getMessage()),
+            logger.error(request.getRequestContext(),MessageFormat.format("UpdateNotificationActor:Error Msg: {0} ",ex.getMessage()),
                     ex);
-             throw new BaseException(IResponseMessage.Key.SERVER_ERROR,IResponseMessage.Message.INTERNAL_ERROR, ResponseCode.serverError.getResponseCode());
+            throw new BaseException(IResponseMessage.Key.SERVER_ERROR,IResponseMessage.Message.INTERNAL_ERROR, ResponseCode.serverError.getResponseCode());
         }
 
     }

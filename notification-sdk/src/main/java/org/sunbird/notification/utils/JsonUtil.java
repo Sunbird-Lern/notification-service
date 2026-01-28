@@ -2,7 +2,7 @@ package org.sunbird.notification.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 public class JsonUtil {
   private static LoggerUtil logger = new LoggerUtil(JsonUtil.class);

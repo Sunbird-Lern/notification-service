@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import org.sunbird.notification.fcm.provider.IFCMNotificationService;
 import org.sunbird.notification.utils.FCMResponse;
 import org.sunbird.notification.utils.NotificationConstant;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;

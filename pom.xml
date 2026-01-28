@@ -98,14 +98,15 @@
         </plugins>
     </build>
     <modules>
+        <module>sb-common</module>
+        <module>sb-telemetry-utils</module>
+        <module>core/sunbird-platform-common</module>
+        <module>core/sunbird-cassandra-utils</module>
         <module>sb-utils</module>
+        <module>notification-sdk</module>
         <module>all-actors</module>
         <module>sb-actor</module>
-        <module>notification-sdk</module>
         <module>service</module>
-        <module>cassandra-utils</module>
-        <module>sb-telemetry-utils</module>
-        <module>sb-common</module>
         <module>reports</module>
     </modules>
 </project>

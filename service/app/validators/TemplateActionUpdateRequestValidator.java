@@ -6,7 +6,7 @@ import org.sunbird.common.message.IResponseMessage;
 import org.sunbird.common.message.ResponseCode;
 import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import utils.ValidationUtil;
 
 import java.util.Arrays;

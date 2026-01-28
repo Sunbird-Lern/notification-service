@@ -21,7 +21,7 @@ import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
 import org.sunbird.util.SystemConfigUtil;
 import org.sunbird.utils.PropertiesCache;
-import org.sunbird.utils.ServiceFactory;
+import org.sunbird.helper.ServiceFactory;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -56,14 +56,14 @@ public class NotificationTemplateActorTest extends BaseActorTest{
         cassandraOperation = mock(CassandraOperationImpl.class);
         when(ServiceFactory.getInstance()).thenReturn(cassandraOperation);
         when(cassandraOperation.getRecordsByProperty(Mockito.anyString(),Mockito.eq("action_template"),Mockito.anyString(),Mockito.anyString(),
-                Mockito.anyMap())).thenReturn(getActionTemplateSuccess());
+                Mockito.any())).thenReturn(getActionTemplateSuccess());
 
         when(cassandraOperation.getRecordsByProperty(Mockito.anyString(),Mockito.eq("notification_template"),Mockito.anyString(),Mockito.anyString(),
-                Mockito.anyMap())).thenReturn(getTemplateSuccess());
-        when(cassandraOperation.upsertRecord(Mockito.anyString(),Mockito.anyString(),Mockito.anyMap(),Mockito.anyMap())).thenReturn(getCassandraResponse());
-        when(cassandraOperation.deleteRecord(Mockito.anyString(),Mockito.anyString(),Mockito.anyMap(),Mockito.anyMap())).thenReturn(getCassandraResponse());
-        when(cassandraOperation.updateRecord(Mockito.anyString(),Mockito.anyString(),Mockito.anyMap(),Mockito.anyMap(),Mockito.anyMap())).thenReturn(getCassandraResponse());
-        when(cassandraOperation.insertRecord(Mockito.anyString(),Mockito.anyString(),Mockito.anyMap(),Mockito.anyMap())).thenReturn(getCassandraResponse());
+                Mockito.any())).thenReturn(getTemplateSuccess());
+        when(cassandraOperation.upsertRecord(Mockito.anyString(),Mockito.anyString(),Mockito.anyMap(),Mockito.any())).thenReturn(getCassandraResponse());
+        Mockito.doNothing().when(cassandraOperation).deleteRecord(Mockito.anyString(),Mockito.anyString(),Mockito.anyMap(),Mockito.any());
+        when(cassandraOperation.updateRecord(Mockito.anyString(),Mockito.anyString(),Mockito.anyMap(),Mockito.anyMap(),Mockito.any())).thenReturn(getCassandraResponse());
+        when(cassandraOperation.insertRecord(Mockito.anyString(),Mockito.anyString(),Mockito.anyMap(),Mockito.any())).thenReturn(getCassandraResponse());
 
 
 

@@ -6,7 +6,7 @@ import org.sunbird.Application;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.message.Localizer;
 import org.sunbird.common.request.Request;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import org.sunbird.common.response.Response;
 import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Controller;

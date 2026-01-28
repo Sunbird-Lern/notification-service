@@ -23,7 +23,7 @@ import org.sunbird.common.util.JsonKey;
 import org.sunbird.notification.email.Email;
 import org.sunbird.util.SystemConfigUtil;
 import org.sunbird.utils.PropertiesCache;
-import org.sunbird.utils.ServiceFactory;
+import org.sunbird.helper.ServiceFactory;
 
 import java.time.Duration;
 import java.util.*;
@@ -96,7 +96,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
                     Mockito.anyString(),
                     Mockito.anyString(),
                     Mockito.anyMap(),
-                    Mockito.anyMap()))
+                    Mockito.any()))
                     .thenReturn(getNotificationFeedResponse());
 
             when(cassandraOperation.getRecordsByProperty(
@@ -110,7 +110,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
                     Mockito.anyString(),
                     Mockito.anyString(),
                     Mockito.anyList(),
-                    Mockito.anyMap()))
+                    Mockito.any()))
                     .thenReturn(getCassandraResponse());
         }catch (BaseException be) {
             Assert.assertTrue(false);
@@ -155,7 +155,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
                     Mockito.anyString(),
                     Mockito.anyString(),
                     Mockito.anyMap(),
-                    Mockito.anyMap()))
+                    Mockito.any()))
                     .thenReturn(getNotificationFeedResponse());
 
             when(cassandraOperation.getRecordsByProperty(
@@ -169,7 +169,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
                     Mockito.anyString(),
                     Mockito.anyString(),
                     Mockito.anyList(),
-                    Mockito.anyMap()))
+                    Mockito.any()))
                     .thenReturn(getCassandraResponse());
 
         }catch (BaseException be) {
@@ -215,7 +215,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
                     Mockito.anyString(),
                     Mockito.anyString(),
                     Mockito.anyMap(),
-                    Mockito.anyMap()))
+                    Mockito.any()))
                     .thenReturn(getNotificationFeedResponse());
 
             when(cassandraOperation.getRecordsByProperty(
@@ -229,7 +229,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
                     Mockito.anyString(),
                     Mockito.anyString(),
                     Mockito.anyList(),
-                    Mockito.anyMap()))
+                    Mockito.any()))
                     .thenReturn(getCassandraResponse());
 
         }catch (BaseException be) {
@@ -275,7 +275,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
                     Mockito.anyString(),
                     Mockito.anyString(),
                     Mockito.anyMap(),
-                    Mockito.anyMap()))
+                    Mockito.any()))
                     .thenReturn(getNotificationFeedResponse());
 
             when(cassandraOperation.getRecordsByProperty(
@@ -289,7 +289,7 @@ public class CreateNotificationActorTest extends BaseActorTest{
                     Mockito.anyString(),
                     Mockito.anyString(),
                     Mockito.anyList(),
-                    Mockito.anyMap()))
+                    Mockito.any()))
                     .thenReturn(getCassandraResponse());
 
         }catch (BaseException be) {

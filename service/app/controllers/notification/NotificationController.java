@@ -11,7 +11,7 @@ import controllers.ResponseHandler;
 import org.sunbird.NotificationValidator;
 import org.sunbird.common.exception.BaseException;
 import org.sunbird.common.request.Request;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import play.mvc.Http;
 import play.mvc.Result;
 import utils.RequestMapper;

@@ -4,7 +4,7 @@ import controllers.BaseController;
 import controllers.JsonKey;
 import controllers.ResponseHandler;
 import org.sunbird.common.request.Request;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 import play.mvc.Http;
 import play.mvc.Result;
 import utils.RequestMapper;

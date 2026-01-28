@@ -4,15 +4,20 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.sunbird.cassandra.CassandraOperation;
 import org.sunbird.common.exception.BaseException;
+import org.sunbird.common.request.RequestContext;
 import org.sunbird.common.response.Response;
 import org.sunbird.common.util.JsonKey;
 import org.sunbird.pojo.ActionTemplate;
 import org.sunbird.pojo.NotificationTemplate;
-import org.sunbird.utils.ServiceFactory;
+import org.sunbird.helper.ServiceFactory;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TemplateDaoImpl implements TemplateDao{
@@ -39,13 +44,13 @@ public class TemplateDaoImpl implements TemplateDao{
         Map<String, Object> map =
                 mapper.convertValue(template, new TypeReference<Map<String, Object>>() {});
         map.put(JsonKey.CREATED_ON, new Timestamp(Calendar.getInstance().getTime().getTime()));
-        return cassandraOperation.insertRecord(KEY_SPACE_NAME, NOTIFICATION_TEMPLATE, map, reqContext);
+        return cassandraOperation.insertRecord(KEY_SPACE_NAME, NOTIFICATION_TEMPLATE, map, getRequestContext(reqContext));
 
     }
 
     @Override
     public Response listTemplate(Map<String, Object> reqContext) throws BaseException {
-        return cassandraOperation.getAllRecords(KEY_SPACE_NAME,NOTIFICATION_TEMPLATE,reqContext);
+        return cassandraOperation.getAllRecords(KEY_SPACE_NAME,NOTIFICATION_TEMPLATE,getRequestContext(reqContext));
     }
 
     @Override
@@ -55,29 +60,48 @@ public class TemplateDaoImpl implements TemplateDao{
         map.put(JsonKey.LAST_UPDATED_ON, new Timestamp(Calendar.getInstance().getTime().getTime()));
         Map<String,Object> compositeKey = new HashMap<>();
         compositeKey.put(JsonKey.TEMPLATE_ID,template.getTemplateId());
-        return cassandraOperation.updateRecord(KEY_SPACE_NAME, NOTIFICATION_TEMPLATE, map, compositeKey, reqContext);
+        return cassandraOperation.updateRecord(KEY_SPACE_NAME, NOTIFICATION_TEMPLATE, map, compositeKey, getRequestContext(reqContext));
     }
 
     @Override
     public Response deleteTemplate(String templateId, Map<String, Object> reqContext) throws BaseException {
         Map<String,String> compositeKey = new HashMap<>();
         compositeKey.put(JsonKey.TEMPLATE_ID,templateId);
-        return cassandraOperation.deleteRecord(KEY_SPACE_NAME, NOTIFICATION_TEMPLATE, compositeKey, reqContext);
+        cassandraOperation.deleteRecord(KEY_SPACE_NAME, NOTIFICATION_TEMPLATE, compositeKey, getRequestContext(reqContext));
+        Response response = new Response();
+        response.put("response", "SUCCESS");
+        return response;
     }
 
     @Override
     public Response upsertActionTemplate(ActionTemplate actionTemplate, Map<String, Object> reqContext) throws BaseException {
         Map<String, Object> map = mapper.convertValue(actionTemplate, Map.class);
-        return cassandraOperation.upsertRecord(KEY_SPACE_NAME,ACTION_TEMPLATE,map,reqContext);
+        return cassandraOperation.upsertRecord(KEY_SPACE_NAME,ACTION_TEMPLATE,map,getRequestContext(reqContext));
     }
 
     @Override
     public Response getTemplate(String templateId, Map<String,Object> reqContext) throws BaseException {
-        return cassandraOperation.getRecordsByProperty(KEY_SPACE_NAME,NOTIFICATION_TEMPLATE, org.sunbird.JsonKey.TEMPLATE_ID,templateId,reqContext);
+        List<Object> values = new ArrayList<>();
+        values.add(templateId);
+        return cassandraOperation.getRecordsByProperty(KEY_SPACE_NAME,NOTIFICATION_TEMPLATE, org.sunbird.JsonKey.TEMPLATE_ID,values,getRequestContext(reqContext));
 
     }
     @Override
     public Response getTemplateId(String actionType, Map<String,Object> reqContext) throws BaseException {
-        return cassandraOperation.getRecordsByProperty(KEY_SPACE_NAME,ACTION_TEMPLATE, org.sunbird.JsonKey.ACTION,actionType,reqContext);
+        List<Object> values = new ArrayList<>();
+        values.add(actionType);
+        return cassandraOperation.getRecordsByProperty(KEY_SPACE_NAME,ACTION_TEMPLATE, org.sunbird.JsonKey.ACTION,values,getRequestContext(reqContext));
+    }
+
+    private RequestContext getRequestContext(Map<String, Object> reqContext) {
+        RequestContext requestContext = new RequestContext();
+        if (reqContext != null) {
+            requestContext.setReqId((String) reqContext.get(JsonKey.REQUEST_ID));
+            requestContext.setActorId((String) reqContext.get(JsonKey.ACTOR_ID));
+            requestContext.setDid((String) reqContext.get(JsonKey.DEVICE_ID));
+            requestContext.setAppId((String) reqContext.get(JsonKey.APP_ID));
+            requestContext.getContextMap().putAll(reqContext);
+        }
+        return requestContext;
     }
 }

@@ -9,7 +9,7 @@ import java.util.Map;
 import org.sunbird.notification.fcm.provider.FCMInitializer;
 import org.sunbird.notification.fcm.provider.IFCMNotificationService;
 import org.sunbird.notification.utils.FCMResponse;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 public class FCMNotificationServiceImpl implements IFCMNotificationService {
   private static LoggerUtil logger = new LoggerUtil(FCMNotificationServiceImpl.class);

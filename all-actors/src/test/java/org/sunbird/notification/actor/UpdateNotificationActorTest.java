@@ -22,7 +22,7 @@ import org.sunbird.common.request.Request;
 import org.sunbird.common.response.Response;
 import org.sunbird.util.SystemConfigUtil;
 import org.sunbird.utils.PropertiesCache;
-import org.sunbird.utils.ServiceFactory;
+import org.sunbird.helper.ServiceFactory;
 
 import java.time.Duration;
 import java.util.Arrays;
@@ -82,7 +82,7 @@ public class UpdateNotificationActorTest extends BaseActorTest{
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyList(),
-                Mockito.anyMap()))
+                Mockito.any()))
                 .thenReturn(getCassandraResponse());
 
         subject.tell(request, probe.getRef());
@@ -116,14 +116,14 @@ public class UpdateNotificationActorTest extends BaseActorTest{
                 Mockito.anyString(),
                 Mockito.anyString(),
                 Mockito.anyList(),
-                Mockito.anyMap()))
+                Mockito.any()))
                 .thenReturn(getCassandraResponse());
         when(cassandraOperation.getRecordsByPrimaryKeys(
                 Mockito.anyString(),
                 Mockito.eq("feed_version_map"),
                 Mockito.anyList(),
                 Mockito.anyString(),
-                Mockito.anyMap()))
+                Mockito.any()))
                 .thenReturn(getFeedMapList());
         subject.tell(request, probe.getRef());
         Object message = probe.expectMsgAnyClassOf(Duration.ofSeconds(80), Response.class, BaseException.class);

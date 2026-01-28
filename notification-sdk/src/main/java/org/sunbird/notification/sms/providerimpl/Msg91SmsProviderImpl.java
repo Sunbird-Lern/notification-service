@@ -21,7 +21,7 @@ import org.sunbird.notification.sms.provider.ISmsProvider;
 import org.sunbird.notification.utils.JsonUtil;
 import org.sunbird.notification.utils.NotificationConstant;
 import org.sunbird.notification.utils.Util;
-import org.sunbird.request.LoggerUtil;
+import org.sunbird.logging.LoggerUtil;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
